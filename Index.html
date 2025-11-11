@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small Dick's Barber - Inicio</title>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="#inicio" class="logo">Small Dick's Barber</a>
+            <ul>
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#nosotros">Nosotros</a></li>
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+            <a href="#contacto" class="btn-cita">Agendar Cita</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section id="inicio">
+            <div class="slider-container">
+                
+                <div class="slide fade">
+                    <img src="img/img1.webp" alt="Equipo de Barberos">
+                    <div class="slider-caption">
+                        <h1>Estilo y Precisión en cada corte</h1>
+                        <p>La mejor experiencia de barbería tradicional y moderna.</p>
+                        <a href="#contacto" class="btn-cita">Agendar Cita Ahora</a>
+                    </div>
+                </div>
+        
+                <div class="slide fade">
+                    <img src="img/img2.jpeg" alt="Barbero trabajando">
+                    <div class="slider-caption">
+                        <h1>Atención Personalizada</h1>
+                        <p>Donde cada detalle cuenta para tu mejor imagen.</p>
+                        <a href="#contacto" class="btn-cita">Agendar Cita Ahora</a>
+                    </div>
+                </div>
+                
+                <div class="slide fade">
+                    <img src="img/img3.jpeg" alt="Productos de barbería">
+                    <div class="slider-caption">
+                        <h1>Productos de Calidad</h1>
+                        <p>Para mantener tu estilo impecable todos los días.</p>
+                        <a href="#contacto" class="btn-cita">Agendar Cita Ahora</a>
+                    </div>
+                </div>
+                                 
+                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1)">&#10095;</a>
+        
+                <div class="slider-dots">
+                    <span class="dot" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                    <span class="dot" onclick="currentSlide(3)"></span>
+                </div>
+        
+            </div> </section>
+
+        <section id="nosotros">
+            <h2>Sobre Nosotros</h2>
+            <p>
+                Aquí puedes escribir una breve descripción de tu barbería.
+                Habla de tu misión, tu experiencia y lo que te hace único.
+            </p>
+        </section>
+
+        <section id="servicios">
+            <h2>Nuestros Servicios</h2>
+            <div class="servicios-grid">
+                <div class="servicio-card">
+                    <h3>Corte de Cabello</h3>
+                    <p>Corte clásico o moderno con máquina y/o tijera.</p>
+                    <span class="precio">$200</span>
+                </div>
+                <div class="servicio-card">
+                    <h3>Corte y Barba</h3>
+                    <p>Servicio completo de corte de cabello y arreglo de barba.</p>
+                    <span class="precio">$350</span>
+                </div>
+                <div class="servicio-card">
+                    <h3>Afeitado Clásico</h3>
+                    <p>Afeitado con navaja y toallas calientes.</p>
+                    <span class="precio">$150</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacto">
+            <h2>Contacto y Ubicación</h2>
+            <div class="contacto-info">
+                <p><strong>Dirección:</strong> Tu Calle, Número, Colonia, Ciudad</p>
+                <p><strong>Teléfono:</strong> (00) 1234-5678</p>
+                <p><strong>Horario:</strong> Lunes a Sábado de 10am - 8pm</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Small Dick's Barber. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
