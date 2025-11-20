@@ -1,0 +1,331 @@
+/* ----- RESET BÁSICO Y VARIABLES GLOBALES ----- */
+:root {
+    /* Paleta de colores inspirada en el sitio de ejemplo */
+    --color-fondo: #0a0a0a;
+    --color-primario: #c5a47e; /* Un tono dorado/beige */
+    --color-texto: #f1f1f1;
+    --color-gris-oscuro: #1a1a1a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Facilita el manejo de anchos y paddings */
+    font-family: Arial, sans-serif; /* Puedes cambiar esto por una fuente más estilizada */
+    scroll-behavior: smooth; /* Para que el scroll al pulsar los enlaces sea suave */
+}
+
+body {
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.6;
+}
+
+/* ----- ENCABEZADO Y NAVEGACIÓN ----- */
+header {
+    background-color: var(--color-gris-oscuro);
+    border-bottom: 1px solid var(--color-primario);
+    padding: 1rem 5%;
+    position: sticky; /* Para que el menú se quede fijo arriba */
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-primario);
+    text-decoration: none;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem; /* Espacio entre elementos del menú */
+}
+
+nav ul li a {
+    color: var(--color-texto);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: var(--color-primario);
+}
+
+/* ----- BOTÓN DE CITA (REUTILIZABLE) ----- */
+.btn-cita {
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-cita:hover {
+    background-color: #e0b98f; /* Un tono más claro del primario */
+}
+
+/* ----- ESTILOS DE SECCIONES GENERALES ----- */
+section {
+    padding: 4rem 5%; /* 4rem arriba/abajo, 5% a los lados */
+    text-align: center;
+}
+
+section h2 {
+    font-size: 2.5rem;
+    color: var(--color-primario);
+    margin-bottom: 2rem;
+}
+
+/* ----- SECCIÓN DE INICIO (HERO) ----- */
+#inicio {
+    min-height: 80vh; /* Ocupa el 80% de la altura de la pantalla */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://via.placeholder.com/1500x800.png?text=Imagen+Fondo+Barberia');
+    background-size: cover;
+    background-position: center;
+    padding: 0;
+}
+
+#inicio h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+#inicio p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+/* ----- CONTENEDOR DEL SLIDER ----- */
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Optimizadas imágenes: object-fit cover para mantener aspecto, image-rendering para mejor calidad */
+.slide {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    /* Mejora de renderizado y calidad de imagen */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.slide.fade {
+    animation: fade 0.5s ease-in-out;
+}
+
+@keyframes fade {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
+}
+
+/* Mejorado: caption con mejor posicionamiento */
+.slider-caption {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 5;
+    width: 90%;
+    max-width: 800px;
+    animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.slider-caption h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--color-texto);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.slider-caption p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--color-texto);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+
+/* ----- CONTROLES DEL SLIDER ----- */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 60%;
+    width: auto;
+    padding: 1rem;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+    transition: 0.3s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 10;
+    border: none;
+}
+
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.prev {
+    left: 10px; /* Añade o modifica esta línea */
+    border-radius: 3px 0 0 3px; /* El radio es al revés que .next */
+}
+
+/* ----- PUNTOS DE NAVEGACIÓN ----- */
+.slider-dots {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dot {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.active, .dot:hover {
+    background-color: var(--color-primario);
+}
+
+/* ----- SECCIÓN NOSOTROS ----- */
+#nosotros {
+    background-color: var(--color-gris-oscuro);
+}
+
+#nosotros p {
+    max-width: 800px;
+    margin: 0 auto; /* Centra el párrafo */
+}
+
+/* ----- SECCIÓN DE SERVICIOS ----- */
+.servicios-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap; /* Para que se acomoden en pantallas pequeñas */
+}
+
+.servicio-card {
+    background-color: var(--color-gris-oscuro);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 2rem;
+    width: 300px; /* Ancho fijo para cada tarjeta */
+    transition: transform 0.3s ease;
+}
+
+.servicio-card:hover {
+    transform: translateY(-5px); /* Pequeño efecto al pasar el mouse */
+}
+
+.servicio-card h3 {
+    color: var(--color-primario);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.servicio-card .precio {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--color-primario);
+    margin-top: 1rem;
+}
+
+/* ----- SECCIÓN CONTACTO ----- */
+#contacto {
+    background-color: var(--color-gris-oscuro);
+}
+
+.contacto-info p {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ----- PIE DE PÁGINA ----- */
+footer {
+    text-align: center;
+    padding: 2rem 5%;
+    border-top: 1px solid #333;
+    font-size: 0.9rem;
+}
+
+/* ----- RESPONSIVO ----- */
+@media (max-width: 768px) {
+    .slider-caption h1 {
+        font-size: 2rem;
+    }
+
+    .slider-caption p {
+        font-size: 1rem;
+    }
+
+    .prev, .next {
+        padding: 0.75rem;
+        font-size: 1.2rem;
+    }
+
+    nav ul {
+        gap: 0.75rem;
+    }
+}
