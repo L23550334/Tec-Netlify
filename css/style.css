@@ -329,3 +329,113 @@ footer {
         gap: 0.75rem;
     }
 }
+/* ----- SECCIÓN DE PRODUCTOS (NUEVOS ESTILOS) ----- */
+
+#catalogo {
+    padding-top: 5rem; /* Asegura espacio si el header es fijo */
+}
+
+.subtitulo-catalogo {
+    font-size: 1.1rem;
+    color: var(--color-texto);
+    margin-bottom: 3rem;
+}
+
+.product-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Espacio entre las tarjetas */
+    flex-wrap: wrap; /* Permite que los productos se muevan a la siguiente línea */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.product-card {
+    background-color: var(--color-gris-oscuro);
+    border: 2px solid var(--color-gris-oscuro);
+    border-radius: 10px;
+    padding: 1.5rem;
+    width: 300px; /* Ancho fijo para las tarjetas */
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    
+    overflow: hidden; 
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* AÑADIDO 'transform' a la transición */
+}
+
+.product-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    border-color: var(--color-primario);
+    transform: scale(1.03); /* APLICAMOS EL ZOOM AL CUADRO COMPLETO */
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    
+    transition: none;
+}
+
+.product-card:hover img {
+    transform: scale(1); /* Aseguramos que la imagen no se mueva sola */
+}
+
+.product-card h3 {
+    color: var(--color-primario);
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.product-card p {
+    font-size: 0.95rem;
+    color: #ccc;
+    height: 60px; /* Altura fija para la descripción */
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.product-card .precio {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-texto); /* Color del precio diferente al texto */
+    margin-bottom: 1.5rem; /* Espacio debajo del precio antes del botón */
+}
+
+.btn-comprar {
+    display: block; /* Hace que el botón ocupe todo el ancho de su contenedor */
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-comprar:hover {
+    background-color: #e0b98f;
+    transform: translateY(-2px); /* Pequeño levantamiento al pasar el ratón */
+}
+
+/* RESPONSIVO PARA PRODUCTOS */
+@media (max-width: 650px) {
+    .product-grid {
+        gap: 20px;
+    }
+    
+    .product-card {
+        width: 90%; /* Ocupa casi todo el ancho en móviles */
+    }
+}
+.nav-links-group {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem; /* Espacio entre el menú (UL) y el botón (Agendar Cita) */
+}
