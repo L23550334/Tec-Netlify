@@ -437,5 +437,5 @@ footer {
 .nav-links-group {
     display: flex;
     align-items: center;
-    gap: 2.5rem; /* Espacio entre el menú (UL) y el botón (Agendar Cita) */
+    gap: 13rem; /* Espacio entre el menú (UL) y el botón (Agendar Cita) */
 }
