@@ -67,9 +67,6 @@ function handleAuth() {
         const navPlaceholder = document.querySelector('.nav-placeholder');
         navPlaceholder.innerHTML = `<a href="#" id="cart-btn" class="btn-cita">Carrito (<span id="cart-count">0</span>)</a>`;
         document.getElementById('cart-btn').addEventListener('click', toggleCartModal);
-        // En la página de productos, no necesitamos mostrar el estado de login/logout en el menú lateral.
-        // Así que detenemos la función aquí.
-        return;
     }
 
     if (user) {
@@ -153,15 +150,15 @@ function handleLoginModalAndRedirect() {
 
                 // Redirigir según el rol
                 if (foundUser.role === 'admin') {
-                    window.location.href = 'html/admin-dashboard.html';
+                    window.location.href = '/html/admin-dashboard.html';
                 } else if (foundUser.role === 'barbero') {
-                    window.location.href = 'html/barbero-dashboard.html';
+                    window.location.href = '/html/barbero-dashboard.html';
                 } else {
                     // Para clientes: si venía de reseña, se queda en Index.html; si no, va a citas.html
                     if (loginForReview === 'true') {
-                        window.location.href = 'index.html';
+                        window.location.href = '/index.html';
                     } else {
-                        window.location.href = 'html/citas.html';
+                        window.location.href = '/html/citas.html';
                     }
                 }
             } else {
@@ -327,7 +324,7 @@ function renderCartItems() {
         total += item.price * item.quantity;
         itemsContainer.innerHTML += `
             <div class="cart-item">
-                <img src="${item.img.replace('..', '')}" alt="${item.name}">
+                <img src="${item.img}" alt="${item.name}">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
                     <p>${item.quantity} x $${item.price.toFixed(2)}</p>
