@@ -1,6 +1,6 @@
 <?php
 // test.php
-include 'php/conexion.php';
+include 'conexion.php';
 
 if ($conn) {
     echo "<h1>¡ÉXITO TOTAL! 🎉</h1>";
