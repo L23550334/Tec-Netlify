@@ -36,6 +36,7 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative; /* Para centrar el logo correctamente */
 }
 
 nav .logo {
@@ -43,23 +44,18 @@ nav .logo {
     font-weight: bold;
     color: var(--color-primario);
     text-decoration: none;
+    /* Centrado absoluto */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 1.5rem; /* Espacio entre elementos del menú */
+.nav-placeholder {
+    width: 50px; /* Espacio a la derecha para balancear el icono de hamburguesa */
 }
 
-nav ul li a {
-    color: var(--color-texto);
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
-}
-
-nav ul li a:hover {
-    color: var(--color-primario);
+.nav-placeholder .btn-cita {
+    white-space: nowrap; /* Evita que el texto del botón del carrito se rompa */
 }
 
 /* ----- BOTÓN DE CITA (REUTILIZABLE) ----- */
@@ -359,6 +355,7 @@ footer {
     text-align: center;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     
+    position: relative; /* Necesario para posicionar las partículas dentro */
     overflow: hidden; 
     transition: box-shadow 0.3s ease, transform 0.3s ease; /* AÑADIDO 'transform' a la transición */
 }
@@ -407,7 +404,7 @@ footer {
 }
 
 .btn-comprar {
-    display: block; /* Hace que el botón ocupe todo el ancho de su contenedor */
+    display: inline-block; /* Permite que el botón se centre horizontalmente */
     background-color: var(--color-primario);
     color: var(--color-fondo);
     padding: 0.75rem 1rem;
@@ -430,12 +427,542 @@ footer {
         gap: 20px;
     }
     
-    .product-card {
-        width: 90%; /* Ocupa casi todo el ancho en móviles */
-    }
 }
-.nav-links-group {
+
+/* ----- ESTILOS PARA EL FORMULARIO DE CITAS ----- */
+#agendar-cita-form {
+    padding-top: 5rem;
+}
+
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: var(--color-gris-oscuro);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #333;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--color-primario);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: var(--color-texto);
+    font-size: 1rem;
+}
+
+.btn-enviar {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-enviar:hover {
+    background-color: #e0b98f;
+}
+
+/* ----- SECCIÓN DE RESEÑAS ----- */
+#reseñas {
+    background-color: var(--color-fondo);
+}
+
+.reseñas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.reseña-card {
+    background-color: var(--color-gris-oscuro);
+    border: 1px solid #333;
+    padding: 2rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.reseña-estrellas {
+    color: var(--color-primario);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.reseña-texto {
+    font-style: italic;
+    color: #ccc;
+    margin-bottom: 1rem;
+    flex-grow: 1; /* Hace que el texto ocupe el espacio disponible */
+}
+
+.reseña-autor {
+    font-weight: bold;
+    text-align: right;
+    color: var(--color-texto);
+}
+
+.form-reseña-container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.form-reseña-container h3 {
+    font-size: 1.8rem;
+    color: var(--color-primario);
+    margin-bottom: 1.5rem;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: var(--color-texto);
+    font-size: 1rem;
+    resize: vertical;
+}
+
+/* Estilos para el input de estrellas */
+.estrellas-input {
+    display: flex;
+    flex-direction: row-reverse; /* Invierte el orden para que el hover funcione correctamente */
+    justify-content: center;
+    gap: 5px;
+}
+
+.estrellas-input input[type="radio"] {
+    display: none; /* Oculta los botones de radio reales */
+}
+
+.estrellas-input label {
+    font-size: 2.5rem;
+    color: #555; /* Color de estrellas vacías */
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.estrellas-input input[type="radio"]:checked ~ label,
+.estrellas-input label:hover,
+.estrellas-input label:hover ~ label {
+    color: var(--color-primario); /* Color de estrellas seleccionadas y al pasar el mouse */
+}
+
+/* ----- ESTILOS DE AUTENTICACIÓN ----- */
+.login-error-message {
+    color: #ff8a8a;
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 1px solid #ff4d4d;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    display: none; /* Oculto por defecto */
+}
+
+.auth-user {
     display: flex;
     align-items: center;
-    gap: 13rem; /* Espacio entre el menú (UL) y el botón (Agendar Cita) */
+    gap: 1rem;
+    color: var(--color-texto);
+    background-color: #2a2a2a;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+}
+
+.nav-dashboard {
+    color: var(--color-primario);
+    text-decoration: none;
+}
+
+.auth-user .username {
+    font-weight: bold;
+    color: var(--color-primario);
+}
+
+.btn-logout {
+    background-color: #555;
+    color: var(--color-texto);
+    padding: 0.4rem 0.8rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #d9534f; /* Se pone rojo al pasar el mouse */
+}
+
+/* ----- ESTILOS PARA EL MODAL DE LOGIN ----- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none; /* Oculto por defecto */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: var(--color-gris-oscuro);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-primario);
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2rem;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-modal:hover {
+    color: var(--color-texto);
+}
+
+.form-switch-link {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.form-switch-link a {
+    color: var(--color-primario);
+    font-weight: bold;
+}
+
+/* ----- ESTILOS PARA TABLAS DE DASHBOARD ----- */
+.table-container {
+    overflow-x: auto; /* Para que la tabla sea responsive en móviles */
+    background-color: var(--color-gris-oscuro);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+table thead {
+    background-color: #2a2a2a;
+}
+
+table th, table td {
+    padding: 1rem;
+    border-bottom: 1px solid #333;
+}
+
+table th {
+    color: var(--color-primario);
+    font-size: 1.1rem;
+}
+
+table tbody tr:hover {
+    background-color: #252525;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-accion {
+    padding: 0.5rem 0.8rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--color-fondo);
+}
+
+.btn-editar {
+    background-color: var(--color-primario);
+}
+
+.btn-editar:hover {
+    background-color: #e0b98f;
+}
+
+.btn-eliminar {
+    background-color: #d9534f; /* Un tono rojo */
+}
+.btn-eliminar:hover {
+    background-color: #c9302c;
+}
+
+/* ----- ESTILOS PARA PARTÍCULAS EN PRODUCTOS ----- */
+.particle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Para que no interfiera con el ratón */
+    overflow: hidden;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: var(--color-primario);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particle-animation 1.5s ease-out forwards;
+}
+
+@keyframes particle-animation {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        /* Movimiento aleatorio hacia afuera */
+        transform: translate(
+            calc((var(--random-x, 0.5) - 0.5) * 200px), 
+            calc((var(--random-y, 0.5) - 0.5) * 200px)
+        ) scale(0);
+    }
+}
+
+/* ----- ESTILOS PARA EL CARRITO DE COMPRAS ----- */
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between; /* Para empujar el botón de quitar al final */
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.cart-item-info h4 {
+    color: var(--color-primario);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.cart-item-info p {
+    margin: 0;
+    color: #ccc;
+}
+
+.btn-remove-item {
+    background-color: transparent;
+    border: none;
+    color: #888;
+    font-size: 1.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 0.5rem;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.btn-remove-item:hover {
+    color: #d9534f; /* Rojo al pasar el mouse */
+}
+
+#cart-total {
+    text-align: right;
+    margin-top: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--color-primario);
+}
+
+/* Animación para el botón del carrito */
+#cart-btn.shake {
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ----- ESTILOS PARA EL SELECTOR DE CANTIDAD ----- */
+.quantity-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.quantity-selector input {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    width: 80px;
+    border: 1px solid var(--color-primario);
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    -moz-appearance: textfield; /* Firefox */
+}
+
+.quantity-btn {
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+    padding-bottom: 5px; /* Ajuste para centrar visualmente el símbolo */
+    transition: background-color 0.2s ease;
+}
+
+.quantity-btn:hover {
+    background-color: #e0b98f;
+}
+
+/* ----- ESTILOS PARA MENÚ HAMBURGUESA Y LATERAL ----- */
+#hamburger-btn {
+    cursor: pointer;
+    z-index: 2; /* Para estar por encima del logo si se superponen */
+}
+
+#hamburger-btn span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px 0;
+    background-color: var(--color-texto);
+    transition: 0.4s;
+}
+
+/* Animación del icono de hamburguesa a 'X' */
+#hamburger-btn.open span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+#hamburger-btn.open span:nth-child(2) {
+    opacity: 0;
+}
+
+#hamburger-btn.open span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+.side-nav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 2500;
+    top: 0;
+    left: 0;
+    background-color: var(--color-gris-oscuro);
+    overflow-x: hidden;
+    transition: transform 0.5s ease, width 0.5s ease; /* Transición suave */
+    padding-top: 60px;
+    border-right: 1px solid var(--color-primario);
+    /* Cambio clave: El menú está fuera de la pantalla por defecto */
+    width: 280px; /* Ancho fijo para evitar distorsión */
+    transform: translateX(-100%);
+}
+
+.side-nav.open {
+    transform: translateX(0); /* El menú se desliza a la vista */
+}
+
+.side-nav ul {
+    list-style: none;
+    padding: 0 2rem;
+}
+
+.side-nav a {
+    padding: 8px 8px 8px 0;
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: var(--color-texto);
+    display: block;
+    transition: 0.3s;
+}
+
+.side-nav a:hover {
+    color: var(--color-primario);
+}
+
+.side-nav .close-side-menu {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+.side-menu-auth {
+    padding: 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid #333;
+}
+
+.side-menu-auth .auth-user {
+    justify-content: space-between;
 }

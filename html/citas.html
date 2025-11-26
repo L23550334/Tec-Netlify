@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Cita - Small Dick's Barber</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <!-- Icono de Menú Hamburguesa -->
+            <div id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <!-- Logo Centrado -->
+            <a href="../Index.html" class="logo">Small Dick's Barber</a>
+            <!-- Espacio a la derecha -->
+            <div class="nav-placeholder"></div>
+        </nav>
+    </header>
+
+    <!-- Menú Lateral Desplegable -->
+    <div id="side-menu" class="side-nav">
+        <a href="#" class="close-side-menu">&times;</a>
+        <ul>
+            <li><a href="../Index.html">Inicio</a></li>
+            <li><a href="productos.html">Productos</a></li>
+        </ul>
+        <div id="auth-container" class="side-menu-auth"></div>
+    </div>
+
+    <main>
+        <section id="agendar-cita-form">
+            <h2>Agenda tu Cita</h2>
+            <p class="subtitulo-catalogo">Completa el formulario y nos pondremos en contacto para confirmar.</p>
+
+            <form class="form-container">
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="servicio">Servicio Deseado</label>
+                    <select id="servicio" name="servicio" required>
+                        <option value="">Selecciona un servicio...</option>
+                        <option value="corte">Corte de Cabello ($200)</option>
+                        <option value="corte-barba">Corte y Barba ($350)</option>
+                        <option value="afeitado">Afeitado Clásico ($150)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha">Fecha Preferida</label>
+                    <input type="date" id="fecha" name="fecha" required>
+                </div>
+
+                <button type="submit" class="btn-enviar">Enviar Solicitud</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Small Dick's Barber. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="../JS/script.js"></script>
+
+</body>
+</html>

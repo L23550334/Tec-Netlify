@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador - Small Dick's Barber</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="../Index.html" class="logo">Small Dick's Barber</a>
+            <div class="nav-links-group" id="nav-menu">
+                <ul>
+                    <li><a href="../Index.html">Volver al Inicio</a></li>
+                </ul>
+                <div id="auth-container"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="admin-panel">
+            <h2>Panel de Administración de Citas</h2>
+            <p class="subtitulo-catalogo">Gestiona todas las citas programadas.</p>
+
+            <button id="btn-abrir-modal-cita" class="btn-enviar" style="margin-bottom: 2rem; max-width: 200px;">Añadir Nueva Cita</button>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Servicio</th>
+                            <th>Fecha</th>
+                            <th>Teléfono</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="citas-tbody">
+                        <!-- Las filas de citas se insertarán aquí con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para Añadir/Editar Cita -->
+    <div id="cita-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="cita-modal-titulo">Añadir Nueva Cita</h2>
+            <form id="form-cita" class="form-container">
+                <input type="hidden" id="cita-id">
+                <div class="form-group">
+                    <label for="cita-nombre">Nombre del Cliente</label>
+                    <input type="text" id="cita-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="cita-telefono">Teléfono</label>
+                    <input type="tel" id="cita-telefono" required>
+                </div>
+                <div class="form-group">
+                    <label for="cita-servicio">Servicio</label>
+                    <select id="cita-servicio" required>
+                        <option value="Corte de Cabello">Corte de Cabello ($200)</option>
+                        <option value="Corte y Barba">Corte y Barba ($350)</option>
+                        <option value="Afeitado Clásico">Afeitado Clásico ($150)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cita-fecha">Fecha y Hora</label>
+                    <input type="datetime-local" id="cita-fecha" required>
+                </div>
+                <button type="submit" class="btn-enviar">Guardar Cita</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Small Dick's Barber. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="../JS/script.js"></script>
+
+</body>
+</html>

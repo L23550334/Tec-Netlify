@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Small Dick's Barber</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="../Index.html" class="logo">Small Dick's Barber</a>
+            
+            <div class="nav-links-group" id="nav-menu">
+                <ul>
+                    <li><a href="../Index.html#inicio">Inicio</a></li>
+                    <li><a href="../Index.html#nosotros">Nosotros</a></li>
+                    <li><a href="../Index.html#servicios">Servicios</a></li>
+                    <li><a href="../Index.html#contacto">Contacto</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                </ul>
+                <!-- El botón de login/logout se gestionará con JS -->
+                <div id="auth-container"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="login-form">
+            <h2>Iniciar Sesión</h2>
+            <p class="subtitulo-catalogo">Ingresa tus credenciales para continuar.</p>
+
+            <form id="form-login" class="form-container">
+                <div id="login-error" class="login-error-message"></div>
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn-enviar">Ingresar</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="../JS/script.js"></script>
+</body>
+</html>
