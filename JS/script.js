@@ -72,9 +72,9 @@ function handleAuth() {
     if (user) {
         let dashboardLink = '';
         if (user.role === 'admin') {
-            dashboardLink = `<a href="html/admin-dashboard.html" class="nav-dashboard">Panel Admin</a>`;
+            dashboardLink = `<a href="/html/admin-dashboard.html" class="nav-dashboard">Panel Admin</a>`;
         } else if (user.role === 'barbero') {
-            dashboardLink = `<a href="html/barbero-dashboard.html" class="nav-dashboard">Mis Citas</a>`;
+            dashboardLink = `<a href="/html/barbero-dashboard.html" class="nav-dashboard">Mis Citas</a>`;
         }
 
         // Si el usuario ha iniciado sesión, muestra su nombre y un botón para salir.
@@ -99,12 +99,7 @@ function logout(event) {
     localStorage.removeItem('loggedInUser');
 
     // Comprueba si la página actual está dentro de la carpeta /html/
-    const onSubPage = window.location.pathname.includes('/html/');
-
-    // Si está en una subpágina, necesita subir un nivel (../) para encontrar Index.html
-    // Si está en la página principal, solo necesita ir a Index.html
-    const indexPath = onSubPage ? '../index.html' : 'index.html';
-    window.location.href = indexPath;
+    window.location.href = '/index.html';
 }
 
 function setupLoginRequiredElements() {
@@ -150,15 +145,15 @@ function handleLoginModalAndRedirect() {
 
                 // Redirigir según el rol
                 if (foundUser.role === 'admin') {
-                    window.location.href = 'html/admin-dashboard.html';
+                    window.location.href = '/html/admin-dashboard.html';
                 } else if (foundUser.role === 'barbero') {
-                    window.location.href = 'html/barbero-dashboard.html';
+                    window.location.href = '/html/barbero-dashboard.html';
                 } else {
                     // Para clientes: si venía de reseña, se queda en Index.html; si no, va a citas.html
                     if (loginForReview === 'true') {
-                        window.location.href = 'index.html';
+                        window.location.href = '/index.html';
                     } else {
-                        window.location.href = 'html/citas.html';
+                        window.location.href = '/html/citas.html';
                     }
                 }
             } else {
