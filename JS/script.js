@@ -324,7 +324,7 @@ function renderCartItems() {
         total += item.price * item.quantity;
         itemsContainer.innerHTML += `
             <div class="cart-item">
-                <img src="${item.img.replace('../', '')}" alt="${item.name}">
+                <img src="${item.img}" alt="${item.name}">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
                     <p>${item.quantity} x $${item.price.toFixed(2)}</p>
@@ -450,8 +450,6 @@ function createParticles(card) {
         particle.style.left = `${Math.random() * 100}%`;
         particle.style.top = `${Math.random() * 100}%`;
         particle.style.transform = `scale(${Math.random()})`;
-        particle.style.setProperty('--random-x', Math.random());
-        particle.style.setProperty('--random-y', Math.random());
         particle.style.setProperty('--random-x', Math.random());
         particle.style.setProperty('--random-y', Math.random());
         particle.style.animationDelay = `${Math.random() * 2}s`;
