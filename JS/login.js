@@ -22,7 +22,8 @@ document.getElementById('form-login').addEventListener('submit', function(e) {
     };
 
     // Petición Fetch a la API
-    fetch('../php/login.php', {
+    // CORRECCIÓN 1: Como estás en index.html, la ruta es directa a 'php/', sin los dos puntos '..'
+    fetch('php/login.php', { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -37,14 +38,17 @@ document.getElementById('form-login').addEventListener('submit', function(e) {
             
             // Redirección según rol
             if (data.rol == 1) {
-                window.location.href = '../admin/dashboard.html'; // Admin
+                // Admin -> Va a la carpeta html
+                window.location.href = 'html/admin-dashboard.html'; 
             } else if (data.rol == 2) {
-                window.location.href = '../barbero/agenda.html'; // Barbero
+                // Barbero -> Va a la carpeta html
+                window.location.href = 'html/barbero-dashboard.html'; 
             } else {
-                window.location.href = '../index.html'; // Cliente
+                // Cliente -> Recarga la página actual (Index)
+                window.location.reload(); 
             }
         } else {
-            // Si hubo error (contraseña mal, etc)
+            // Si hubo error
             errorDiv.textContent = data.message;
             errorDiv.style.display = 'block';
         }
