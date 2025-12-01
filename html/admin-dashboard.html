@@ -3,86 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administrador - Small Dick's Barber</title>
+    <title>Panel Admin - Small Dick's Barber</title>
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* --- ESTILOS CORREGIDOS PARA EL ADMIN --- */
+        body {
+            background-color: #0a0a0a; /* Fondo general oscuro */
+        }
+
+        /* Arreglo del Header para que no salgan puntos */
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: var(--color-primario);
+            font-weight: bold;
+        }
+
+        /* Layout Principal */
+        .admin-layout {
+            display: flex;
+            min-height: calc(100vh - 80px); /* Restamos la altura del header */
+        }
+        
+        /* Menú Lateral */
+        .sidebar {
+            width: 250px;
+            background-color: #151515;
+            border-right: 1px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .sidebar button {
+            background: none;
+            border: 1px solid #333;
+            color: #ccc;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .sidebar button:hover, .sidebar button.active {
+            background-color: var(--color-primario);
+            color: #0a0a0a;
+            font-weight: bold;
+            border-color: var(--color-primario);
+        }
+
+        /* Contenido Principal */
+        .admin-content {
+            flex: 1;
+            padding: 2rem;
+            background-color: #0a0a0a; /* Fondo negro para el contenido */
+            color: white;
+        }
+
+        h2 { color: var(--color-primario); margin-bottom: 0.5rem; }
+        .subtitulo-catalogo { color: #888; margin-bottom: 2rem; }
+
+        /* TABLA MEJORADA */
+        .table-container {
+            overflow-x: auto;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            border: 1px solid #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #eee;
+        }
+        
+        thead {
+            background-color: #252525;
+            border-bottom: 2px solid var(--color-primario);
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            color: var(--color-primario);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        tr:hover {
+            background-color: #222;
+        }
+
+        /* Botones de Acción */
+        .btn-accion {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .btn-editar { background-color: #ffc107; color: black; }
+        .btn-borrar { background-color: #ff4d4d; color: white; }
+
+        .section-panel { display: none; }
+        .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
 <body>
 
     <header>
         <nav>
             <a href="../index.html" class="logo">Small Dick's Barber</a>
-            <div class="nav-links-group" id="nav-menu">
+            <div class="nav-links-group">
                 <ul>
-                    <li><a href="../index.html">Volver al Inicio</a></li>
+                    <li><a href="../index.html">🏠 Volver al Inicio</a></li>
+                    <li><a href="#" onclick="cerrarSesion()">🚪 Cerrar Sesión</a></li>
                 </ul>
-                <div id="auth-container"></div>
             </div>
         </nav>
     </header>
 
-    <main>
-        <section id="admin-panel">
-            <h2>Panel de Administración de Citas</h2>
-            <p class="subtitulo-catalogo">Gestiona todas las citas programadas.</p>
+    <main class="admin-layout">
+        
+        <aside class="sidebar">
+            <button onclick="mostrarSeccion('productos')" class="active">📦 Productos</button>
+            <button onclick="mostrarSeccion('citas')">📅 Citas</button>
+            <button onclick="mostrarSeccion('usuarios')">👥 Usuarios</button>
+        </aside>
 
-            <button id="btn-abrir-modal-cita" class="btn-enviar" style="margin-bottom: 2rem; max-width: 200px;">Añadir Nueva Cita</button>
+        <section class="admin-content">
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Servicio</th>
-                            <th>Fecha</th>
-                            <th>Teléfono</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="citas-tbody">
-                        <!-- Las filas de citas se insertarán aquí con JavaScript -->
-                    </tbody>
-                </table>
+            <div id="panel-productos" class="section-panel active">
+                <h2>Gestión de Inventario</h2>
+                <p class="subtitulo-catalogo">Control de productos en venta.</p>
+                
+                <button class="btn-cita" style="margin-bottom: 20px;">+ Nuevo Producto</button>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-productos-body">
+                            <tr><td colspan="5" style="text-align:center; padding: 20px;">Cargando datos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <div id="panel-citas" class="section-panel">
+                <h2>Citas Programadas</h2>
+                <p class="subtitulo-catalogo">Agenda de la barbería.</p>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Cliente</th><th>Fecha</th><th>Estado</th></tr></thead>
+                        <tbody><tr><td colspan="3" style="text-align:center;">Próximamente...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-usuarios" class="section-panel">
+                 <h2>Usuarios Registrados</h2>
+                 <p class="subtitulo-catalogo">Clientes y personal.</p>
+            </div>
+
         </section>
     </main>
 
-    <!-- Modal para Añadir/Editar Cita -->
-    <div id="cita-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2 id="cita-modal-titulo">Añadir Nueva Cita</h2>
-            <form id="form-cita" class="form-container">
-                <input type="hidden" id="cita-id">
-                <div class="form-group">
-                    <label for="cita-nombre">Nombre del Cliente</label>
-                    <input type="text" id="cita-nombre" required>
-                </div>
-                <div class="form-group">
-                    <label for="cita-telefono">Teléfono</label>
-                    <input type="tel" id="cita-telefono" required>
-                </div>
-                <div class="form-group">
-                    <label for="cita-servicio">Servicio</label>
-                    <select id="cita-servicio" required>
-                        <option value="Corte de Cabello">Corte de Cabello ($200)</option>
-                        <option value="Corte y Barba">Corte y Barba ($350)</option>
-                        <option value="Afeitado Clásico">Afeitado Clásico ($150)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="cita-fecha">Fecha y Hora</label>
-                    <input type="datetime-local" id="cita-fecha" required>
-                </div>
-                <button type="submit" class="btn-enviar">Guardar Cita</button>
-            </form>
-        </div>
-    </div>
+    <script>
+        function mostrarSeccion(id) {
+            document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + id).classList.add('active');
+            event.target.classList.add('active');
+        }
 
-    <footer>
-        <p>&copy; 2025 Small Dick's Barber. Todos los derechos reservados.</p>
-    </footer>
+        function cargarProductos() {
+            fetch('../php/productos_get.php')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tabla-productos-body');
+                    tbody.innerHTML = ''; 
 
-    <script src="../js/script.js"></script>
+                    if(data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay productos registrados</td></tr>';
+                        return;
+                    }
 
+                    data.forEach(prod => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${prod.id_producto}</td>
+                                <td>${prod.nombre}</td>
+                                <td>$${prod.precio}</td>
+                                <td>${prod.stock} un.</td>
+                                <td>
+                                    <button class="btn-accion btn-editar">Editar</button>
+                                    <button class="btn-accion btn-borrar">Borrar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('tabla-productos-body').innerHTML = 
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos</td></tr>';
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarProductos);
+
+        function cerrarSesion() {
+            if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
+        }
+    </script>
 </body>
 </html>
