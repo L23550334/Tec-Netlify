@@ -1,42 +1,34 @@
 // JS/login.js
 
-// 1. ESPERAR A QUE EL HTML CARGUE COMPLETO 
+// 1. ESPERAR A QUE EL HTML CARGUE COMPLETO (Todo debe ir aquí adentro)
 document.addEventListener('DOMContentLoaded', function() {
 
+    // ===========================
+    // 🟢 LÓGICA DE LOGIN
+    // ===========================
     const loginForm = document.getElementById('form-login');
 
-    // Verificamos si el formulario existe antes de usarlo
     if (loginForm) {
-        
         loginForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Evita recarga
+            e.preventDefault(); 
 
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
             const errorDiv = document.getElementById('login-error');
 
-            // Verificamos que los inputs existan (por seguridad)
-            if (!emailInput || !passwordInput) {
-                console.error("No se encontraron los campos de email o password");
-                return;
-            }
+            if (!emailInput || !passwordInput) return;
 
             const email = emailInput.value;
             const password = passwordInput.value;
 
-            // Validación simple
             if (email.trim() === '' || password.trim() === '') {
                 errorDiv.textContent = "Por favor, completa todos los campos.";
                 errorDiv.style.display = 'block';
                 return;
             }
 
-            const datos = {
-                email: email,
-                password: password
-            };
+            const datos = { email: email, password: password };
 
-            // Petición Fetch
             fetch('php/login.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -61,12 +53,64 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                errorDiv.textContent = "Error de conexión con el servidor.";
+                errorDiv.textContent = "Error de conexión.";
                 errorDiv.style.display = 'block';
             });
         });
-
-    } else {
-        console.error("El formulario 'form-login' no se encontró en el HTML. Revisa el ID.");
     }
-});
+
+    // ===========================
+    // 🔵 LÓGICA DE REGISTRO 
+    // ===========================
+    const registerForm = document.getElementById('form-register');
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nombre = document.getElementById('reg-nombre').value;
+            const email = document.getElementById('reg-email').value;
+            const telefono = document.getElementById('reg-telefono').value;
+            const password = document.getElementById('reg-password').value;
+            const errorDiv = document.getElementById('register-error');
+
+            if (password.length < 6) {
+                errorDiv.textContent = "La contraseña debe tener al menos 6 caracteres.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            const datos = {
+                nombre: nombre,
+                email: email,
+                telefono: telefono,
+                password: password
+            };
+
+            fetch('php/registro.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
+                    registerForm.reset();
+                    // Cambiar vista a Login
+                    document.getElementById('show-login-view').click(); 
+                    errorDiv.style.display = 'none';
+                } else {
+                    errorDiv.textContent = data.message;
+                    errorDiv.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorDiv.textContent = "Error al intentar registrarse.";
+                errorDiv.style.display = 'block';
+            });
+        });
+    }
+
+}); // <--- AQUÍ TERMINA EL DOMContentLoaded
