@@ -63,18 +63,17 @@ function handleAuth() {
 
     // Lógica especial para el botón de la derecha en la página de productos
     if (isProductsPage) {
-        // Mueve el botón del carrito al placeholder de la derecha en la barra de navegación
-        const navPlaceholder = document.querySelector('.nav-placeholder');
-        navPlaceholder.innerHTML = `<a href="#" id="cart-btn" class="btn-cita">Carrito (<span id="cart-count">0</span>)</a>`;
-        document.getElementById('cart-btn').addEventListener('click', toggleCartModal);
+        // Busca el botón del carrito que ya existe en el HTML y le añade la funcionalidad
+        const cartBtn = document.getElementById('cart-btn');
+        if (cartBtn) cartBtn.addEventListener('click', toggleCartModal);
     }
 
     if (user) {
         let dashboardLink = '';
         if (user.role === 'admin') {
-            dashboardLink = `<a href="html/admin-dashboard.html" class="nav-dashboard">Panel Admin</a>`;
+            dashboardLink = `<a href="/html/admin-dashboard.html" class="nav-dashboard">Panel Admin</a>`;
         } else if (user.role === 'barbero') {
-            dashboardLink = `<a href="html/barbero-dashboard.html" class="nav-dashboard">Mis Citas</a>`;
+            dashboardLink = `<a href="/html/barbero-dashboard.html" class="nav-dashboard">Mis Citas</a>`;
         }
 
         // Si el usuario ha iniciado sesión, muestra su nombre y un botón para salir.
@@ -103,7 +102,7 @@ function logout(event) {
 
     // Si está en una subpágina, necesita subir un nivel (../) para encontrar Index.html
     // Si está en la página principal, solo necesita ir a Index.html
-    const indexPath = onSubPage ? '../index.html' : 'index.html';
+    const indexPath = onSubPage ? '/index.html' : 'index.html';
     window.location.href = indexPath;
 }
 
@@ -150,15 +149,15 @@ function handleLoginModalAndRedirect() {
 
                 // Redirigir según el rol
                 if (foundUser.role === 'admin') {
-                    window.location.href = 'html/admin-dashboard.html';
+                    window.location.href = '/html/admin-dashboard.html';
                 } else if (foundUser.role === 'barbero') {
-                    window.location.href = 'html/barbero-dashboard.html';
+                    window.location.href = '/html/barbero-dashboard.html';
                 } else {
-                    // Para clientes: si venía de reseña, se queda en Index.html; si no, va a citas.html
+                    // Para clientes: si venía de reseña, se queda en index.html; si no, va a citas.html
                     if (loginForReview === 'true') {
                         window.location.href = 'index.html';
                     } else {
-                        window.location.href = 'html/citas.html';
+                        window.location.href = 'ht';
                     }
                 }
             } else {
@@ -257,7 +256,117 @@ function handleShoppingCart() {
         cartModal.querySelector('.close-modal').addEventListener('click', toggleCartModal);
     }
 
+    // --- Lógica para los botones de checkout ---
+    handlePickupButton();
+    handleDeliveryButton();
+
     updateCartCount();
+}
+
+function handlePickupButton() {
+    const pickupBtn = document.getElementById('pickup-btn');
+    if (!pickupBtn) return;
+
+    pickupBtn.addEventListener('click', () => {
+        const cart = getCart();
+        if (cart.length === 0) return;
+
+        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        
+        toggleCartModal(); // Cierra el modal del carrito
+        
+        // Reutilizamos el modal de confirmación
+        showConfirmationModal(
+            '¡Pedido Confirmado!',
+            'Muy bien, tus productos están listos para recoger en tienda.',
+            total
+        );
+    });
+}
+
+function handleDeliveryButton() {
+    const deliveryBtn = document.getElementById('delivery-btn');
+    const deliveryModal = document.getElementById('delivery-modal');
+    if (!deliveryBtn || !deliveryModal) return;
+
+    deliveryBtn.addEventListener('click', () => {
+        const cart = getCart();
+        if (cart.length === 0) return;
+
+        toggleCartModal(); // Cierra el modal del carrito
+        deliveryModal.style.display = 'flex'; // Muestra el modal de domicilio
+
+        // Pre-rellenar nombre si el usuario está logueado
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (user && user.username) {
+            document.getElementById('delivery-nombre').value = user.username;
+        }
+    });
+
+    // Lógica para cerrar y enviar el formulario de domicilio
+    const formDelivery = document.getElementById('form-delivery');
+    deliveryModal.querySelector('.close-modal').addEventListener('click', () => deliveryModal.style.display = 'none');
+
+    formDelivery.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const subtotal = getCart().reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const shippingCost = 50; // Costo de envío
+        const finalTotal = subtotal + shippingCost;
+        
+        deliveryModal.style.display = 'none'; // Oculta el modal de domicilio
+        showConfirmationModal(
+            '¡Pedido en Camino!', 
+            `Tu pedido ha sido confirmado y será enviado pronto. Se ha añadido un costo de envío de $${shippingCost.toFixed(2)}.`, 
+            finalTotal
+        );
+    });
+}
+
+function showConfirmationModal(title, message, total) {
+    const confirmationModal = document.getElementById('pickup-confirmation-modal');
+    
+    // Personalizar el contenido del modal
+    confirmationModal.querySelector('h2').textContent = title;
+    confirmationModal.querySelector('p').textContent = message;
+    confirmationModal.querySelector('#pickup-total').textContent = `Total: $${total.toFixed(2)}`;
+
+    confirmationModal.style.display = 'flex';
+
+    const closeAndReset = () => {
+        confirmationModal.style.display = 'none';
+        saveCart([]); // Vacía el carrito
+        updateCartCount(); // Actualiza el contador a 0
+
+        // Desplazamiento suave hacia el catálogo de productos
+        const catalogoSection = document.getElementById('catalogo');
+        if (catalogoSection) {
+            catalogoSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    confirmationModal.querySelector('#close-confirmation-modal').addEventListener('click', closeAndReset, { once: true });
+}
+
+function showAlertModal(message, title = 'Aviso') {
+    const alertModal = document.getElementById('alert-modal');
+    if (!alertModal) {
+        // Si el modal no existe por alguna razón, usa el alert normal
+        alert(message);
+        return;
+    }
+
+    const modalTitle = document.getElementById('alert-modal-title');
+    const modalMessage = document.getElementById('alert-modal-message');
+    const closeBtn = document.getElementById('alert-modal-close');
+
+    if (modalTitle) modalTitle.textContent = title;
+    if (modalMessage) modalMessage.textContent = message;
+
+    alertModal.style.display = 'flex';
+
+    closeBtn.addEventListener('click', () => {
+        alertModal.style.display = 'none';
+    }, { once: true });
 }
 
 function getCart() {
@@ -326,10 +435,17 @@ function renderCartItems() {
             <div class="cart-item">
                 <img src="${item.img}" alt="${item.name}">
                 <div class="cart-item-info">
-                    <h4>${item.name}</h4>
-                    <p>${item.quantity} x $${item.price.toFixed(2)}</p>
+                    <h4>${item.name}</h4>                    
+                    <div class="quantity-selector" style="margin-top: 0.5rem; justify-content: flex-start;">
+                        <button type="button" class="quantity-btn cart-quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                        <input type="text" class="cart-quantity-input" value="${item.quantity}" readonly>
+                        <button type="button" class="quantity-btn cart-quantity-btn" data-id="${item.id}" data-action="increase">+</button>
+                    </div>
+                    <p style="margin-top: 0.5rem;">Subtotal: $${(item.price * item.quantity).toFixed(2)}</p>
                 </div>
-                <button class="btn-remove-item" data-id="${item.id}">&times;</button>
+                <div style="text-align: right;">
+                    <button class="btn-remove-item" data-id="${item.id}" title="Eliminar producto">&times;</button>
+                </div>
             </div>
         `;
     });
@@ -343,24 +459,57 @@ function renderCartItems() {
             removeFromCart(id);
         });
     });
+
+    // Añadir listeners a los botones de cantidad (+/-)
+    document.querySelectorAll('.cart-quantity-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+            const action = e.target.dataset.action;
+            if (action === 'increase') {
+                increaseCartItemQuantity(id);
+            } else if (action === 'decrease') {
+                decreaseCartItemQuantity(id);
+            }
+        });
+    });
 }
 
 function removeFromCart(productId) {
     let cart = getCart();
-    const productIndex = cart.findIndex(item => item.id === productId);
-
-    if (productIndex > -1) {
-        if (cart[productIndex].quantity > 1) {
-            // Si hay más de uno, solo reduce la cantidad
-            cart[productIndex].quantity--;
-        } else {
-            // Si solo hay uno, elimina el producto del carrito
-            cart.splice(productIndex, 1);
-        }
-    }
-
+    // Filtra el carrito para eliminar completamente el producto, sin importar la cantidad.
+    cart = cart.filter(item => item.id !== productId);
     saveCart(cart);
     renderCartItems(); // Vuelve a renderizar el carrito para mostrar los cambios
+}
+
+function increaseCartItemQuantity(productId) {
+    let cart = getCart();
+    const product = cart.find(item => item.id === productId);
+    if (product) { 
+        if (product.quantity >= 15) {
+            showAlertModal('No contamos con tantas unidades disponibles. El máximo por producto es 15.');
+            return;
+        }
+        product.quantity++;
+    }
+    saveCart(cart);
+    renderCartItems();
+}
+
+function decreaseCartItemQuantity(productId) {
+    let cart = getCart();
+    const product = cart.find(item => item.id === productId);
+    if (product) {
+        if (product.quantity > 1) {
+            product.quantity--;
+        } else {
+            // Si la cantidad es 1, al disminuir se elimina el producto
+            removeFromCart(productId);
+            return; // Salimos para evitar doble renderizado
+        }
+    }
+    saveCart(cart);
+    renderCartItems();
 }
 
 function openQuantityModal(product) {
@@ -378,7 +527,12 @@ function openQuantityModal(product) {
 
     // Listeners para los botones + y -
     const plusHandler = () => {
-        quantityInput.value = parseInt(quantityInput.value, 10) + 1;
+        const currentValue = parseInt(quantityInput.value, 10);
+        if (currentValue >= 15) {
+            showAlertModal('No contamos con tantas unidades disponibles. El máximo por producto es 15.');
+            return;
+        }
+        quantityInput.value = currentValue + 1;
     };
     const minusHandler = () => {
         const currentValue = parseInt(quantityInput.value, 10);
