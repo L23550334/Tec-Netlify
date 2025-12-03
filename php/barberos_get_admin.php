@@ -12,7 +12,7 @@ try {
     }
 
     // Obtener solo usuarios con rol de barbero (rol = 2)
-    $sql = "SELECT id_usuario, nombre, email, telefono FROM usuarios WHERE rol = 2";
+    $sql = "SELECT id_usuario, nombre, email, telefono FROM usuarios WHERE rol = 2 ORDER BY nombre ASC";
     $result = $conn->query($sql);
 
     if (!$result) {
