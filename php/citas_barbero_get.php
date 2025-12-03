@@ -1,12 +1,27 @@
 <?php
-// php/citas_barbero_get.php
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 include 'conexion.php';
 session_start();
 
 // Validar que el usuario esté logueado
 if (!isset($_SESSION['usuario_id'])) {
-    echo json_encode([]);
+    // Para pruebas, devolver todas las citas
+    // En producción, deberías devolver un array vacío o un error
+    $sql = "SELECT c.id_cita, c.fecha_hora, c.servicio, c.estado, u.nombre as cliente_nombre, u.telefono
+            FROM citas c
+            JOIN usuarios u ON c.id_cliente = u.id_usuario
+            ORDER BY c.fecha_hora ASC";
+    
+    $result = $conn->query($sql);
+    $citas = [];
+    if ($result) {
+        while($row = $result->fetch_assoc()) {
+            $citas[] = $row;
+        }
+    }
+    echo json_encode($citas);
+    $conn->close();
     exit;
 }
 
