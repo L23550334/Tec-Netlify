@@ -3,551 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Barbero - Small Dick's Barber</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Productos - Small Dick's Barber</title>
+    
+    <link rel="stylesheet" href="/css/style.css">
     <style>
-        body { background-color: #0a0a0a; color: white; }
-        .admin-layout { display: flex; min-height: calc(100vh - 80px); }
-        
-        .sidebar { width: 250px; background-color: #151515; border-right: 1px solid #333; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .sidebar button { background: none; border: 1px solid #333; color: #ccc; padding: 15px; text-align: left; cursor: pointer; border-radius: 5px; width: 100%; transition: 0.3s; }
-        .sidebar button:hover, .sidebar button.active { background-color: var(--color-primario); color: #0a0a0a; font-weight: bold; border-color: var(--color-primario); }
-
-        .content { flex: 1; padding: 2rem; }
-        h2 { color: var(--color-primario); margin-bottom: 0.5rem; }
-        .subtitulo { color: #888; margin-bottom: 2rem; }
-
-        .search-box {
-            background-color: #1a1a1a;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #333;
+        /* Estilo para centrar el botón dentro de la tarjeta del producto */
+        .product-card {
+            text-align: center;
         }
-
-        .search-box label {
-            display: block;
-            color: var(--color-primario);
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .search-box select,
-        .search-box input {
-            width: 100%;
-            padding: 10px;
-            background-color: #0a0a0a;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        .search-box button {
-            padding: 10px 20px;
-            background-color: var(--color-primario);
-            color: #0a0a0a;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .search-box button:hover {
-            opacity: 0.9;
-        }
-
-        .table-container { overflow-x: auto; background-color: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
-        table { width: 100%; border-collapse: collapse; color: #eee; }
-        thead { background-color: #252525; border-bottom: 2px solid var(--color-primario); }
-        th { padding: 15px; text-align: left; color: var(--color-primario); font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
-        td { padding: 15px; border-bottom: 1px solid #333; }
-        tr:hover { background-color: #222; }
-
-        .btn-estado { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; margin-right: 5px; }
-        .btn-completar { background-color: #4CAF50; color: white; }
-        .btn-cancelar { background-color: #ff4d4d; color: white; }
-        
-        .section-panel { display: none; }
-        .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <header>
         <nav>
-            <a href="../index.html" class="logo">Small Dick's Barber</a>
-            <div class="nav-links-group">
-                <ul style="list-style: none; display: flex; gap: 20px;">
-                    <li><a href="../index.html" style="text-decoration: none; color: var(--color-primario);">🏠 Volver al Inicio</a></li>
-                    <li><a href="#" onclick="cerrarSesion()" style="text-decoration: none; color: #888;">🚪 Cerrar Sesión</a></li>
-                </ul>
+            <!-- Icono de Menú Hamburguesa -->
+            <div id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <!-- Logo Centrado -->
+            <a href="/index.html" class="logo">Small Dick's Barber</a> 
+            <!-- Espacio a la derecha para el botón del carrito -->
+            <div class="nav-placeholder">
+                <a href="#" id="cart-btn" class="btn-cita">Carrito (<span id="cart-count">0</span>)</a>
             </div>
         </nav>
     </header>
 
-    <main class="admin-layout">
-        <aside class="sidebar">
-            <button onclick="mostrarSeccion('agenda')" class="active">📅 Mi Agenda</button>
-            <button onclick="mostrarSeccion('productos')">📦 Productos</button>
-            <button onclick="mostrarSeccion('clientes')">👥 Mis Clientes</button>
-        </aside>
+    <!-- Menú Lateral Desplegable -->
+    <div id="side-menu" class="side-nav">
+        <a href="#" class="close-side-menu">&times;</a>
+        <ul>
+            <li><a href="/index.html">Inicio</a></li> 
+        </ul>
+        <!-- El inicio de sesión se gestiona aquí, pero no se muestra si está el carrito -->
+        <div id="auth-container" class="side-menu-auth"></div>
+    </div>
 
-        <section class="content">
-            <div id="panel-agenda" class="section-panel active">
-                <h2>Citas Programadas</h2>
-                <p class="subtitulo">Gestiona tus clientes asignados.</p>
-                
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por ID de Cita</h3>
-                    <label for="barbero-buscar-cita-id">Selecciona una Cita:</label>
-                    <select id="barbero-buscar-cita-id">
-                        <option value="">-- Cargar mis citas --</option>
-                    </select>
-                    <button onclick="buscarMiCitaPorId()">Buscar</button>
-                </div>
+    <main>
 
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por Cliente</h3>
-                    <label for="barbero-buscar-cliente">Selecciona un Cliente:</label>
-                    <select id="barbero-buscar-cliente">
-                        <option value="">-- Seleccionar cliente --</option>
-                    </select>
-                    <button onclick="mostrarCitasDelCliente()">Mostrar Citas</button>
-                </div>
+        <section id="catalogo">
+            <h2>Nuestro Catálogo</h2>
+            <p class="subtitulo-catalogo">Productos premium para tu cuidado diario.</p>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Fecha y Hora</th>
-                                <th>Cliente</th>
-                                <th>Servicio</th>
-                                <th>Teléfono</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-citas-body">
-                            <tr><td colspan="6" style="text-align:center; padding: 20px;">Cargando citas...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="panel-productos" class="section-panel">
-                <h2>Catálogo de Productos</h2>
-                <p class="subtitulo">Productos disponibles para recomendar.</p>
-
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por ID de Producto</h3>
-                    <label for="barbero-buscar-producto-id">Selecciona un Producto:</label>
-                    <select id="barbero-buscar-producto-id">
-                        <option value="">-- Cargar productos --</option>
-                    </select>
-                    <button onclick="verDetalleProducto()">Ver Detalle</button>
-                </div>
-
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Descripción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-productos-barbero-body">
-                            <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="panel-clientes" class="section-panel">
-                <h2>Mis Clientes</h2>
-                <p class="subtitulo">Clientes que has atendido.</p>
-
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por ID de Cliente</h3>
-                    <label for="barbero-buscar-cliente-id">Selecciona un Cliente:</label>
-                    <select id="barbero-buscar-cliente-id">
-                        <option value="">-- Cargar clientes --</option>
-                    </select>
-                    <button onclick="verHistorialCliente()">Ver Historial</button>
-                </div>
-
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por Tipo de Servicio</h3>
-                    <label for="barbero-buscar-servicio">Selecciona un Servicio:</label>
-                    <select id="barbero-buscar-servicio">
-                        <option value="">-- Todos los servicios --</option>
-                        <option value="Corte">Corte</option>
-                        <option value="Barba">Barba</option>
-                        <option value="Completo">Corte + Barba</option>
-                    </select>
-                    <button onclick="filtrarClientesPorServicio()">Filtrar</button>
-                </div>
-
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por Estado de Cita</h3>
-                    <label for="barbero-buscar-estado">Selecciona un Estado:</label>
-                    <select id="barbero-buscar-estado">
-                        <option value="">-- Todos los estados --</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="completada">Completada</option>
-                        <option value="cancelada">Cancelada</option>
-                    </select>
-                    <button onclick="filtrarCitasPorEstado()">Filtrar</button>
-                </div>
-
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Teléfono</th>
-                                <th>Total Citas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-clientes-body">
-                            <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="product-grid" id="product-grid">
+                <!-- Los productos se cargarán aquí dinámicamente -->
             </div>
         </section>
+
     </main>
 
+    <footer>
+        <p>&copy; 2025 Small Dick's Barber. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="/JS/validaciones.js"></script>
+    <script src="/JS/script.js"></script>
+    
+    <!-- Script para cargar productos dinámicamente desde la API -->
     <script>
-        let misCitasData = [];
-        let productosData = [];
-        let clientesData = [];
+        function cargarProductosDinamicamente() {
+            // Determine the correct API path based on current location
+            const apiPath = window.location.pathname.includes('/html/') 
+                ? '../php/productos_get.php' 
+                : '/php/productos_get.php';
+            
+            fetch(apiPath)
+                .then(res => {
+                    console.log("[v0] Response status:", res.status);
+                    console.log("[v0] Response URL:", res.url);
+                    if (!res.ok) throw new Error('HTTP error, status=' + res.status);
+                    return res.json();
+                })
+                .then(productos => {
+                    console.log("[v0] Productos cargados:", productos.length, productos);
+                    const gridContainer = document.getElementById('product-grid');
+                    gridContainer.innerHTML = ''; // Limpiar productos anteriores
+                    
+                    if (productos.length === 0) {
+                        gridContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay productos disponibles</p>';
+                        return;
+                    }
+                    
+                    productos.forEach(producto => {
+                        const card = document.createElement('div');
+                        card.className = 'product-card';
+                        card.setAttribute('data-id', producto.id_producto);
+                        card.setAttribute('data-name', producto.nombre);
+                        card.setAttribute('data-price', producto.precio);
+                        
+                        card.innerHTML = `
+                            <img src="/img/placeholder.svg?height=200&width=200&query=${encodeURIComponent(producto.nombre)}" alt="${producto.nombre}">
+                            <h3>${producto.nombre}</h3>
+                            <p>${producto.descripcion || 'Producto de calidad premium'}</p>
+                            <span class="precio">$${parseFloat(producto.precio).toFixed(2)}</span>
+                            <button class="btn-comprar">Agregar al carrito</button>
+                        `;
+                        
+                        gridContainer.appendChild(card);
+                    });
+                    
+                    // Re-agregar event listeners a los botones después de cargar
+                    agregarEventListenersProductos();
+                })
+                .catch(err => {
+                    console.error("[v0] Error al cargar productos:", err);
+                    document.getElementById('product-grid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Error al cargar productos</p>';
+                });
+        }
         
-        console.log('[v0] Dashboard del Barbero iniciado');
-
-        function mostrarSeccion(id) {
-            console.log('[v0] Mostrando sección:', id);
-            document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
-            document.getElementById('panel-' + id).classList.add('active');
-            event.target.classList.add('active');
-
-            if (id === 'agenda') {
-                cargarCitas();
-            } else if (id === 'productos') {
-                cargarProductosBarbero();
-            } else if (id === 'clientes') {
-                cargarClientesBarbero();
-            }
-        }
-
-        function cerrarSesion() {
-            if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
-        }
-
-        function cargarCitas() {
-            console.log('[v0] Cargando citas del barbero...');
-            fetch('../php/citas_barbero_get.php')
-                .then(response => {
-                    console.log('[v0] Respuesta recibida, status:', response.status);
-                    return response.text().then(text => {
-                        console.log('[v0] Respuesta raw:', text);
-                        try {
-                            return JSON.parse(text);
-                        } catch(e) {
-                            console.error('[v0] Error parseando JSON:', e);
-                            throw new Error('La respuesta no es JSON válido');
-                        }
-                    });
-                })
-                .then(data => {
-                    console.log('[v0] Citas recibidas:', data);
-                    if(data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    misCitasData = data;
-                    const tbody = document.getElementById('tabla-citas-body');
-                    const select = document.getElementById('barbero-buscar-cita-id');
-                    const selectCliente = document.getElementById('barbero-buscar-cliente');
-                    
-                    tbody.innerHTML = '';
-                    select.innerHTML = '<option value="">-- Seleccionar cita --</option>';
-                    selectCliente.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
-
-                    if (!data || data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No tienes citas pendientes</td></tr>';
-                        return;
-                    }
-
-                    const clientesUnicos = new Set();
-
-                    data.forEach(cita => {
-                        const fechaObj = new Date(cita.fecha_hora);
-                        const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                        select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${fechaStr}</option>`;
-                        
-                        if (!clientesUnicos.has(cita.cliente_nombre)) {
-                            clientesUnicos.add(cita.cliente_nombre);
-                            selectCliente.innerHTML += `<option value="${cita.cliente_nombre}">${cita.cliente_nombre}</option>`;
-                        }
-
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>#${cita.id_cita}</td>
-                            <td>${fechaStr}</td>
-                            <td>${cita.cliente_nombre}</td>
-                            <td>${cita.servicio}</td>
-                            <td>${cita.telefono}</td>
-                            <td>
-                                <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
-                                <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                })
-                .catch(error => {
-                    console.error('[v0] Error al cargar citas:', error);
-                    document.getElementById('tabla-citas-body').innerHTML = 
-                        '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos: ' + error.message + '</td></tr>';
-                });
-        }
-
-        function buscarMiCitaPorId() {
-            const id = document.getElementById('barbero-buscar-cita-id').value;
-            if (!id) {
-                alert('Por favor selecciona una cita');
-                return;
-            }
-            const cita = misCitasData.find(c => c.id_cita == id);
-            if (cita) {
-                const fechaStr = new Date(cita.fecha_hora).toLocaleString();
-                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nServicio: ${cita.servicio}\nFecha: ${fechaStr}\nTeléfono: ${cita.telefono}`);
-            }
-        }
-
-        function mostrarCitasDelCliente() {
-            const clienteNombre = document.getElementById('barbero-buscar-cliente').value;
-            if (!clienteNombre) {
-                cargarCitas();
-                return;
-            }
-            
-            const tbody = document.getElementById('tabla-citas-body');
-            tbody.innerHTML = '';
-            
-            const citasFiltradas = misCitasData.filter(c => c.cliente_nombre === clienteNombre);
-            
-            if (citasFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas para este cliente</td></tr>';
-                return;
-            }
-
-            citasFiltradas.forEach(cita => {
-                const fechaObj = new Date(cita.fecha_hora);
-                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>#${cita.id_cita}</td>
-                    <td>${fechaStr}</td>
-                    <td>${cita.cliente_nombre}</td>
-                    <td>${cita.servicio}</td>
-                    <td>${cita.telefono}</td>
-                    <td>
-                        <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
-                        <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function cargarProductosBarbero() {
-            console.log('[v0] Cargando productos...');
-            fetch('../php/productos_get.php')
-                .then(res => {
-                    console.log('[v0] Respuesta productos, status:', res.status);
-                    return res.text().then(text => {
-                        console.log('[v0] Respuesta raw productos:', text);
-                        try {
-                            return JSON.parse(text);
-                        } catch(e) {
-                            console.error('[v0] Error parseando JSON:', e);
-                            throw new Error('La respuesta no es JSON válido');
-                        }
-                    });
-                })
-                .then(data => {
-                    console.log('[v0] Productos recibidos:', data);
-                    if(data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    productosData = data;
-                    const tbody = document.getElementById('tabla-productos-barbero-body');
-                    const select = document.getElementById('barbero-buscar-producto-id');
-                    
-                    tbody.innerHTML = '';
-                    select.innerHTML = '<option value="">-- Seleccionar producto --</option>';
-
-                    if (!data || data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay productos</td></tr>';
-                        return;
-                    }
-
-                    data.forEach(prod => {
-                        select.innerHTML += `<option value="${prod.id_producto}">#${prod.id_producto} - ${prod.nombre}</option>`;
-                        
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>#${prod.id_producto}</td>
-                                <td>${prod.nombre}</td>
-                                <td>$${prod.precio}</td>
-                                <td>${prod.stock} un.</td>
-                                <td>${prod.descripcion || 'N/A'}</td>
-                            </tr>
-                        `;
-                    });
-                })
-                .catch(err => {
-                    console.error('[v0] Error al cargar productos:', err);
-                    document.getElementById('tabla-productos-barbero-body').innerHTML = 
-                        '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + err.message + '</td></tr>';
-                });
-        }
-
-        function verDetalleProducto() {
-            const id = document.getElementById('barbero-buscar-producto-id').value;
-            if (!id) {
-                alert('Por favor selecciona un producto');
-                return;
-            }
-            const producto = productosData.find(p => p.id_producto == id);
-            if (producto) {
-                alert(`📦 PRODUCTO:\n\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
-            }
-        }
-
-        function cargarClientesBarbero() {
-            console.log('[v0] Cargando clientes...');
-            fetch('../php/clientes_get_admin.php')
-                .then(res => {
-                    console.log('[v0] Respuesta clientes, status:', res.status);
-                    return res.text().then(text => {
-                        console.log('[v0] Respuesta raw clientes:', text);
-                        try {
-                            return JSON.parse(text);
-                        } catch(e) {
-                            console.error('[v0] Error parseando JSON:', e);
-                            throw new Error('La respuesta no es JSON válido');
-                        }
-                    });
-                })
-                .then(data => {
-                    console.log('[v0] Clientes recibidos:', data);
-                    if(data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    clientesData = data;
-                    const tbody = document.getElementById('tabla-clientes-body');
-                    const select = document.getElementById('barbero-buscar-cliente-id');
-                    
-                    tbody.innerHTML = '';
-                    select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
-
-                    if (!data || data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No tienes clientes registrados</td></tr>';
-                        return;
-                    }
-
-                    data.forEach(cliente => {
-                        select.innerHTML += `<option value="${cliente.id_usuario}">#${cliente.id_usuario} - ${cliente.nombre}</option>`;
-                        
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>#${cliente.id_usuario}</td>
-                                <td>${cliente.nombre}</td>
-                                <td>${cliente.email}</td>
-                                <td>${cliente.telefono || 'N/A'}</td>
-                                <td>${cliente.total_citas || 0}</td>
-                            </tr>
-                        `;
-                    });
-                })
-                .catch(err => {
-                    console.error('[v0] Error al cargar clientes:', err);
-                    document.getElementById('tabla-clientes-body').innerHTML = 
-                        '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + err.message + '</td></tr>';
-                });
-        }
-
-        function verHistorialCliente() {
-            const id = document.getElementById('barbero-buscar-cliente-id').value;
-            if (!id) {
-                alert('Por favor selecciona un cliente');
-                return;
-            }
-            const cliente = clientesData.find(c => c.id_usuario == id);
-            if (cliente) {
-                alert(`👤 CLIENTE:\n\nNombre: ${cliente.nombre}\nEmail: ${cliente.email}\nTeléfono: ${cliente.telefono || 'N/A'}\nTotal Citas: ${cliente.total_citas || 0}`);
-            }
-        }
-
-        function filtrarClientesPorServicio() {
-            alert('Función de filtrar clientes por servicio en desarrollo');
-        }
-
-        function filtrarCitasPorEstado() {
-            alert('Función de filtrar citas por estado en desarrollo');
-        }
-
-        function actualizarEstado(idCita, nuevoEstado) {
-            if (!confirm(`¿Confirmar cambio de estado a "${nuevoEstado}"?`)) return;
-            
-            console.log('[v0] Actualizando estado de cita:', idCita, 'a', nuevoEstado);
-            fetch('../php/citas_actualizar.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_cita: idCita,
-                    estado: nuevoEstado
-                })
-            })
-            .then(res => {
-                console.log('[v0] Respuesta actualización, status:', res.status);
-                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
-                return res.json();
-            })
-            .then(data => {
-                console.log('[v0] Respuesta actualización:', data);
-                if (data.success) {
-                    alert('✅ Estado actualizado correctamente');
-                    cargarCitas();
-                } else {
-                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
-                }
-            })
-            .catch(err => {
-                console.error('[v0] Error:', err);
-                alert('Error de conexión: ' + err.message);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('[v0] Página cargada, iniciando carga de citas');
-            cargarCitas();
-        });
+        // Cargar productos cuando la página carga
+        document.addEventListener('DOMContentLoaded', cargarProductosDinamicamente);
+        
+        // Recargar cada 3 segundos
+        setInterval(cargarProductosDinamicamente, 3000);
     </script>
+
+    <!-- Estructura del Modal del Carrito (Oculto por defecto) -->
+    <div id="cart-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Carrito de Compras</h2>
+            <div id="cart-items-container">
+                <!-- Los items del carrito se insertarán aquí -->
+            </div>
+            <div id="cart-total">
+                <!-- El total se mostrará aquí -->
+            </div>
+            <div id="checkout-options" style="margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                <button id="pickup-btn" class="btn-cita">Recoger en tienda</button>
+                <button id="delivery-btn" class="btn-cita">Servicio a Domicilio</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estructura del Modal de Cantidad (Oculto por defecto) -->
+    <div id="quantity-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 350px;">
+            <span class="close-modal">&times;</span>
+            <h2 id="quantity-modal-title">Seleccionar Cantidad</h2>
+            <form id="form-quantity" class="form-container">
+                <div class="form-group">
+                    <label>Cantidad</label>
+                    <div class="quantity-selector">
+                        <button type="button" class="quantity-btn" id="quantity-minus">-</button>
+                        <input type="text" id="quantity-input" value="1" min="1" readonly>
+                        <button type="button" class="quantity-btn" id="quantity-plus">+</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-enviar">Aceptar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Estructura del Modal de Servicio a Domicilio (Oculto por defecto) -->
+    <div id="delivery-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal">&times;</span>
+            <h2>Datos de Entrega</h2>
+            <p class="subtitulo-catalogo" style="margin-bottom: 1rem;">Ingresa tus datos para el envío.</p>
+            <form id="form-delivery" class="form-container" style="text-align: left;">
+                <div class="form-group">
+                    <label for="delivery-nombre">Nombre de quien recibe</label>
+                    <input type="text" id="delivery-nombre" required
+                           minlength="3" maxlength="50"
+                           pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+                           title="Solo letras, mínimo 3 caracteres"
+                           placeholder="Ej: Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label for="delivery-calle">Calle</label>
+                    <input type="text" id="delivery-calle" required
+                           minlength="3" maxlength="100"
+                           title="Mínimo 3 caracteres"
+                           placeholder="Ej: Av. Reforma">
+                </div>
+                <div class="form-group">
+                    <label for="delivery-colonia">Colonia</label>
+                    <select id="delivery-colonia" required title="Selecciona una colonia">
+                        <option value="">-- Selecciona una colonia --</option>
+                        <option value="Aeropuerto">Aeropuerto</option>
+                        <option value="Alamedas">Alamedas</option>
+                        <option value="Altavista">Altavista</option>
+                        <option value="Ávalos">Ávalos</option>
+                        <option value="Barrio San Pedro">Barrio San Pedro</option>
+                        <option value="Bellavista">Bellavista</option>
+                        <option value="Cafetales">Cafetales</option>
+                        <option value="Campanario">Campanario</option>
+                        <option value="Campesina">Campesina</option>
+                        <option value="Campobello">Campobello</option>
+                        <option value="Centro">Centro</option>
+                        <option value="Cerradas de Cumbres">Cerradas de Cumbres</option>
+                        <option value="Chihuahua 2000">Chihuahua 2000</option>
+                        <option value="Club Campestre">Club Campestre</option>
+                        <option value="Colinas del Sol">Colinas del Sol</option>
+                        <option value="Cumbres">Cumbres</option>
+                        <option value="Cumbres del Sur">Cumbres del Sur</option>
+                        <option value="Dale">Dale</option>
+                        <option value="Delicias">Delicias</option>
+                        <option value="Diego Lucero">Diego Lucero</option>
+                        <option value="El Palomar">El Palomar</option>
+                        <option value="Francisco I. Madero">Francisco I. Madero</option>
+                        <option value="Granjas">Granjas</option>
+                        <option value="Guadalupe">Guadalupe</option>
+                        <option value="Independencia">Independencia</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Jardines del Santuario">Jardines del Santuario</option>
+                        <option value="Josefa Ortiz de Dominguez">Josefa Ortiz de Dominguez</option>
+                        <option value="Kennedy">Kennedy</option>
+                        <option value="La Cantera">La Cantera</option>
+                        <option value="Las Granjas">Las Granjas</option>
+                        <option value="Lomas">Lomas</option>
+                        <option value="Lomas del Santuario">Lomas del Santuario</option>
+                        <option value="Los Nogales">Los Nogales</option>
+                        <option value="Mármol">Mármol</option>
+                        <option value="Martín López">Martín López</option>
+                        <option value="Mirador">Mirador</option>
+                        <option value="Nombre de Dios">Nombre de Dios</option>
+                        <option value="Obrera">Obrera</option>
+                        <option value="Pacífico">Pacífico</option>
+                        <option value="Palmas">Palmas</option>
+                        <option value="Panamericana">Panamericana</option>
+                        <option value="Parques de San Felipe">Parques de San Felipe</option>
+                        <option value="Paseos de Chihuahua">Paseos de Chihuahua</option>
+                        <option value="Pinos">Pinos</option>
+                        <option value="Ponce de León">Ponce de León</option>
+                        <option value="Quintas Carolinas">Quintas Carolinas</option>
+                        <option value="Quintas del Sol">Quintas del Sol</option>
+                        <option value="Revolución">Revolución</option>
+                        <option value="Riberas de Sacramento">Riberas de Sacramento</option>
+                        <option value="Rosario">Rosario</option>
+                        <option value="Sacramento">Sacramento</option>
+                        <option value="San Felipe Viejo">San Felipe Viejo</option>
+                        <option value="San Francisco">San Francisco</option>
+                        <option value="San José">San José</option>
+                        <option value="San Miguel">San Miguel</option>
+                        <option value="San Rafael">San Rafael</option>
+                        <option value="Santa Rita">Santa Rita</option>
+                        <option value="Santa Rosa">Santa Rosa</option>
+                        <option value="Santo Niño">Santo Niño</option>
+                        <option value="Saucito">Saucito</option>
+                        <option value="Sector Bolívar">Sector Bolívar</option>
+                        <option value="Tecnológico">Tecnológico</option>
+                        <option value="Tierra y Libertad">Tierra y Libertad</option>
+                        <option value="Unidad Chihuahua">Unidad Chihuahua</option>
+                        <option value="Valle de la Madrid">Valle de la Madrid</option>
+                        <option value="Valle del Sol">Valle del Sol</option>
+                        <option value="Villa">Villa</option>
+                        <option value="Vistas del Norte">Vistas del Norte</option>
+                        <option value="Zootecnia">Zootecnia</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="delivery-numero">Número Exterior</label>
+                    <input type="text" id="delivery-numero" required
+                           minlength="1" maxlength="10"
+                           pattern="[0-9A-Za-z\-]+"
+                           title="Número válido (puede incluir letras, ej: 123-A)"
+                           placeholder="Ej: 456">
+                </div>
+                <button type="submit" class="btn-enviar">Confirmar Pedido</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Estructura del Modal de Alerta Genérico (Oculto por defecto) -->
+    <div id="alert-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 id="alert-modal-title">Aviso</h2>
+            <p id="alert-modal-message" class="subtitulo-catalogo" style="margin-bottom: 1.5rem;"></p>
+            <button id="alert-modal-close" class="btn-cita">Aceptar</button>
+        </div>
+    </div>
+
 </body>
 </html>
