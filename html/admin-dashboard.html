@@ -365,13 +365,13 @@
         </section>
     </main>
 
+    <script src="../JS/admin-dashboard.js"></script>
     <script>
         let productosData = [];
         let citasData = [];
         let usuariosData = [];
         let barberosData = [];
         let clientesData = [];
-        // </CHANGE>
 
         function mostrarSeccion(id) {
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
@@ -388,7 +388,6 @@
             } else if (id === 'usuarios') {
                 cargarUsuarios();
             }
-            // </CHANGE>
         }
 
         function validarPrecio(precio) {
@@ -399,7 +398,6 @@
             return true;
         }
 
-        // CLIENT-SIDE VALIDATION 2: Validate stock is non-negative integer
         function validarStock(stock) {
             if (!Number.isInteger(Number(stock)) || stock < 0) {
                 alert('❌ VALIDACIÓN: El stock debe ser un número entero no negativo');
@@ -407,7 +405,6 @@
             }
             return true;
         }
-        // </CHANGE>
 
         function cargarProductos() {
             fetch('../php/productos_get.php')
@@ -426,10 +423,8 @@
                     }
 
                     data.forEach(prod => {
-                        // Populate combo box for primary key search
                         select.innerHTML += `<option value="${prod.id_producto}">#${prod.id_producto} - ${prod.nombre}</option>`;
                         
-                        // Populate dynamic table
                         tbody.innerHTML += `
                             <tr>
                                 <td>#${prod.id_producto}</td>
@@ -475,12 +470,10 @@
                 const nuevoPrecio = prompt('Nuevo precio:', producto.precio);
                 const nuevoStock = prompt('Nuevo stock:', producto.stock);
                 
-                // Apply client-side validations
                 if (nuevoNombre && nuevoPrecio && nuevoStock) {
                     if (!validarPrecio(nuevoPrecio)) return;
                     if (!validarStock(nuevoStock)) return;
                     alert('✅ Producto actualizado (simulado)');
-                    // Here you would call a PHP endpoint to update
                 }
             }
         }
@@ -493,7 +486,6 @@
             }
             if (confirm('¿Estás seguro de eliminar este producto?')) {
                 alert('🗑️ Producto eliminado (simulado)');
-                // Here you would call a PHP endpoint to delete
             }
         }
 
@@ -510,11 +502,9 @@
         function mostrarFormularioNuevoProducto() {
             alert('Aquí se mostraría un formulario para crear un nuevo producto');
         }
-        // </CHANGE>
 
         function cargarCitas() {
-            // Simulated data - replace with actual fetch to PHP endpoint
-            fetch('../php/citas_barbero_get.php')
+            fetch('../php/citas_admin_get.php')
                 .then(res => res.json())
                 .then(data => {
                     citasData = data;
@@ -530,21 +520,33 @@
                     }
 
                     data.forEach(cita => {
-                        select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${cita.fecha_hora}</option>`;
+                        const fechaObj = new Date(cita.fecha_hora);
+                        const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                        select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${fechaStr}</option>`;
                         
                         tbody.innerHTML += `
                             <tr>
                                 <td>#${cita.id_cita}</td>
                                 <td>${cita.cliente_nombre}</td>
-                                <td>Barbero</td>
-                                <td>${new Date(cita.fecha_hora).toLocaleString()}</td>
+                                <td>${cita.barbero_nombre}</td>
+                                <td>${fechaStr}</td>
                                 <td>${cita.servicio}</td>
-                                <td>${cita.estado}</td>
+                                <td>
+                                    <span class="estado-badge ${cita.estado}">${cita.estado}</span>
+                                    <button class="btn-accion btn-editar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
+                                    <button class="btn-accion btn-borrar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
+                                    <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">🗑️ Eliminar</button>
+                                </td>
                             </tr>
                         `;
                     });
                 })
-                .catch(err => console.error(err));
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('tabla-citas-body').innerHTML = 
+                        '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos</td></tr>';
+                });
         }
 
         function buscarCitaPorId() {
@@ -555,17 +557,22 @@
             }
             const cita = citasData.find(c => c.id_cita == id);
             if (cita) {
-                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nFecha: ${cita.fecha_hora}\nServicio: ${cita.servicio}`);
+                const fechaObj = new Date(cita.fecha_hora);
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString();
+                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nBarbero: ${cita.barbero_nombre}\nServicio: ${cita.servicio}\nFecha: ${fechaStr}\nEstado: ${cita.estado}`);
             }
         }
 
         function actualizarCita() {
             const id = document.getElementById('buscar-cita-id').value;
             if (!id) {
-                alert('Por favor selecciona una cita para actualizar');
+                alert('Por favor selecciona una cita');
                 return;
             }
-            alert('✅ Actualizar cita (implementar con UPDATE SQL)');
+            const nuevoEstado = prompt('Nuevo estado (pendiente/completada/cancelada):');
+            if (nuevoEstado) {
+                actualizarEstado(id, nuevoEstado);
+            }
         }
 
         function eliminarCita() {
@@ -574,95 +581,122 @@
                 alert('Por favor selecciona una cita para eliminar');
                 return;
             }
-            if (confirm('¿Eliminar esta cita?')) {
-                alert('🗑️ Cita eliminada (simulado)');
-            }
-        }
-        // </CHANGE>
-
-        function cargarBarberos() {
-            // This would fetch users with rol=2 (barberos)
-            barberosData = [
-                {id: 2, nombre: 'Barbero Christian'},
-                {id: 3, nombre: 'Barbero Moroni'},
-                {id: 4, nombre: 'Barbero Luis'},
-                {id: 5, nombre: 'Barbero Angel'},
-                {id: 6, nombre: 'Barbero Sergio'}
-            ];
-            
-            const select = document.getElementById('buscar-barbero');
-            select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
-            barberosData.forEach(b => {
-                select.innerHTML += `<option value="${b.id}">${b.nombre}</option>`;
-            });
+            eliminarCitaDirecto(id);
         }
 
         function buscarCitasPorBarbero() {
-            const idBarbero = document.getElementById('buscar-barbero').value;
-            if (!idBarbero) {
+            const barberoId = document.getElementById('buscar-barbero').value;
+            if (!barberoId) {
                 alert('Por favor selecciona un barbero');
                 return;
             }
-            alert(`🔍 Mostrando citas del barbero ID: ${idBarbero}\n(Implementar filtro en tabla)`);
-            // Here you would filter citasData by id_barbero
-        }
-        // </CHANGE>
-
-        function cargarClientes() {
-            // This would fetch users with rol=3 (clientes)
-            clientesData = [
-                {id: 7, nombre: 'Cliente Juan'},
-                {id: 8, nombre: 'Cliente María'},
-                {id: 9, nombre: 'Cliente Pedro'}
-            ];
             
-            const select = document.getElementById('buscar-cliente');
-            select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
-            clientesData.forEach(c => {
-                select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+            const tbody = document.getElementById('tabla-citas-body');
+            tbody.innerHTML = '';
+            
+            const citasFiltradas = citasData.filter(c => c.id_barbero == barberoId);
+            
+            if (citasFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas para este barbero</td></tr>';
+                return;
+            }
+
+            citasFiltradas.forEach(cita => {
+                const fechaObj = new Date(cita.fecha_hora);
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${cita.id_cita}</td>
+                        <td>${cita.cliente_nombre}</td>
+                        <td>${cita.barbero_nombre}</td>
+                        <td>${fechaStr}</td>
+                        <td>${cita.servicio}</td>
+                        <td>
+                            <span class="estado-badge ${cita.estado}">${cita.estado}</span>
+                            <button class="btn-accion btn-editar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅</button>
+                            <button class="btn-accion btn-borrar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌</button>
+                        </td>
+                    </tr>
+                `;
             });
         }
 
         function buscarCitasPorCliente() {
-            const idCliente = document.getElementById('buscar-cliente').value;
-            if (!idCliente) {
+            const clienteId = document.getElementById('buscar-cliente').value;
+            if (!clienteId) {
                 alert('Por favor selecciona un cliente');
                 return;
             }
-            alert(`🔍 Mostrando citas del cliente ID: ${idCliente}\n(Implementar filtro en tabla)`);
-            // Here you would filter citasData by id_cliente
+            
+            alert('Filtrar por cliente ID: ' + clienteId + ' (función a implementar)');
         }
-        // </CHANGE>
+
+        function cargarBarberos() {
+            fetch('../php/barberos_get_admin.php')
+                .then(res => res.json())
+                .then(data => {
+                    barberosData = data;
+                    const select = document.getElementById('buscar-barbero');
+                    select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
+                    
+                    data.forEach(barbero => {
+                        select.innerHTML += `<option value="${barbero.id_usuario}">${barbero.nombre}</option>`;
+                    });
+                })
+                .catch(err => console.error(err));
+        }
+
+        function cargarClientes() {
+            fetch('../php/clientes_get_admin.php')
+                .then(res => res.json())
+                .then(data => {
+                    clientesData = data;
+                    const select = document.getElementById('buscar-cliente');
+                    select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+                    
+                    data.forEach(cliente => {
+                        select.innerHTML += `<option value="${cliente.id_usuario}">${cliente.nombre}</option>`;
+                    });
+                })
+                .catch(err => console.error(err));
+        }
 
         function cargarUsuarios() {
-            // Simulated - replace with actual PHP endpoint
-            usuariosData = [
-                {id_usuario: 1, nombre: 'Admin', email: 'admin@barber.com', telefono: '555-000-0000', rol: 1},
-                {id_usuario: 2, nombre: 'Barbero Christian', email: 'chris@barber.com', telefono: '555-111-1111', rol: 2},
-                {id_usuario: 3, nombre: 'Barbero Moroni', email: 'moroni@barber.com', telefono: '555-222-2222', rol: 2},
-            ];
+            fetch('../php/usuarios_get.php')
+                .then(res => res.json())
+                .then(data => {
+                    usuariosData = data;
+                    const tbody = document.getElementById('tabla-usuarios-body');
+                    const select = document.getElementById('buscar-usuario-id');
+                    
+                    tbody.innerHTML = '';
+                    select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
 
-            const tbody = document.getElementById('tabla-usuarios-body');
-            const select = document.getElementById('buscar-usuario-id');
-            
-            tbody.innerHTML = '';
-            select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
+                    if(data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios registrados</td></tr>';
+                        return;
+                    }
 
-            usuariosData.forEach(user => {
-                const rolNombre = user.rol === 1 ? 'Admin' : user.rol === 2 ? 'Barbero' : 'Cliente';
-                
-                select.innerHTML += `<option value="${user.id_usuario}">#${user.id_usuario} - ${user.nombre}</option>`;
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td>#${user.id_usuario}</td>
-                        <td>${user.nombre}</td>
-                        <td>${user.email}</td>
-                        <td>${user.telefono}</td>
-                        <td>${rolNombre}</td>
-                    </tr>
-                `;
-            });
+                    data.forEach(usuario => {
+                        select.innerHTML += `<option value="${usuario.id_usuario}">#${usuario.id_usuario} - ${usuario.nombre}</option>`;
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${usuario.id_usuario}</td>
+                                <td>${usuario.nombre}</td>
+                                <td>${usuario.email}</td>
+                                <td>${usuario.telefono || 'N/A'}</td>
+                                <td>${usuario.rol_texto}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('tabla-usuarios-body').innerHTML = 
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos</td></tr>';
+                });
         }
 
         function buscarUsuarioPorId() {
@@ -673,57 +707,57 @@
             }
             const usuario = usuariosData.find(u => u.id_usuario == id);
             if (usuario) {
-                const rolNombre = usuario.rol === 1 ? 'Admin' : usuario.rol === 2 ? 'Barbero' : 'Cliente';
-                alert(`👤 USUARIO ENCONTRADO:\n\nID: ${usuario.id_usuario}\nNombre: ${usuario.nombre}\nEmail: ${usuario.email}\nRol: ${rolNombre}`);
+                alert(`👤 USUARIO ENCONTRADO:\n\nID: ${usuario.id_usuario}\nNombre: ${usuario.nombre}\nEmail: ${usuario.email}\nTeléfono: ${usuario.telefono || 'N/A'}\nRol: ${usuario.rol_texto}`);
             }
         }
 
         function actualizarUsuario() {
-            const id = document.getElementById('buscar-usuario-id').value;
-            if (!id) {
-                alert('Por favor selecciona un usuario');
-                return;
-            }
-            alert('✅ Actualizar usuario (implementar con UPDATE SQL)');
+            alert('Función de actualizar usuario a implementar');
         }
 
         function eliminarUsuario() {
-            const id = document.getElementById('buscar-usuario-id').value;
-            if (!id) {
-                alert('Por favor selecciona un usuario');
-                return;
-            }
-            if (confirm('¿Eliminar este usuario?')) {
-                alert('🗑️ Usuario eliminado (simulado)');
-            }
+            alert('Función de eliminar usuario a implementar');
         }
 
         function buscarUsuariosPorRol() {
             const rol = document.getElementById('buscar-rol').value;
+            if (!rol) {
+                cargarUsuarios();
+                return;
+            }
+            
             const tbody = document.getElementById('tabla-usuarios-body');
             tbody.innerHTML = '';
             
-            const filtrados = rol ? usuariosData.filter(u => u.rol == rol) : usuariosData;
+            const usuariosFiltrados = usuariosData.filter(u => u.rol == rol);
             
-            if (filtrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios con ese rol</td></tr>';
+            if (usuariosFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios con este rol</td></tr>';
                 return;
             }
 
-            filtrados.forEach(user => {
-                const rolNombre = user.rol === 1 ? 'Admin' : user.rol === 2 ? 'Barbero' : 'Cliente';
+            usuariosFiltrados.forEach(usuario => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>#${user.id_usuario}</td>
-                        <td>${user.nombre}</td>
-                        <td>${user.email}</td>
-                        <td>${user.telefono}</td>
-                        <td>${rolNombre}</td>
+                        <td>#${usuario.id_usuario}</td>
+                        <td>${usuario.nombre}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.telefono || 'N/A'}</td>
+                        <td>${usuario.rol_texto}</td>
                     </tr>
                 `;
             });
         }
-        // </CHANGE>
+
+        function actualizarEstado(id, estado) {
+            alert(`Actualizar estado de cita ID: ${id} a ${estado} (función a implementar con UPDATE SQL)`);
+        }
+
+        function eliminarCitaDirecto(id) {
+            if (confirm('¿Eliminar esta cita?')) {
+                alert(`Cita ${id} eliminada (simulado)`);
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', cargarProductos);
 
