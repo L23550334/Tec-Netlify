@@ -906,11 +906,22 @@
             fetch('../php/usuarios_get.php')
                 .then(res => {
                     console.log('[v0] Respuesta recibida de usuarios_get.php, status:', res.status);
-                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
-                    return res.json();
+                    return res.text().then(text => {
+                        console.log('[v0] Respuesta raw:', text);
+                        try {
+                            return JSON.parse(text);
+                        } catch(e) {
+                            console.error('[v0] Error parseando JSON:', e);
+                            throw new Error('La respuesta no es JSON válido. Revisa que el archivo PHP no tenga errores de sintaxis o output HTML.');
+                        }
+                    });
                 })
                 .then(data => {
                     console.log('[v0] Usuarios recibidos:', data);
+                    if(data.error) {
+                        throw new Error(data.error);
+                    }
+                    
                     usuariosData = data;
                     const tbody = document.getElementById('tabla-usuarios-body');
                     const select = document.getElementById('buscar-usuario-id');
