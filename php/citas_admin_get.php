@@ -1,18 +1,13 @@
 <?php
-// php/citas_admin_get.php - Obtener todas las citas para el admin
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 include 'conexion.php';
-session_start();
-
-// Validar que el usuario sea admin
-if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] != 1) {
-    echo json_encode([]);
-    exit;
-}
 
 // Consulta SQL: Une tabla citas con usuarios para sacar nombres de cliente y barbero
 $sql = "SELECT c.id_cita, c.fecha_hora, c.servicio, c.estado, 
+        c.id_cliente, c.id_barbero,
         cliente.nombre as cliente_nombre, 
+        cliente.email as cliente_email,
         barbero.nombre as barbero_nombre,
         cliente.telefono
         FROM citas c
@@ -32,3 +27,4 @@ if ($result) {
 echo json_encode($citas);
 $conn->close();
 ?>
+
