@@ -28,6 +28,16 @@ function ocultarError(errorDiv) {
   errorDiv.style.display = "none"
 }
 
+function guardarUsuarioLocal(data) {
+  const usuario = {
+    id_usuario: data.id_usuario,
+    nombre: data.nombre,
+    email: data.email,
+    rol: data.rol,
+  }
+  localStorage.setItem("usuario", JSON.stringify(usuario))
+}
+
 // 1. ESPERAR A QUE EL HTML CARGUE COMPLETO
 document.addEventListener("DOMContentLoaded", () => {
   // ===========================
@@ -75,6 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
+            guardarUsuarioLocal(data)
+
             alert("¡Bienvenido " + (data.nombre || "") + "!")
 
             if (data.rol == 1) {
@@ -82,7 +94,12 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (data.rol == 2) {
               window.location.href = "html/barbero-dashboard.html"
             } else {
-              window.location.reload()
+              const urlAnterior = document.referrer
+              if (urlAnterior.includes("citas.html")) {
+                window.location.href = "html/citas.html"
+              } else {
+                window.location.reload()
+              }
             }
           } else {
             mostrarError(errorDiv, data.message)
