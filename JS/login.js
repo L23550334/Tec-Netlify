@@ -1,6 +1,5 @@
 // JS/login.js
 
-<<<<<<< HEAD
 // ----- FUNCIÓN DE SANITIZACIÓN -----
 /**
  * Sanitiza una cadena de texto para prevenir ataques XSS (Cross-Site Scripting).
@@ -9,18 +8,15 @@
  * @returns {string} La cadena sanitizada.
  */
 function sanitizeHTML(str) {
-    if (!str) return '';
-    return str.replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&gt;', '"': '&quot;', "'": '&#039;'})[m]);
+  if (!str) return ""
+  return str.replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[m])
 }
 
-// 1. ESPERAR A QUE EL HTML CARGUE COMPLETO (Todo debe ir aquí adentro)
-document.addEventListener('DOMContentLoaded', function() {
-=======
+// ----- FUNCIONES DE VALIDACIÓN -----
 function validarEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return regex.test(email)
 }
->>>>>>> 4556148552fe05caf7d416858403540cf03ca712
 
 function validarTelefono(telefono) {
   const regex = /^[0-9]{10}$/
@@ -36,20 +32,17 @@ function validarPassword(password) {
   return password.length >= 6
 }
 
+// ----- FUNCIONES AUXILIARES PARA ERRORES -----
 function mostrarError(errorDiv, mensaje) {
   errorDiv.textContent = mensaje
   errorDiv.style.display = "block"
 }
 
-<<<<<<< HEAD
-            const email = sanitizeHTML(emailInput.value);
-            const password = sanitizeHTML(passwordInput.value);
-=======
 function ocultarError(errorDiv) {
   errorDiv.style.display = "none"
 }
->>>>>>> 4556148552fe05caf7d416858403540cf03ca712
 
+// ----- FUNCIÓN PARA GUARDAR USUARIO EN LOCALSTORAGE -----
 function guardarUsuarioLocal(data) {
   const usuario = {
     id_usuario: data.id_usuario,
@@ -79,8 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!emailInput || !passwordInput) return
 
-      const email = emailInput.value.trim()
-      const password = passwordInput.value
+      // Sanitizamos y luego validamos
+      const email = sanitizeHTML(emailInput.value.trim())
+      const password = sanitizeHTML(passwordInput.value)
 
       if (email === "" || password === "") {
         mostrarError(errorDiv, "Por favor, completa todos los campos.")
@@ -118,57 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             alert("¡Bienvenido " + (data.nombre || "") + "!")
 
-<<<<<<< HEAD
-            fetch('php/login.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("¡Bienvenido " + (data.nombre || '') + "!");
-                    
-                    if (data.rol == 1) {
-                        window.location.href = 'html/admin-dashboard.html';
-                    } else if (data.rol == 2) {
-                        window.location.href = 'html/barbero-dashboard.html';
-                    } else {
-                        window.location.reload();
-                    }
-                } else {
-                    errorDiv.textContent = data.message;
-                    errorDiv.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorDiv.textContent = "Error de conexión.";
-                errorDiv.style.display = 'block';
-            });
-        });
-    }
-
-    // ===========================
-    // 🔵 LÓGICA DE REGISTRO 
-    // ===========================
-    const registerForm = document.getElementById('form-register');
-
-    if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const nombre = sanitizeHTML(document.getElementById('reg-nombre').value);
-            const email = sanitizeHTML(document.getElementById('reg-email').value);
-            const telefono = sanitizeHTML(document.getElementById('reg-telefono').value);
-            const password = sanitizeHTML(document.getElementById('reg-password').value);
-            const errorDiv = document.getElementById('register-error');
-
-            if (password.length < 6) {
-                errorDiv.textContent = "La contraseña debe tener al menos 6 caracteres.";
-                errorDiv.style.display = 'block';
-                return;
-=======
             if (data.rol == 1) {
               window.location.href = "html/admin-dashboard.html"
             } else if (data.rol == 2) {
@@ -180,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
               } else {
                 window.location.reload()
               }
->>>>>>> 4556148552fe05caf7d416858403540cf03ca712
             }
           } else {
             mostrarError(errorDiv, data.message)
@@ -202,10 +144,11 @@ document.addEventListener("DOMContentLoaded", () => {
     registerForm.addEventListener("submit", (e) => {
       e.preventDefault()
 
-      const nombre = document.getElementById("reg-nombre").value.trim()
-      const email = document.getElementById("reg-email").value.trim()
-      const telefono = document.getElementById("reg-telefono").value.trim()
-      const password = document.getElementById("reg-password").value
+      // Sanitizamos los valores antes de validarlos y usarlos
+      const nombre = sanitizeHTML(document.getElementById("reg-nombre").value.trim())
+      const email = sanitizeHTML(document.getElementById("reg-email").value.trim())
+      const telefono = sanitizeHTML(document.getElementById("reg-telefono").value.trim())
+      const password = sanitizeHTML(document.getElementById("reg-password").value)
       const errorDiv = document.getElementById("register-error")
 
       if (nombre === "" || email === "" || telefono === "" || password === "") {

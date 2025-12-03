@@ -10,14 +10,6 @@ function sanitizeHTML(str) {
     return str.replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'})[m]);
 }
 
-// ----- LÓGICA DE AUTENTICACIÓN (SIMULADA) -----
-const DUMMY_USERS = [
-  // Cambiado a let para poder añadir nuevos usuarios
-  { username: "cliente", password: "123", role: "cliente" },
-  { username: "barbero", password: "123", role: "barbero" },
-  { username: "admin", password: "123", role: "admin" },
-]
-
 let slideIndex = 1
 showSlides(slideIndex)
 
@@ -62,10 +54,8 @@ function showSlides(n) {
 document.addEventListener("DOMContentLoaded", () => {
   handleAuth()
   setupLoginRequiredElements()
-  handleLoginModalAndRedirect()
+  handleModalViewSwitching() // Reemplaza la lógica de login/registro conflictiva
   handleReseñasForm()
-  handleAdminDashboard()
-  handleBarberDashboard()
   handleProductCardParticles() // Nueva función para las partículas
   handleShoppingCart() // Nueva función para el carrito
   handleSideMenu() // Nueva función para el menú lateral
@@ -142,79 +132,23 @@ function setupLoginRequiredElements() {
     })
   })
 }
-function handleLoginModalAndRedirect() {
-  const loginForm = document.getElementById("form-login")
+
+/**
+ * Gestiona el cambio de vistas entre el formulario de login y el de registro dentro del modal.
+ * La lógica de envío de formularios ya está en login.js.
+ */
+function handleModalViewSwitching() {
   const modal = document.getElementById("login-modal")
   const closeModalBtn = document.querySelector(".close-modal")
-  const registerForm = document.getElementById("form-register")
-
   const loginView = document.getElementById("login-view")
   const registerView = document.getElementById("register-view")
   const showRegisterBtn = document.getElementById("show-register-view")
   const showLoginBtn = document.getElementById("show-login-view")
 
-  if (loginForm && modal && closeModalBtn) {
-    loginForm.addEventListener("submit", (event) => {
-      event.preventDefault()
-      const username = document.getElementById("username").value
-      const password = document.getElementById("password").value
-      const errorDiv = document.getElementById("login-error")
-
-      const foundUser = DUMMY_USERS.find((u) => u.username === username && u.password === password)
-
-      if (foundUser) {
-        localStorage.setItem("loggedInUser", JSON.stringify({ username: foundUser.username, role: foundUser.role }))
-
-        const loginForReview = localStorage.getItem("loginForReview")
-        localStorage.removeItem("loginForReview") // Limpiar la bandera inmediatamente
-
-        // Redirigir según el rol
-        if (foundUser.role === "admin") {
-          window.location.href = "/html/admin-dashboard.html"
-        } else if (foundUser.role === "barbero") {
-          window.location.href = "/html/barbero-dashboard.html"
-        } else {
-          // Para clientes: si venía de reseña, se queda en index.html; si no, va a citas.html
-          if (loginForReview === "true") {
-            window.location.href = "index.html"
-          } else {
-            window.location.href = "ht"
-          }
-        }
-      } else {
-        errorDiv.textContent = "Usuario o contraseña incorrectos."
-        errorDiv.style.display = "block"
-      }
-    })
-
-    // Lógica para el formulario de registro
-    registerForm.addEventListener("submit", (event) => {
-      event.preventDefault()
-      const username = document.getElementById("register-username").value
-      const password = document.getElementById("register-password").value
-      const errorDiv = document.getElementById("register-error")
-
-      // Simulación de validación: el usuario no debe existir
-      const userExists = DUMMY_USERS.some((u) => u.username === username)
-      if (userExists) {
-        errorDiv.textContent = "Este nombre de usuario ya está en uso."
-        errorDiv.style.display = "block"
-        return
-      }
-
-      // Añadir nuevo usuario (siempre como cliente)
-      const newUser = { username, password, role: "cliente" }
-      DUMMY_USERS.push(newUser)
-
-      // Iniciar sesión automáticamente y recargar
-      localStorage.setItem("loggedInUser", JSON.stringify(newUser))
-      window.location.reload()
-    })
-
+  if (modal && closeModalBtn && showRegisterBtn && showLoginBtn) {
     // Cierra el modal al hacer clic en la 'X'
     closeModalBtn.addEventListener("click", () => {
       modal.style.display = "none"
-      localStorage.removeItem("loginForReview") // Limpiar la bandera si el modal se cierra sin login
     })
 
     // Lógica para cambiar entre vistas
@@ -636,156 +570,6 @@ function createParticles(card) {
   }
 }
 
-// ----- LÓGICA PARA PANELES DE ADMIN Y BARBERO -----
-
-function getCitas() {
-  // Obtiene las citas de localStorage o devuelve un array vacío con datos de ejemplo si no hay nada
-  const citas = localStorage.getItem("citas")
-  if (citas) {
-    return JSON.parse(citas)
-  } else {
-    // Datos de ejemplo para la primera vez
-    const citasEjemplo = [
-      { id: 1, nombre: "Juan Pérez", servicio: "Corte y Barba", fecha: "2025-11-26T10:00", telefono: "5512345678" },
-      { id: 2, nombre: "Miguel R.", servicio: "Corte de Cabello", fecha: "2025-11-26T12:30", telefono: "5587654321" },
-    ]
-    localStorage.setItem("citas", JSON.stringify(citasEjemplo))
-    return citasEjemplo
-  }
-}
-
-function saveCitas(citas) {
-  localStorage.setItem("citas", JSON.stringify(citas))
-}
-
-function handleAdminDashboard() {
-  if (!document.getElementById("admin-panel")) return
-
-  const modal = document.getElementById("cita-modal")
-  const btnAbrirModal = document.getElementById("btn-abrir-modal-cita")
-  const closeModalBtn = modal.querySelector(".close-modal")
-  const formCita = document.getElementById("form-cita")
-  const modalTitulo = document.getElementById("cita-modal-titulo")
-
-  btnAbrirModal.addEventListener("click", () => {
-    formCita.reset()
-    document.getElementById("cita-id").value = ""
-    modalTitulo.textContent = "Añadir Nueva Cita"
-    modal.style.display = "flex"
-  })
-
-  closeModalBtn.addEventListener("click", () => (modal.style.display = "none"))
-
-<<<<<<< HEAD
-    formCita.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const id = document.getElementById('cita-id').value;
-        const nuevaCita = {
-            id: id ? parseInt(id) : Date.now(),
-            nombre: sanitizeHTML(document.getElementById('cita-nombre').value),
-            telefono: sanitizeHTML(document.getElementById('cita-telefono').value),
-            servicio: sanitizeHTML(document.getElementById('cita-servicio').value),
-            fecha: document.getElementById('cita-fecha').value, // La fecha no necesita sanitización de HTML
-        };
-=======
-  formCita.addEventListener("submit", (e) => {
-    e.preventDefault()
-    const id = document.getElementById("cita-id").value
-    const nuevaCita = {
-      id: id ? Number.parseInt(id) : Date.now(), // Usa el ID existente o crea uno nuevo
-      nombre: document.getElementById("cita-nombre").value,
-      telefono: document.getElementById("cita-telefono").value,
-      servicio: document.getElementById("cita-servicio").value,
-      fecha: document.getElementById("cita-fecha").value,
-    }
->>>>>>> 4556148552fe05caf7d416858403540cf03ca712
-
-    let citas = getCitas()
-    if (id) {
-      // Editando
-      citas = citas.map((c) => (c.id === nuevaCita.id ? nuevaCita : c))
-    } else {
-      // Creando
-      citas.push(nuevaCita)
-    }
-    saveCitas(citas)
-    renderAdminTable()
-    modal.style.display = "none"
-  })
-
-  renderAdminTable()
-}
-
-function renderAdminTable() {
-  const tbody = document.getElementById("citas-tbody")
-  if (!tbody) return
-  tbody.innerHTML = ""
-  const citas = getCitas()
-
-  citas.forEach((cita) => {
-    const fecha = new Date(cita.fecha)
-    const tr = document.createElement("tr")
-    tr.innerHTML = `
-            <td>${cita.nombre}</td>
-            <td>${cita.servicio}</td>
-            <td>${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}</td>
-            <td>${cita.telefono}</td>
-            <td class="actions-cell">
-                <button class="btn-accion btn-editar" data-id="${cita.id}">Editar</button>
-                <button class="btn-accion btn-eliminar" data-id="${cita.id}">Eliminar</button>
-            </td>
-        `
-    tbody.appendChild(tr)
-  })
-
-  // Añadir listeners para los nuevos botones
-  document.querySelectorAll(".btn-editar").forEach((btn) => btn.addEventListener("click", editarCita))
-  document.querySelectorAll(".btn-eliminar").forEach((btn) => btn.addEventListener("click", eliminarCita))
-}
-
-function editarCita(e) {
-  const id = Number.parseInt(e.target.dataset.id)
-  const citas = getCitas()
-  const cita = citas.find((c) => c.id === id)
-
-  document.getElementById("cita-id").value = cita.id
-  document.getElementById("cita-nombre").value = cita.nombre
-  document.getElementById("cita-telefono").value = cita.telefono
-  document.getElementById("cita-servicio").value = cita.servicio
-  document.getElementById("cita-fecha").value = cita.fecha
-
-  document.getElementById("cita-modal-titulo").textContent = "Editar Cita"
-  document.getElementById("cita-modal").style.display = "flex"
-}
-
-function eliminarCita(e) {
-  if (!confirm("¿Estás seguro de que quieres eliminar esta cita?")) return
-  const id = Number.parseInt(e.target.dataset.id)
-  let citas = getCitas()
-  citas = citas.filter((c) => c.id !== id)
-  saveCitas(citas)
-  renderAdminTable()
-}
-
-function handleBarberDashboard() {
-  const tbody = document.getElementById("citas-tbody")
-  if (!document.getElementById("barber-panel") || !tbody) return
-
-  tbody.innerHTML = ""
-  const citas = getCitas()
-
-  citas.forEach((cita) => {
-    const fecha = new Date(cita.fecha)
-    const tr = document.createElement("tr")
-    tr.innerHTML = `
-            <td>${cita.nombre}</td>
-            <td>${cita.servicio}</td>
-            <td>${fecha.toLocaleTimeString()}</td>
-        `
-    tbody.appendChild(tr)
-  })
-}
-
 function handleReseñasForm() {
   const formReseña = document.getElementById("form-reseña")
 
@@ -798,65 +582,42 @@ function handleReseñasForm() {
       if (!user) {
         event.preventDefault()
         document.getElementById("login-modal").style.display = "flex" // Muestra el modal
-        localStorage.setItem("loginForReview", "true") // Establecer bandera para saber que el login es para una reseña
         return
       }
 
       // Previene el comportamiento por defecto del formulario (recargar la página)
       event.preventDefault()
 
-<<<<<<< HEAD
-            // 1. Obtener los datos del formulario
-            const nombre = sanitizeHTML(document.getElementById('reseña-nombre').value);
-            const comentario = sanitizeHTML(document.getElementById('reseña-comentario').value);
-            const rating = document.querySelector('input[name="rating"]:checked').value;
-
-            // 2. Crear la nueva tarjeta de reseña
-            const reseñaGrid = document.querySelector('.reseñas-grid');
-            const nuevaReseña = document.createElement('div');
-            nuevaReseña.className = 'reseña-card';
-=======
       // 1. Obtener los datos del formulario
-      const nombre = document.getElementById("reseña-nombre").value
-      const comentario = document.getElementById("reseña-comentario").value
+      const nombre = sanitizeHTML(document.getElementById("reseña-nombre").value)
+      const comentario = sanitizeHTML(document.getElementById("reseña-comentario").value)
       const rating = document.querySelector('input[name="rating"]:checked').value
 
       // 2. Crear la nueva tarjeta de reseña
       const reseñaGrid = document.querySelector(".reseñas-grid")
       const nuevaReseña = document.createElement("div")
-      nuevaReseña.classList.add("reseña-card")
->>>>>>> 4556148552fe05caf7d416858403540cf03ca712
+      nuevaReseña.className = "reseña-card"
 
       let estrellasHTML = ""
       for (let i = 0; i < rating; i++) {
         estrellasHTML += "<span>&#9733;</span>"
       }
 
-      nuevaReseña.innerHTML = `
-                <div class="reseña-estrellas">${estrellasHTML}</div>
-<<<<<<< HEAD
+      nuevaReseña.innerHTML = ` <div class="reseña-estrellas">${estrellasHTML}</div>
                 <p class="reseña-texto"></p>
                 <h4 class="reseña-autor"></h4>
-            `;
-
-            // 3. Usar .textContent para insertar los datos sanitizados.
-            // Esto es aún más seguro que usar innerHTML con datos del usuario.
-            const textoP = nuevaReseña.querySelector('.reseña-texto');
-            const autorH4 = nuevaReseña.querySelector('.reseña-autor');
-            
-            textoP.textContent = `"${comentario}"`;
-            autorH4.textContent = `- ${nombre}`;
-
-            // 3. Añadir la nueva reseña al grid
-            reseñaGrid.appendChild(nuevaReseña);
-=======
-                <p class="reseña-texto">"${comentario}"</p>
-                <h4 class="reseña-autor">- ${nombre}</h4>
             `
+
+      // 3. Usar .textContent para insertar los datos sanitizados.
+      // Esto es aún más seguro que usar innerHTML con datos del usuario.
+      const textoP = nuevaReseña.querySelector(".reseña-texto")
+      const autorH4 = nuevaReseña.querySelector(".reseña-autor")
+
+      textoP.textContent = `"${comentario}"`
+      autorH4.textContent = `- ${nombre}`
 
       // 3. Añadir la nueva reseña al grid
       reseñaGrid.appendChild(nuevaReseña)
->>>>>>> 4556148552fe05caf7d416858403540cf03ca712
 
       // 4. Limpiar el formulario
       formReseña.reset()
