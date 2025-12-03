@@ -20,17 +20,6 @@ try {
 
     $usuarios = [];
     while($row = $result->fetch_assoc()) {
-        $row['rol'] = isset($row['rol']) ? $row['rol'] : 0;
-        
-        // Convertir rol a texto
-        $rol_texto = '';
-        switch($row['rol']) {
-            case 1: $rol_texto = 'Admin'; break;
-            case 2: $rol_texto = 'Barbero'; break;
-            case 3: $rol_texto = 'Cliente'; break;
-            default: $rol_texto = 'Desconocido';
-        }
-        $row['rol_texto'] = $rol_texto;
         $usuarios[] = $row;
     }
 
@@ -45,3 +34,4 @@ try {
     echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
 }
 ?>
+
