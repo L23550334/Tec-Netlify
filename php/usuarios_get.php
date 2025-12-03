@@ -11,8 +11,7 @@ try {
         throw new Exception("Error de conexión a la base de datos");
     }
 
-    // Consulta SQL: Obtener todos los usuarios
-    $sql = "SELECT id_usuario, nombre, email, telefono, rol FROM usuarios ORDER BY id_usuario DESC";
+    $sql = "SELECT id_usuario, nombre, email, telefono FROM usuarios ORDER BY id_usuario DESC";
     $result = $conn->query($sql);
 
     if (!$result) {
@@ -21,6 +20,8 @@ try {
 
     $usuarios = [];
     while($row = $result->fetch_assoc()) {
+        $row['rol'] = isset($row['rol']) ? $row['rol'] : 0;
+        
         // Convertir rol a texto
         $rol_texto = '';
         switch($row['rol']) {
@@ -44,4 +45,3 @@ try {
     echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
 }
 ?>
-
