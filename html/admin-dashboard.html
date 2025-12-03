@@ -252,7 +252,6 @@
                     </table>
                 </div>
             </div>
-            <!-- </CHANGE> -->
 
             <!-- CITAS Panel with foreign key searches and dynamic tables -->
             <div id="panel-citas" class="section-panel">
@@ -310,7 +309,6 @@
                     </table>
                 </div>
             </div>
-            <!-- </CHANGE> -->
 
             <!-- USUARIOS Panel with primary key search and foreign key search -->
             <div id="panel-usuarios" class="section-panel">
@@ -360,7 +358,6 @@
                     </table>
                 </div>
             </div>
-            <!-- </CHANGE> -->
 
         </section>
     </main>
@@ -372,6 +369,8 @@
         let usuariosData = [];
         let barberosData = [];
         let clientesData = [];
+        
+        console.log('[v0] Dashboard de Admin iniciado');
 
         function mostrarSeccion(id) {
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
@@ -407,9 +406,15 @@
         }
 
         function cargarProductos() {
+            console.log('[v0] Cargando productos...');
             fetch('../php/productos_get.php')
-                .then(res => res.json())
+                .then(res => {
+                    console.log('[v0] Respuesta recibida de productos_get.php');
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
                 .then(data => {
+                    console.log('[v0] Productos recibidos:', data);
                     productosData = data;
                     const tbody = document.getElementById('tabla-productos-body');
                     const select = document.getElementById('buscar-producto-id');
@@ -440,9 +445,9 @@
                     });
                 })
                 .catch(err => {
-                    console.error(err);
+                    console.error('[v0] Error al cargar productos:', err);
                     document.getElementById('tabla-productos-body').innerHTML = 
-                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos</td></tr>';
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
                 });
         }
 
@@ -456,6 +461,75 @@
             if (producto) {
                 alert(`📦 PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}`);
             }
+        }
+
+        function editarProductoDirecto(id) {
+            const producto = productosData.find(p => p.id_producto == id);
+            if (!producto) {
+                alert('Producto no encontrado');
+                return;
+            }
+            
+            const nuevoNombre = prompt('Nuevo nombre:', producto.nombre);
+            if (!nuevoNombre) return;
+            
+            const nuevoPrecio = prompt('Nuevo precio:', producto.precio);
+            if (!nuevoPrecio || !validarPrecio(nuevoPrecio)) return;
+            
+            const nuevoStock = prompt('Nuevo stock:', producto.stock);
+            if (!nuevoStock || !validarStock(nuevoStock)) return;
+            
+            const nuevaDescripcion = prompt('Nueva descripción:', producto.descripcion || '');
+            
+            console.log('[v0] Actualizando producto:', id);
+            fetch('../php/productos_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_producto: id,
+                    nombre: nuevoNombre,
+                    precio: parseFloat(nuevoPrecio),
+                    stock: parseInt(nuevoStock),
+                    descripcion: nuevaDescripcion
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Producto actualizado correctamente');
+                    cargarProductos();
+                } else {
+                    alert('Error: ' + data.mensaje);
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión');
+            });
+        }
+
+        function eliminarProductoDirecto(id) {
+            if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+            
+            console.log('[v0] Eliminando producto:', id);
+            fetch('../php/productos_eliminar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_producto: id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Producto eliminado correctamente');
+                    cargarProductos();
+                } else {
+                    alert('Error: ' + data.mensaje);
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión');
+            });
         }
 
         function editarProducto() {
@@ -478,35 +552,54 @@
             }
         }
 
-        function eliminarProducto() {
-            const id = document.getElementById('buscar-producto-id').value;
-            if (!id) {
-                alert('Por favor selecciona un producto para eliminar');
-                return;
-            }
-            if (confirm('¿Estás seguro de eliminar este producto?')) {
-                alert('🗑️ Producto eliminado (simulado)');
-            }
-        }
-
-        function editarProductoDirecto(id) {
-            alert(`Editar producto ID: ${id} (función a implementar con UPDATE SQL)`);
-        }
-
-        function eliminarProductoDirecto(id) {
-            if (confirm('¿Eliminar este producto?')) {
-                alert(`Producto ${id} eliminado (simulado)`);
-            }
-        }
-
         function mostrarFormularioNuevoProducto() {
-            alert('Aquí se mostraría un formulario para crear un nuevo producto');
+            const nombre = prompt('Nombre del producto:');
+            if (!nombre) return;
+            
+            const precio = prompt('Precio:');
+            if (!precio || !validarPrecio(precio)) return;
+            
+            const stock = prompt('Stock inicial:');
+            if (!stock || !validarStock(stock)) return;
+            
+            const descripcion = prompt('Descripción (opcional):') || '';
+            
+            console.log('[v0] Creando producto nuevo');
+            fetch('../php/productos_crear.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre: nombre,
+                    precio: parseFloat(precio),
+                    stock: parseInt(stock),
+                    descripcion: descripcion
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Producto creado correctamente');
+                    cargarProductos();
+                } else {
+                    alert('Error: ' + data.mensaje);
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión');
+            });
         }
 
         function cargarCitas() {
+            console.log('[v0] Cargando citas...');
             fetch('../php/citas_admin_get.php')
-                .then(res => res.json())
+                .then(res => {
+                    console.log('[v0] Respuesta recibida de citas_admin_get.php');
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
                 .then(data => {
+                    console.log('[v0] Citas recibidas:', data);
                     citasData = data;
                     const tbody = document.getElementById('tabla-citas-body');
                     const select = document.getElementById('buscar-cita-id');
@@ -534,18 +627,18 @@
                                 <td>${cita.servicio}</td>
                                 <td>
                                     <span class="estado-badge ${cita.estado}">${cita.estado}</span>
-                                    <button class="btn-accion btn-editar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
-                                    <button class="btn-accion btn-borrar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
-                                    <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">🗑️ Eliminar</button>
+                                    <button class="btn-accion btn-editar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">Completar</button>
+                                    <button class="btn-accion btn-borrar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">Cancelar</button>
+                                    <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Eliminar</button>
                                 </td>
                             </tr>
                         `;
                     });
                 })
                 .catch(err => {
-                    console.error(err);
+                    console.error('[v0] Error al cargar citas:', err);
                     document.getElementById('tabla-citas-body').innerHTML = 
-                        '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos</td></tr>';
+                        '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
                 });
         }
 
@@ -633,9 +726,14 @@
         }
 
         function cargarBarberos() {
+            console.log('[v0] Cargando barberos...');
             fetch('../php/barberos_get_admin.php')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
                 .then(data => {
+                    console.log('[v0] Barberos recibidos:', data);
                     barberosData = data;
                     const select = document.getElementById('buscar-barbero');
                     select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
@@ -644,13 +742,18 @@
                         select.innerHTML += `<option value="${barbero.id_usuario}">${barbero.nombre}</option>`;
                     });
                 })
-                .catch(err => console.error(err));
+                .catch(err => console.error('[v0] Error al cargar barberos:', err));
         }
 
         function cargarClientes() {
+            console.log('[v0] Cargando clientes...');
             fetch('../php/clientes_get_admin.php')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
                 .then(data => {
+                    console.log('[v0] Clientes recibidos:', data);
                     clientesData = data;
                     const select = document.getElementById('buscar-cliente');
                     select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
@@ -659,13 +762,18 @@
                         select.innerHTML += `<option value="${cliente.id_usuario}">${cliente.nombre}</option>`;
                     });
                 })
-                .catch(err => console.error(err));
+                .catch(err => console.error('[v0] Error al cargar clientes:', err));
         }
 
         function cargarUsuarios() {
+            console.log('[v0] Cargando usuarios...');
             fetch('../php/usuarios_get.php')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
                 .then(data => {
+                    console.log('[v0] Usuarios recibidos:', data);
                     usuariosData = data;
                     const tbody = document.getElementById('tabla-usuarios-body');
                     const select = document.getElementById('buscar-usuario-id');
@@ -693,9 +801,9 @@
                     });
                 })
                 .catch(err => {
-                    console.error(err);
+                    console.error('[v0] Error al cargar usuarios:', err);
                     document.getElementById('tabla-usuarios-body').innerHTML = 
-                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos</td></tr>';
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
                 });
         }
 
@@ -750,13 +858,51 @@
         }
 
         function actualizarEstado(id, estado) {
-            alert(`Actualizar estado de cita ID: ${id} a ${estado} (función a implementar con UPDATE SQL)`);
+            if (!confirm(`¿Confirmar cambio de estado a "${estado}"?`)) return;
+            
+            console.log('[v0] Actualizando estado de cita:', id, estado);
+            fetch('../php/citas_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cita: id, estado: estado })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Estado actualizado correctamente');
+                    cargarCitas();
+                } else {
+                    alert('Error: ' + data.mensaje);
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión');
+            });
         }
 
         function eliminarCitaDirecto(id) {
-            if (confirm('¿Eliminar esta cita?')) {
-                alert(`Cita ${id} eliminada (simulado)`);
-            }
+            if (!confirm('¿Estás seguro de eliminar esta cita?')) return;
+            
+            console.log('[v0] Eliminando cita:', id);
+            fetch('../php/citas_eliminar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cita: id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cita eliminada correctamente');
+                    cargarCitas();
+                } else {
+                    alert('Error: ' + data.mensaje);
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión');
+            });
         }
 
         document.addEventListener('DOMContentLoaded', cargarProductos);
@@ -767,3 +913,4 @@
     </script>
 </body>
 </html>
+
