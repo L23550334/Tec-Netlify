@@ -293,17 +293,14 @@
                         return;
                     }
 
-                    // Track unique clients
                     const clientesUnicos = new Set();
 
                     data.forEach(cita => {
                         const fechaObj = new Date(cita.fecha_hora);
                         const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                        // Populate primary key combo box
                         select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${fechaStr}</option>`;
                         
-                        // Populate foreign key combo box (clients)
                         if (!clientesUnicos.has(cita.cliente_nombre)) {
                             clientesUnicos.add(cita.cliente_nombre);
                             selectCliente.innerHTML += `<option value="${cita.cliente_nombre}">${cita.cliente_nombre}</option>`;
@@ -340,24 +337,6 @@
             if (cita) {
                 alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nServicio: ${cita.servicio}\nFecha: ${new Date(cita.fecha_hora).toLocaleString()}\nTeléfono: ${cita.telefono}`);
             }
-        }
-
-        function completarCita() {
-            const id = document.getElementById('barbero-buscar-cita-id').value;
-            if (!id) {
-                alert('Por favor selecciona una cita');
-                return;
-            }
-            actualizarEstado(id, 'completada');
-        }
-
-        function cancelarCita() {
-            const id = document.getElementById('barbero-buscar-cita-id').value;
-            if (!id) {
-                alert('Por favor selecciona una cita');
-                return;
-            }
-            actualizarEstado(id, 'cancelada');
         }
 
         function mostrarCitasDelCliente() {
@@ -434,7 +413,8 @@
                 })
                 .catch(err => {
                     console.error('[v0] Error al cargar productos:', err);
-                    document.getElementById('tabla-productos-barbero-body').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + err.message + '</td></tr>';
+                    document.getElementById('tabla-productos-barbero-body').innerHTML = 
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + err.message + '</td></tr>';
                 });
         }
 
@@ -446,37 +426,50 @@
             }
             const producto = productosData.find(p => p.id_producto == id);
             if (producto) {
-                alert(`📦 PRODUCTO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
+                alert(`📦 PRODUCTO:\n\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
             }
         }
 
         function cargarClientesBarbero() {
-            // Simulated data - would come from PHP endpoint filtering clients who have appointments with this barber
-            clientesData = [
-                {id: 7, nombre: 'Cliente Juan', email: 'juan@email.com', telefono: '555-777-7777', total_citas: 5},
-                {id: 8, nombre: 'Cliente María', email: 'maria@email.com', telefono: '555-888-8888', total_citas: 3},
-                {id: 9, nombre: 'Cliente Pedro', email: 'pedro@email.com', telefono: '555-999-9999', total_citas: 8}
-            ];
+            console.log('[v0] Cargando clientes del barbero...');
+            fetch('../php/clientes_barbero_get.php')
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Clientes recibidos:', data);
+                    clientesData = data;
+                    const tbody = document.getElementById('tabla-clientes-body');
+                    const select = document.getElementById('barbero-buscar-cliente-id');
+                    
+                    tbody.innerHTML = '';
+                    select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
 
-            const tbody = document.getElementById('tabla-clientes-body');
-            const select = document.getElementById('barbero-buscar-cliente-id');
-            
-            tbody.innerHTML = '';
-            select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No tienes clientes registrados</td></tr>';
+                        return;
+                    }
 
-            clientesData.forEach(cliente => {
-                select.innerHTML += `<option value="${cliente.id}">#${cliente.id} - ${cliente.nombre}</option>`;
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td>#${cliente.id}</td>
-                        <td>${cliente.nombre}</td>
-                        <td>${cliente.email}</td>
-                        <td>${cliente.telefono}</td>
-                        <td>${cliente.total_citas}</td>
-                    </tr>
-                `;
-            });
+                    data.forEach(cliente => {
+                        select.innerHTML += `<option value="${cliente.id_usuario}">#${cliente.id_usuario} - ${cliente.nombre}</option>`;
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${cliente.id_usuario}</td>
+                                <td>${cliente.nombre}</td>
+                                <td>${cliente.email}</td>
+                                <td>${cliente.telefono || 'N/A'}</td>
+                                <td>${cliente.total_citas || 0}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar clientes:', err);
+                    document.getElementById('tabla-clientes-body').innerHTML = 
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + err.message + '</td></tr>';
+                });
         }
 
         function verHistorialCliente() {
@@ -485,73 +478,33 @@
                 alert('Por favor selecciona un cliente');
                 return;
             }
-            const cliente = clientesData.find(c => c.id == id);
+            const cliente = clientesData.find(c => c.id_usuario == id);
             if (cliente) {
-                alert(`👤 CLIENTE:\n\nID: ${cliente.id}\nNombre: ${cliente.nombre}\nEmail: ${cliente.email}\nTeléfono: ${cliente.telefono}\nTotal de Citas: ${cliente.total_citas}`);
+                alert(`👤 CLIENTE:\n\nNombre: ${cliente.nombre}\nEmail: ${cliente.email}\nTeléfono: ${cliente.telefono || 'N/A'}\nTotal Citas: ${cliente.total_citas || 0}`);
             }
         }
 
         function filtrarClientesPorServicio() {
-            const servicio = document.getElementById('barbero-buscar-servicio').value;
-            if (!servicio) {
-                alert('Por favor selecciona un tipo de servicio');
-                return;
-            }
-            alert(`🔍 Filtrando clientes que solicitaron: ${servicio}\n(Implementar filtro con JOIN de citas)`);
+            alert('Función de filtrar clientes por servicio en desarrollo');
         }
 
         function filtrarCitasPorEstado() {
-            const estado = document.getElementById('barbero-buscar-estado').value;
-            if (!estado) {
-                cargarCitas(); // Reload all
-                return;
-            }
-            
-            const tbody = document.getElementById('tabla-citas-body');
-            tbody.innerHTML = '';
-            
-            const citasFiltradas = misCitasData.filter(c => c.estado === estado);
-            
-            if (citasFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas con ese estado</td></tr>';
-                return;
-            }
-
-            citasFiltradas.forEach(cita => {
-                const fechaObj = new Date(cita.fecha_hora);
-                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>#${cita.id_cita}</td>
-                    <td>${fechaStr}</td>
-                    <td>${cita.cliente_nombre}</td>
-                    <td>${cita.servicio}</td>
-                    <td>${cita.telefono}</td>
-                    <td>
-                        <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅</button>
-                        <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+            alert('Función de filtrar citas por estado en desarrollo');
         }
 
-        document.addEventListener('DOMContentLoaded', cargarCitas);
-
-        function actualizarEstado(id, estado) {
-            if (!confirm(`¿Confirmar cambio de estado a "${estado}"?`)) return;
+        function actualizarEstado(idCita, nuevoEstado) {
+            if (!confirm(`¿Confirmar cambio de estado a "${nuevoEstado}"?`)) return;
             
-            console.log('[v0] Actualizando estado de cita:', id, estado);
+            console.log('[v0] Actualizando estado de cita:', idCita, 'a', nuevoEstado);
             fetch('../php/citas_actualizar.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_cita: id, estado: estado })
+                body: JSON.stringify({
+                    id_cita: idCita,
+                    estado: nuevoEstado
+                })
             })
-            .then(res => {
-                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     alert('✅ Estado actualizado correctamente');
@@ -562,10 +515,13 @@
             })
             .catch(err => {
                 console.error('[v0] Error:', err);
-                alert('Error de conexión: ' + err.message);
+                alert('Error de conexión');
             });
         }
+
+        document.addEventListener('DOMContentLoaded', cargarCitas);
     </script>
 </body>
 </html>
+
 
