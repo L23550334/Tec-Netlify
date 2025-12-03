@@ -1,6 +1,6 @@
 <?php
-// php/clientes_get_admin.php - Obtener clientes para el admin
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 include 'conexion.php';
 
 // Obtener solo usuarios con rol de cliente (rol = 3)
