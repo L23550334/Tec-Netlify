@@ -11,23 +11,23 @@ try {
         throw new Exception("Error de conexión a la base de datos");
     }
 
-    // Consulta para traer todos los productos
-    $sql = "SELECT id_producto, nombre, descripcion, precio, stock FROM productos";
+    // Obtener solo usuarios con rol de barbero (rol = 2)
+    $sql = "SELECT id_usuario, nombre, email, telefono FROM usuarios WHERE rol = 2 ORDER BY nombre ASC";
     $result = $conn->query($sql);
 
     if (!$result) {
         throw new Exception("Error en la consulta: " . $conn->error);
     }
 
-    $productos = [];
+    $barberos = [];
     while($row = $result->fetch_assoc()) {
-        $productos[] = $row;
+        $barberos[] = $row;
     }
 
     $conn->close();
     
     ob_end_clean();
-    echo json_encode($productos, JSON_UNESCAPED_UNICODE);
+    echo json_encode($barberos, JSON_UNESCAPED_UNICODE);
     
 } catch (Exception $e) {
     ob_end_clean();

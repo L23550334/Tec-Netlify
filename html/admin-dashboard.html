@@ -18,6 +18,7 @@
             gap: 20px;
             margin: 0;
             padding: 0;
+            flex-wrap: wrap;
         }
         
         nav ul li a {
@@ -29,6 +30,7 @@
         /* Layout Principal */
         .admin-layout {
             display: flex;
+            flex-direction: row;
             min-height: calc(100vh - 80px); /* Restamos la altura del header */
         }
         
@@ -69,6 +71,7 @@
             padding: 2rem;
             background-color: #0a0a0a; /* Fondo negro para el contenido */
             color: white;
+            overflow-y: auto;
         }
 
         h2 { color: var(--color-primario); margin-bottom: 0.5rem; }
@@ -129,6 +132,194 @@
         .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Added styles for search boxes and forms */
+        .search-box {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+
+        .search-box label {
+            display: block;
+            color: var(--color-primario);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .search-box select,
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .search-box button {
+            padding: 10px 20px;
+            background-color: var(--color-primario);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .search-box button:hover {
+            opacity: 0.9;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .btn-cita {
+            padding: 12px 24px;
+            background-color: var(--color-primario);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .btn-cita:hover {
+            opacity: 0.9;
+        }
+
+        /* Media queries for responsive design */
+        @media (max-width: 768px) {
+            .admin-layout {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #333;
+                flex-direction: row;
+                gap: 10px;
+                overflow-x: auto;
+                padding: 10px;
+            }
+
+            .sidebar button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                min-width: fit-content;
+            }
+
+            .admin-content {
+                padding: 1rem;
+                min-height: auto;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+
+            .btn-accion {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                margin-right: 2px;
+            }
+
+            .search-box {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .btn-cita {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .search-box button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                gap: 10px;
+                font-size: 0.85rem;
+            }
+
+            .admin-content {
+                padding: 0.5rem;
+            }
+
+            table {
+                font-size: 0.75rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .btn-accion {
+                padding: 3px 6px;
+                font-size: 0.65rem;
+            }
+
+            h2 {
+                font-size: 1.1rem;
+            }
+
+            .search-box h3 {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+
+            .search-box label {
+                font-size: 0.85rem;
+            }
+
+            .subtitulo-catalogo {
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -155,12 +346,26 @@
 
         <section class="admin-content">
 
+            <!-- PRODUCTOS Panel with primary key search and dynamic table -->
             <div id="panel-productos" class="section-panel active">
                 <h2>Gestión de Inventario</h2>
                 <p class="subtitulo-catalogo">Control de productos en venta.</p>
                 
-                <button class="btn-cita" style="margin-bottom: 20px;">+ Nuevo Producto</button>
+                <!-- Primary Key Search: Search by Product ID -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Primaria (ID Producto)</h3>
+                    <label for="buscar-producto-id">Selecciona un Producto:</label>
+                    <select id="buscar-producto-id">
+                        <option value="">-- Cargar productos --</option>
+                    </select>
+                    <button onclick="buscarProductoPorId()">Buscar</button>
+                    <button onclick="editarProducto()">Editar</button>
+                    <button onclick="eliminarProducto()">Eliminar</button>
+                </div>
+
+                <button class="btn-cita" style="margin-bottom: 20px;" onclick="mostrarFormularioNuevoProducto()">+ Nuevo Producto</button>
                 
+                <!-- Dynamic Table 1: Products Grid -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -179,46 +384,199 @@
                 </div>
             </div>
 
+            <!-- CITAS Panel with foreign key searches and dynamic tables -->
             <div id="panel-citas" class="section-panel">
                 <h2>Citas Programadas</h2>
                 <p class="subtitulo-catalogo">Agenda de la barbería.</p>
+                
+                <!-- Primary Key Search: Search by Appointment ID -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Primaria (ID Cita)</h3>
+                    <label for="buscar-cita-id">Selecciona una Cita:</label>
+                    <select id="buscar-cita-id">
+                        <option value="">-- Cargar citas --</option>
+                    </select>
+                    <button onclick="buscarCitaPorId()">Buscar</button>
+                    <button onclick="actualizarCita()">Actualizar</button>
+                    <button onclick="eliminarCita()">Eliminar</button>
+                </div>
+
+                <!-- Foreign Key Search 1: Search by Barber -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Barbero</h3>
+                    <label for="buscar-barbero">Selecciona un Barbero:</label>
+                    <select id="buscar-barbero">
+                        <option value="">-- Cargar barberos --</option>
+                    </select>
+                    <button onclick="buscarCitasPorBarbero()">Mostrar Citas</button>
+                </div>
+
+                <!-- Foreign Key Search 2: Search by Customer -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Cliente</h3>
+                    <label for="buscar-cliente">Selecciona un Cliente:</label>
+                    <select id="buscar-cliente">
+                        <option value="">-- Cargar clientes --</option>
+                    </select>
+                    <button onclick="buscarCitasPorCliente()">Mostrar Citas</button>
+                </div>
+
+                <!-- Foreign Key Search 3: Search by State (estado) -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Estado de Cita</h3>
+                    <label for="buscar-estado">Selecciona un Estado:</label>
+                    <select id="buscar-estado">
+                        <option value="">-- Todos los estados --</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                    <button onclick="buscarCitasPorEstado()">Mostrar Citas</button>
+                </div>
+
+                <!-- Dynamic Table 2: Appointments Grid -->
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>Cliente</th><th>Fecha</th><th>Estado</th></tr></thead>
-                        <tbody><tr><td colspan="3" style="text-align:center;">Próximamente...</td></tr></tbody>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Barbero</th>
+                                <th>Fecha</th>
+                                <th>Servicio</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-citas-body">
+                            <tr><td colspan="7" style="text-align:center;">Cargando...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
 
+            <!-- USUARIOS Panel with primary key search and foreign key search -->
             <div id="panel-usuarios" class="section-panel">
-                 <h2>Usuarios Registrados</h2>
-                 <p class="subtitulo-catalogo">Clientes y personal.</p>
+                <h2>Gestión de Usuarios</h2>
+                <p class="subtitulo-catalogo">Clientes y personal.</p>
+
+                <!-- Primary Key Search: Search by User ID -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Primaria (ID Usuario)</h3>
+                    <label for="buscar-usuario-id">Selecciona un Usuario:</label>
+                    <select id="buscar-usuario-id">
+                        <option value="">-- Cargar usuarios --</option>
+                    </select>
+                    <button onclick="buscarUsuarioPorId()">Buscar</button>
+                    <button onclick="actualizarUsuario()">Actualizar</button>
+                    <button onclick="eliminarUsuario()">Eliminar</button>
+                </div>
+
+                <!-- Foreign Key Search 3: Search by Role (rol) -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Foránea (Rol)</h3>
+                    <label for="buscar-rol">Selecciona un Rol:</label>
+                    <select id="buscar-rol">
+                        <option value="">-- Todos los roles --</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Barbero</option>
+                        <option value="3">Cliente</option>
+                    </select>
+                    <button onclick="buscarUsuariosPorRol()">Mostrar Usuarios</button>
+                </div>
+
+                <!-- Dynamic Table 3: Users Grid -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Rol</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-usuarios-body">
+                            <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </section>
     </main>
 
     <script>
+        let productosData = [];
+        let citasData = [];
+        let usuariosData = [];
+        let barberosData = [];
+        let clientesData = [];
+        
+        console.log('[v0] Dashboard de Admin iniciado');
+
         function mostrarSeccion(id) {
+            console.log('[v0] Mostrando sección:', id);
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
             document.getElementById('panel-' + id).classList.add('active');
             event.target.classList.add('active');
+
+            if (id === 'productos') {
+                cargarProductos();
+            } else if (id === 'citas') {
+                cargarCitas();
+                cargarBarberos();
+                cargarClientes();
+            } else if (id === 'usuarios') {
+                cargarUsuarios();
+            }
+        }
+
+        function validarPrecio(precio) {
+            const precioNum = parseFloat(precio);
+            if (isNaN(precioNum) || precioNum <= 0) {
+                alert('❌ VALIDACIÓN: El precio debe ser un número positivo mayor a 0');
+                return false;
+            }
+            return true;
+        }
+
+        function validarStock(stock) {
+            const stockNum = parseInt(stock);
+            if (isNaN(stockNum) || stockNum < 0 || !Number.isInteger(parseFloat(stock))) {
+                alert('❌ VALIDACIÓN: El stock debe ser un número entero no negativo');
+                return false;
+            }
+            return true;
         }
 
         function cargarProductos() {
+            console.log('[v0] Cargando productos desde productos_get.php...');
             fetch('../php/productos_get.php')
-                .then(res => res.json())
+                .then(res => {
+                    console.log('[v0] Respuesta recibida de productos_get.php, status:', res.status);
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
                 .then(data => {
+                    console.log('[v0] Productos recibidos:', data);
+                    productosData = data;
                     const tbody = document.getElementById('tabla-productos-body');
+                    const select = document.getElementById('buscar-producto-id');
+                    
                     tbody.innerHTML = ''; 
+                    select.innerHTML = '<option value="">-- Seleccionar producto --</option>';
 
-                    if(data.length === 0) {
+                    if(!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay productos registrados</td></tr>';
                         return;
                     }
 
                     data.forEach(prod => {
+                        select.innerHTML += `<option value="${prod.id_producto}">#${prod.id_producto} - ${prod.nombre}</option>`;
+                        
                         tbody.innerHTML += `
                             <tr>
                                 <td>#${prod.id_producto}</td>
@@ -226,25 +584,642 @@
                                 <td>$${prod.precio}</td>
                                 <td>${prod.stock} un.</td>
                                 <td>
-                                    <button class="btn-accion btn-editar">Editar</button>
-                                    <button class="btn-accion btn-borrar">Borrar</button>
+                                    <button class="btn-accion btn-editar" onclick="editarProductoDirecto(${prod.id_producto})">Editar</button>
+                                    <button class="btn-accion btn-borrar" onclick="eliminarProductoDirecto(${prod.id_producto})">Borrar</button>
                                 </td>
                             </tr>
                         `;
                     });
                 })
                 .catch(err => {
-                    console.error(err);
+                    console.error('[v0] Error al cargar productos:', err);
                     document.getElementById('tabla-productos-body').innerHTML = 
-                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos</td></tr>';
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
                 });
         }
 
-        document.addEventListener('DOMContentLoaded', cargarProductos);
+        function buscarProductoPorId() {
+            const id = document.getElementById('buscar-producto-id').value;
+            if (!id) {
+                alert('Por favor selecciona un producto');
+                return;
+            }
+            const producto = productosData.find(p => p.id_producto == id);
+            if (producto) {
+                alert(`📦 PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
+            } else {
+                alert('Producto no encontrado');
+            }
+        }
+
+        function editarProducto() {
+            const id = document.getElementById('buscar-producto-id').value;
+            if (!id) {
+                alert('Por favor selecciona un producto');
+                return;
+            }
+            editarProductoDirecto(id);
+        }
+
+        function eliminarProducto() {
+            const id = document.getElementById('buscar-producto-id').value;
+            if (!id) {
+                alert('Por favor selecciona un producto');
+                return;
+            }
+            eliminarProductoDirecto(id);
+        }
+
+        function editarProductoDirecto(id) {
+            const producto = productosData.find(p => p.id_producto == id);
+            if (!producto) {
+                alert('Producto no encontrado');
+                return;
+            }
+            
+            const nuevoNombre = prompt('Nuevo nombre:', producto.nombre);
+            if (!nuevoNombre) return;
+            
+            const nuevoPrecio = prompt('Nuevo precio:', producto.precio);
+            if (!nuevoPrecio || !validarPrecio(nuevoPrecio)) return;
+            
+            const nuevoStock = prompt('Nuevo stock:', producto.stock);
+            if (nuevoStock === null) return;
+            if (!validarStock(nuevoStock)) return;
+            
+            const nuevaDescripcion = prompt('Nueva descripción:', producto.descripcion || '');
+            
+            console.log('[v0] Actualizando producto:', id);
+            fetch('../php/productos_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_producto: id,
+                    nombre: nuevoNombre,
+                    precio: parseFloat(nuevoPrecio),
+                    stock: parseInt(nuevoStock),
+                    descripcion: nuevaDescripcion
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('[v0] Respuesta de actualización:', data);
+                if (data.success) {
+                    alert('✅ Producto actualizado correctamente');
+                    cargarProductos();
+                } else {
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión: ' + err.message);
+            });
+        }
+
+        function eliminarProductoDirecto(id) {
+            if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+            
+            console.log('[v0] Eliminando producto:', id);
+            fetch('../php/productos_eliminar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_producto: id })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('[v0] Respuesta de eliminación:', data);
+                if (data.success) {
+                    alert('✅ Producto eliminado correctamente');
+                    cargarProductos();
+                } else {
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión: ' + err.message);
+            });
+        }
+
+        function mostrarFormularioNuevoProducto() {
+            const nombre = prompt('Nombre del producto:');
+            if (!nombre) return;
+            
+            const precio = prompt('Precio:');
+            if (!precio || !validarPrecio(precio)) return;
+            
+            const stock = prompt('Stock inicial:');
+            if (stock === null) return;
+            if (!validarStock(stock)) return;
+            
+            const descripcion = prompt('Descripción (opcional):') || '';
+            
+            console.log('[v0] Creando nuevo producto');
+            fetch('../php/productos_crear.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre: nombre,
+                    precio: parseFloat(precio),
+                    stock: parseInt(stock),
+                    descripcion: descripcion
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('[v0] Respuesta de creación:', data);
+                if (data.success) {
+                    alert('✅ Producto creado correctamente');
+                    cargarProductos();
+                } else {
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión: ' + err.message);
+            });
+        }
+
+        function cargarCitas() {
+            console.log('[v0] Cargando citas desde citas_admin_get.php...');
+            fetch('../php/citas_admin_get.php')
+                .then(res => {
+                    console.log('[v0] Respuesta recibida de citas_admin_get.php, status:', res.status);
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Citas recibidas:', data);
+                    citasData = data;
+                    const tbody = document.getElementById('tabla-citas-body');
+                    const select = document.getElementById('buscar-cita-id');
+                    
+                    tbody.innerHTML = '';
+                    select.innerHTML = '<option value="">-- Seleccionar cita --</option>';
+
+                    if(!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas registradas</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(cita => {
+                        const fechaObj = new Date(cita.fecha_hora);
+                        const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                        
+                        select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${fechaStr}</option>`;
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${cita.id_cita}</td>
+                                <td>${cita.cliente_nombre}</td>
+                                <td>${cita.barbero_nombre}</td>
+                                <td>${fechaStr}</td>
+                                <td>${cita.servicio}</td>
+                                <td>${cita.estado}</td>
+                                <td>
+                                    <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                                    <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar citas:', err);
+                    document.getElementById('tabla-citas-body').innerHTML = 
+                        '<tr><td colspan="7" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                });
+        }
+
+        function cargarBarberos() {
+            console.log('[v0] Cargando barberos...');
+            fetch('../php/barberos_get_admin.php')
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Barberos recibidos:', data);
+                    barberosData = data;
+                    const select = document.getElementById('buscar-barbero');
+                    select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
+                    
+                    if(data && data.length > 0) {
+                        data.forEach(barbero => {
+                            select.innerHTML += `<option value="${barbero.id_usuario}">${barbero.nombre}</option>`;
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar barberos:', err);
+                });
+        }
+
+        function cargarClientes() {
+            console.log('[v0] Cargando clientes...');
+            fetch('../php/clientes_get_admin.php')
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Clientes recibidos:', data);
+                    clientesData = data;
+                    const select = document.getElementById('buscar-cliente');
+                    select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+                    
+                    if(data && data.length > 0) {
+                        data.forEach(cliente => {
+                            select.innerHTML += `<option value="${cliente.id_usuario}">${cliente.nombre}</option>`;
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar clientes:', err);
+                });
+        }
+
+        function buscarCitaPorId() {
+            const id = document.getElementById('buscar-cita-id').value;
+            if (!id) {
+                alert('Por favor selecciona una cita');
+                return;
+            }
+            const cita = citasData.find(c => c.id_cita == id);
+            if (cita) {
+                const fechaStr = new Date(cita.fecha_hora).toLocaleString();
+                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nBarbero: ${cita.barbero_nombre}\nFecha: ${fechaStr}\nServicio: ${cita.servicio}\nEstado: ${cita.estado}`);
+            } else {
+                alert('Cita no encontrada');
+            }
+        }
+
+        function actualizarCita() {
+            const id = document.getElementById('buscar-cita-id').value;
+            if (!id) {
+                alert('Por favor selecciona una cita');
+                return;
+            }
+            editarCitaDirecto(id);
+        }
+
+        function eliminarCita() {
+            const id = document.getElementById('buscar-cita-id').value;
+            if (!id) {
+                alert('Por favor selecciona una cita');
+                return;
+            }
+            eliminarCitaDirecto(id);
+        }
+
+        function editarCitaDirecto(id) {
+            const cita = citasData.find(c => c.id_cita == id);
+            if (!cita) {
+                alert('Cita no encontrada');
+                return;
+            }
+            
+            const nuevoEstado = prompt('Nuevo estado (pendiente/completada/cancelada):', cita.estado);
+            if (!nuevoEstado) return;
+            
+            if(!['pendiente', 'completada', 'cancelada'].includes(nuevoEstado.toLowerCase())) {
+                alert('❌ Estado inválido. Debe ser: pendiente, completada o cancelada');
+                return;
+            }
+            
+            console.log('[v0] Actualizando estado de cita:', id);
+            fetch('../php/citas_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_cita: id,
+                    estado: nuevoEstado.toLowerCase()
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('[v0] Respuesta de actualización:', data);
+                if (data.success) {
+                    alert('✅ Cita actualizada correctamente');
+                    cargarCitas();
+                } else {
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión: ' + err.message);
+            });
+        }
+
+        function eliminarCitaDirecto(id) {
+            if (!confirm('¿Estás seguro de eliminar esta cita?')) return;
+            
+            console.log('[v0] Eliminando cita:', id);
+            fetch('../php/citas_eliminar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cita: id })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('[v0] Respuesta de eliminación:', data);
+                if (data.success) {
+                    alert('✅ Cita eliminada correctamente');
+                    cargarCitas();
+                } else {
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión: ' + err.message);
+            });
+        }
+
+        function buscarCitasPorBarbero() {
+            const barberoId = document.getElementById('buscar-barbero').value;
+            if (!barberoId) {
+                cargarCitas();
+                return;
+            }
+            
+            const tbody = document.getElementById('tabla-citas-body');
+            tbody.innerHTML = '';
+            
+            const citasFiltradas = citasData.filter(c => c.id_barbero == barberoId);
+            
+            if (citasFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas para este barbero</td></tr>';
+                return;
+            }
+
+            citasFiltradas.forEach(cita => {
+                const fechaObj = new Date(cita.fecha_hora);
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${cita.id_cita}</td>
+                        <td>${cita.cliente_nombre}</td>
+                        <td>${cita.barbero_nombre}</td>
+                        <td>${fechaStr}</td>
+                        <td>${cita.servicio}</td>
+                        <td>${cita.estado}</td>
+                        <td>
+                            <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function buscarCitasPorCliente() {
+            const clienteId = document.getElementById('buscar-cliente').value;
+            if (!clienteId) {
+                cargarCitas();
+                return;
+            }
+            
+            const tbody = document.getElementById('tabla-citas-body');
+            tbody.innerHTML = '';
+            
+            const citasFiltradas = citasData.filter(c => c.id_cliente == clienteId);
+            
+            if (citasFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas para este cliente</td></tr>';
+                return;
+            }
+
+            citasFiltradas.forEach(cita => {
+                const fechaObj = new Date(cita.fecha_hora);
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${cita.id_cita}</td>
+                        <td>${cita.cliente_nombre}</td>
+                        <td>${cita.barbero_nombre}</td>
+                        <td>${fechaStr}</td>
+                        <td>${cita.servicio}</td>
+                        <td>${cita.estado}</td>
+                        <td>
+                            <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function buscarCitasPorEstado() {
+            const estado = document.getElementById('buscar-estado').value;
+            if (!estado) {
+                cargarCitas();
+                return;
+            }
+            
+            console.log('[v0] Buscando citas por estado:', estado);
+            fetch('../php/citas_por_estado_get.php?estado=' + encodeURIComponent(estado))
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Citas por estado recibidas:', data);
+                    const tbody = document.getElementById('tabla-citas-body');
+                    tbody.innerHTML = '';
+                    
+                    if (!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas en ese estado</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(cita => {
+                        const fechaObj = new Date(cita.fecha_hora);
+                        const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${cita.id_cita}</td>
+                                <td>${cita.cliente_nombre}</td>
+                                <td>${cita.barbero_nombre}</td>
+                                <td>${fechaStr}</td>
+                                <td>${cita.servicio}</td>
+                                <td>${cita.estado}</td>
+                                <td>
+                                    <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                                    <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error('[v0] Error:', err);
+                    document.getElementById('tabla-citas-body').innerHTML = 
+                        '<tr><td colspan="7" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                });
+        }
+
+        function cargarUsuarios() {
+            console.log('[v0] Cargando usuarios desde usuarios_get.php...');
+            fetch('../php/usuarios_get.php')
+                .then(res => {
+                    console.log('[v0] Respuesta recibida de usuarios_get.php, status:', res.status);
+                    return res.text().then(text => {
+                        console.log('[v0] Respuesta raw:', text);
+                        try {
+                            return JSON.parse(text);
+                        } catch(e) {
+                            console.error('[v0] Error parseando JSON:', e);
+                            throw new Error('La respuesta no es JSON válido. Revisa que el archivo PHP no tenga errores de sintaxis o output HTML.');
+                        }
+                    });
+                })
+                .then(data => {
+                    console.log('[v0] Usuarios recibidos:', data);
+                    if(data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    usuariosData = data;
+                    const tbody = document.getElementById('tabla-usuarios-body');
+                    const select = document.getElementById('buscar-usuario-id');
+                    
+                    tbody.innerHTML = '';
+                    select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
+
+                    if(!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios registrados</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(usuario => {
+                        const rolNombre = usuario.rol_texto || 'N/A';
+                        
+                        select.innerHTML += `<option value="${usuario.id_usuario}">#${usuario.id_usuario} - ${usuario.nombre}</option>`;
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${usuario.id_usuario}</td>
+                                <td>${usuario.nombre}</td>
+                                <td>${usuario.email}</td>
+                                <td>${usuario.telefono || 'N/A'}</td>
+                                <td>${rolNombre}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar usuarios:', err);
+                    document.getElementById('tabla-usuarios-body').innerHTML = 
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                });
+        }
+
+        function buscarUsuarioPorId() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if(!id) {
+                alert('Selecciona un usuario');
+                return;
+            }
+            const usuario = usuariosData.find(u => u.id_usuario == id);
+            if(usuario) {
+                const tbody = document.getElementById('tabla-usuarios-body');
+                const rolNombre = usuario.rol_texto || 'N/A';
+                tbody.innerHTML = `
+                    <tr>
+                        <td>#${usuario.id_usuario}</td>
+                        <td>${usuario.nombre}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.telefono || 'N/A'}</td>
+                        <td>${rolNombre}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        function actualizarUsuario() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if (!id) {
+                alert('Por favor selecciona un usuario');
+                return;
+            }
+            alert('Función de actualizar usuario próximamente disponible');
+        }
+
+        function eliminarUsuario() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if (!id) {
+                alert('Por favor selecciona un usuario');
+                return;
+            }
+            alert('Función de eliminar usuario próximamente disponible');
+        }
+
+        function buscarUsuariosPorRol() {
+            const rol = document.getElementById('buscar-rol').value;
+            const tbody = document.getElementById('tabla-usuarios-body');
+            
+            tbody.innerHTML = '';
+            
+            if(!rol) {
+                cargarUsuarios();
+                return;
+            }
+            
+            const filtrados = usuariosData.filter(u => u.rol == rol);
+            
+            if(filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios con ese rol</td></tr>';
+                return;
+            }
+            
+            filtrados.forEach(usuario => {
+                const rolNombre = usuario.rol_texto || 'N/A';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${usuario.id_usuario}</td>
+                        <td>${usuario.nombre}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.telefono || 'N/A'}</td>
+                        <td>${rolNombre}</td>
+                    </tr>
+                `;
+            });
+        }
 
         function cerrarSesion() {
-            if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
+            if(confirm("¿Cerrar sesión?")) {
+                localStorage.removeItem('usuario');
+                window.location.href = '../index.html';
+            }
         }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('[v0] Página cargada, iniciando carga de productos');
+            cargarProductos();
+        });
     </script>
+
 </body>
 </html>
