@@ -96,7 +96,7 @@
                     <button class="btn-comprar">Agregar al carrito</button>
                 </div>
 
-                </div>
+            </div>
         </section>
 
     </main>
@@ -144,20 +144,6 @@
         </div>
     </div>
 
-    <!-- Estructura del Modal de Confirmación de Recogida (Oculto por defecto) -->
-    <div id="pickup-confirmation-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 450px;">
-            <div class="confirmation-icon">
-                <div class="checkmark-stem"></div>
-                <div class="checkmark-kick"></div>
-            </div>
-            <h2>¡Pedido Confirmado!</h2>
-            <p class="subtitulo-catalogo" style="margin-bottom: 1rem;">Muy bien, tus productos están listos para recoger en tienda.</p>
-            <div id="pickup-total" class="precio" style="font-size: 2rem; margin-bottom: 2rem;"></div>
-            <button id="close-confirmation-modal" class="btn-cita">Aceptar</button>
-        </div>
-    </div>
-
     <!-- Estructura del Modal de Servicio a Domicilio (Oculto por defecto) -->
     <div id="delivery-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
@@ -167,19 +153,102 @@
             <form id="form-delivery" class="form-container" style="text-align: left;">
                 <div class="form-group">
                     <label for="delivery-nombre">Nombre de quien recibe</label>
-                    <input type="text" id="delivery-nombre" required>
+                    <input type="text" id="delivery-nombre" required
+                           minlength="3" maxlength="50"
+                           pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+                           title="Solo letras, mínimo 3 caracteres"
+                           placeholder="Ej: Juan Pérez">
                 </div>
                 <div class="form-group">
                     <label for="delivery-calle">Calle</label>
-                    <input type="text" id="delivery-calle" required>
+                    <input type="text" id="delivery-calle" required
+                           minlength="3" maxlength="100"
+                           title="Mínimo 3 caracteres"
+                           placeholder="Ej: Av. Reforma">
                 </div>
                 <div class="form-group">
                     <label for="delivery-colonia">Colonia</label>
-                    <input type="text" id="delivery-colonia" required>
+                    <select id="delivery-colonia" required title="Selecciona una colonia">
+                        <option value="">-- Selecciona una colonia --</option>
+                        <option value="Aeropuerto">Aeropuerto</option>
+                        <option value="Alamedas">Alamedas</option>
+                        <option value="Altavista">Altavista</option>
+                        <option value="Ávalos">Ávalos</option>
+                        <option value="Barrio San Pedro">Barrio San Pedro</option>
+                        <option value="Bellavista">Bellavista</option>
+                        <option value="Cafetales">Cafetales</option>
+                        <option value="Campanario">Campanario</option>
+                        <option value="Campesina">Campesina</option>
+                        <option value="Campobello">Campobello</option>
+                        <option value="Centro">Centro</option>
+                        <option value="Cerradas de Cumbres">Cerradas de Cumbres</option>
+                        <option value="Chihuahua 2000">Chihuahua 2000</option>
+                        <option value="Club Campestre">Club Campestre</option>
+                        <option value="Colinas del Sol">Colinas del Sol</option>
+                        <option value="Cumbres">Cumbres</option>
+                        <option value="Cumbres del Sur">Cumbres del Sur</option>
+                        <option value="Dale">Dale</option>
+                        <option value="Delicias">Delicias</option>
+                        <option value="Diego Lucero">Diego Lucero</option>
+                        <option value="El Palomar">El Palomar</option>
+                        <option value="Francisco I. Madero">Francisco I. Madero</option>
+                        <option value="Granjas">Granjas</option>
+                        <option value="Guadalupe">Guadalupe</option>
+                        <option value="Independencia">Independencia</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Jardines del Santuario">Jardines del Santuario</option>
+                        <option value="Josefa Ortiz de Dominguez">Josefa Ortiz de Dominguez</option>
+                        <option value="Kennedy">Kennedy</option>
+                        <option value="La Cantera">La Cantera</option>
+                        <option value="Las Granjas">Las Granjas</option>
+                        <option value="Lomas">Lomas</option>
+                        <option value="Lomas del Santuario">Lomas del Santuario</option>
+                        <option value="Los Nogales">Los Nogales</option>
+                        <option value="Mármol">Mármol</option>
+                        <option value="Martín López">Martín López</option>
+                        <option value="Mirador">Mirador</option>
+                        <option value="Nombre de Dios">Nombre de Dios</option>
+                        <option value="Obrera">Obrera</option>
+                        <option value="Pacífico">Pacífico</option>
+                        <option value="Palmas">Palmas</option>
+                        <option value="Panamericana">Panamericana</option>
+                        <option value="Parques de San Felipe">Parques de San Felipe</option>
+                        <option value="Paseos de Chihuahua">Paseos de Chihuahua</option>
+                        <option value="Pinos">Pinos</option>
+                        <option value="Ponce de León">Ponce de León</option>
+                        <option value="Quintas Carolinas">Quintas Carolinas</option>
+                        <option value="Quintas del Sol">Quintas del Sol</option>
+                        <option value="Revolución">Revolución</option>
+                        <option value="Riberas de Sacramento">Riberas de Sacramento</option>
+                        <option value="Rosario">Rosario</option>
+                        <option value="Sacramento">Sacramento</option>
+                        <option value="San Felipe Viejo">San Felipe Viejo</option>
+                        <option value="San Francisco">San Francisco</option>
+                        <option value="San José">San José</option>
+                        <option value="San Miguel">San Miguel</option>
+                        <option value="San Rafael">San Rafael</option>
+                        <option value="Santa Rita">Santa Rita</option>
+                        <option value="Santa Rosa">Santa Rosa</option>
+                        <option value="Santo Niño">Santo Niño</option>
+                        <option value="Saucito">Saucito</option>
+                        <option value="Sector Bolívar">Sector Bolívar</option>
+                        <option value="Tecnológico">Tecnológico</option>
+                        <option value="Tierra y Libertad">Tierra y Libertad</option>
+                        <option value="Unidad Chihuahua">Unidad Chihuahua</option>
+                        <option value="Valle de la Madrid">Valle de la Madrid</option>
+                        <option value="Valle del Sol">Valle del Sol</option>
+                        <option value="Villa">Villa</option>
+                        <option value="Vistas del Norte">Vistas del Norte</option>
+                        <option value="Zootecnia">Zootecnia</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="delivery-numero">Número Exterior</label>
-                    <input type="text" id="delivery-numero" required>
+                    <input type="text" id="delivery-numero" required
+                           minlength="1" maxlength="10"
+                           pattern="[0-9A-Za-z\-]+"
+                           title="Número válido (puede incluir letras, ej: 123-A)"
+                           placeholder="Ej: 456">
                 </div>
                 <button type="submit" class="btn-enviar">Confirmar Pedido</button>
             </form>
