@@ -249,7 +249,10 @@
         }
 
         function cerrarSesion() {
-            if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
+            if(confirm("¿Cerrar sesión?")) {
+                localStorage.removeItem('loggedInUser');
+                window.location.href = '../index.html';
+            }
         }
 
         function cargarCitas() {
