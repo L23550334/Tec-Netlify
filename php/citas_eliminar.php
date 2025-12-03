@@ -1,30 +1,60 @@
 <?php
-// php/citas_eliminar.php - Eliminar una cita
-header('Content-Type: application/json');
-include 'conexion.php';
-session_start();
+ob_start();
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-// Leer datos del request
-$data = json_decode(file_get_contents('php://input'), true);
-
-if (!isset($data['id_cita'])) {
-    echo json_encode(['success' => false, 'mensaje' => 'ID de cita no proporcionado']);
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    ob_end_clean();
+    exit(0);
 }
 
-$id_cita = $data['id_cita'];
+try {
+    include 'conexion.php';
+    
+    if (!$conn) {
+        throw new Exception("Error de conexión a la base de datos");
+    }
 
-// Eliminar la cita
-$sql = "DELETE FROM citas WHERE id_cita = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id_cita);
+    // Leer datos del request
+    $data = json_decode(file_get_contents('php://input'), true);
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'mensaje' => 'Cita eliminada correctamente']);
-} else {
-    echo json_encode(['success' => false, 'mensaje' => 'Error al eliminar: ' . $conn->error]);
+    if (!isset($data['id_cita'])) {
+        throw new Exception('ID de cita no proporcionado');
+    }
+
+    $id_cita = $data['id_cita'];
+
+    // Eliminar la cita
+    $sql = "DELETE FROM citas WHERE id_cita = ?";
+    $stmt = $conn->prepare($sql);
+    
+    if (!$stmt) {
+        throw new Exception("Error preparando consulta: " . $conn->error);
+    }
+    
+    $stmt->bind_param("i", $id_cita);
+
+    if (!$stmt->execute()) {
+        throw new Exception("Error al eliminar: " . $conn->error);
+    }
+
+    $stmt->close();
+    $conn->close();
+    
+    ob_end_clean();
+    echo json_encode([
+        'success' => true, 
+        'mensaje' => 'Cita eliminada correctamente'
+    ], JSON_UNESCAPED_UNICODE);
+    
+} catch (Exception $e) {
+    ob_end_clean();
+    http_response_code(500);
+    echo json_encode([
+        'success' => false, 
+        'mensaje' => $e->getMessage()
+    ], JSON_UNESCAPED_UNICODE);
 }
-
-$stmt->close();
-$conn->close();
 ?>
