@@ -83,8 +83,8 @@
             <a href="../index.html" class="logo">Small Dick's Barber</a>
             <div class="nav-links-group">
                 <ul style="list-style: none; display: flex; gap: 20px;">
-                    <li><a href="../index.html" style="text-decoration: none; color: var(--color-primario);">🏠 Inicio</a></li>
-                    <li><a href="#" onclick="cerrarSesion()" style="text-decoration: none; color: #888;">🚪 Salir</a></li>
+                    <li><a href="../index.html" style="text-decoration: none; color: var(--color-primario);">🏠 Volver al Inicio</a></li>
+                    <li><a href="#" onclick="cerrarSesion()" style="text-decoration: none; color: #888;">🚪 Cerrar Sesión</a></li>
                 </ul>
             </div>
         </nav>
@@ -247,7 +247,8 @@
         let misCitasData = [];
         let productosData = [];
         let clientesData = [];
-        // </CHANGE>
+        
+        console.log('[v0] Dashboard del Barbero iniciado');
 
         function mostrarSeccion(id) {
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
@@ -262,7 +263,6 @@
             } else if (id === 'clientes') {
                 cargarClientesBarbero();
             }
-            // </CHANGE>
         }
 
         function cerrarSesion() {
@@ -270,9 +270,15 @@
         }
 
         function cargarCitas() {
+            console.log('[v0] Cargando citas del barbero...');
             fetch('../php/citas_barbero_get.php')
-                .then(response => response.json())
+                .then(response => {
+                    console.log('[v0] Respuesta recibida de citas_barbero_get.php');
+                    if (!response.ok) throw new Error('Error HTTP: ' + response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('[v0] Citas recibidas:', data);
                     misCitasData = data;
                     const tbody = document.getElementById('tabla-citas-body');
                     const select = document.getElementById('barbero-buscar-cita-id');
@@ -319,8 +325,8 @@
                     });
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('tabla-citas-body').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error de conexión</td></tr>';
+                    console.error('[v0] Error al cargar citas:', error);
+                    document.getElementById('tabla-citas-body').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error de conexión: ' + error.message + '</td></tr>';
                 });
         }
 
@@ -353,7 +359,6 @@
             }
             actualizarEstado(id, 'cancelada');
         }
-        // </CHANGE>
 
         function mostrarCitasDelCliente() {
             const clienteNombre = document.getElementById('barbero-buscar-cliente').value;
@@ -391,12 +396,16 @@
                 tbody.appendChild(tr);
             });
         }
-        // </CHANGE>
 
         function cargarProductosBarbero() {
+            console.log('[v0] Cargando productos...');
             fetch('../php/productos_get.php')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
                 .then(data => {
+                    console.log('[v0] Productos recibidos:', data);
                     productosData = data;
                     const tbody = document.getElementById('tabla-productos-barbero-body');
                     const select = document.getElementById('barbero-buscar-producto-id');
@@ -423,7 +432,10 @@
                         `;
                     });
                 })
-                .catch(err => console.error(err));
+                .catch(err => {
+                    console.error('[v0] Error al cargar productos:', err);
+                    document.getElementById('tabla-productos-barbero-body').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + err.message + '</td></tr>';
+                });
         }
 
         function verDetalleProducto() {
@@ -437,7 +449,6 @@
                 alert(`📦 PRODUCTO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
             }
         }
-        // </CHANGE>
 
         function cargarClientesBarbero() {
             // Simulated data - would come from PHP endpoint filtering clients who have appointments with this barber
@@ -525,13 +536,36 @@
                 tbody.appendChild(tr);
             });
         }
-        // </CHANGE>
 
         document.addEventListener('DOMContentLoaded', cargarCitas);
 
         function actualizarEstado(id, estado) {
-            alert(`Aquí programaremos el cambio de estado a: ${estado} para la cita ID: ${id}`);
+            if (!confirm(`¿Confirmar cambio de estado a "${estado}"?`)) return;
+            
+            console.log('[v0] Actualizando estado de cita:', id, estado);
+            fetch('../php/citas_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cita: id, estado: estado })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Estado actualizado correctamente');
+                    cargarCitas();
+                } else {
+                    alert('❌ Error: ' + data.mensaje);
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error:', err);
+                alert('Error de conexión: ' + err.message);
+            });
         }
     </script>
 </body>
 </html>
+
