@@ -1,6 +1,6 @@
 <?php
-// php/barberos_get_admin.php - Obtener barberos para el admin
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 include 'conexion.php';
 
 // Obtener solo usuarios con rol de barbero (rol = 2)
