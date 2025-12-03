@@ -94,7 +94,7 @@
         <aside class="sidebar">
             <button onclick="mostrarSeccion('agenda')" class="active">📅 Mi Agenda</button>
             <button onclick="mostrarSeccion('productos')">📦 Productos</button>
-            
+            <button onclick="mostrarSeccion('clientes')">👥 Clientes</button>
         </aside>
 
         <section class="content">
@@ -103,9 +103,21 @@
                 <h2>Citas Programadas</h2>
                 <p class="subtitulo">Gestiona tus clientes asignados.</p>
                 
-               
+                <!-- PRIMARY KEY SEARCH 4: Search appointment by ID -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Primaria (ID Cita)</h3>
+                    <label for="barbero-buscar-cita-id">Selecciona una Cita:</label>
+                    <select id="barbero-buscar-cita-id">
+                        <option value="">-- Cargar mis citas --</option>
+                    </select>
+                    <button onclick="buscarMiCitaPorId()">Buscar</button>
+                    <button onclick="completarCita()">Completar</button>
+                    <button onclick="cancelarCita()">Cancelar</button>
+                </div>
+
                 <!-- FOREIGN KEY SEARCH 4: Search by Client -->
                 <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Foránea (Cliente)</h3>
                     <label for="barbero-buscar-cliente">Selecciona un Cliente:</label>
                     <select id="barbero-buscar-cliente">
                         <option value="">-- Seleccionar cliente --</option>
@@ -141,7 +153,7 @@
 
                 <!-- PRIMARY KEY SEARCH 5: Product search by ID -->
                 <div class="search-box">
-                    
+                    <h3>🔍 Búsqueda por Llave Primaria (ID Producto)</h3>
                     <label for="barbero-buscar-producto-id">Selecciona un Producto:</label>
                     <select id="barbero-buscar-producto-id">
                         <option value="">-- Cargar productos --</option>
@@ -524,4 +536,3 @@
     </script>
 </body>
 </html>
-
