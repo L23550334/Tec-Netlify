@@ -129,6 +129,66 @@
         .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Added styles for search boxes and forms */
+        .search-box {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+
+        .search-box label {
+            display: block;
+            color: var(--color-primario);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .search-box select,
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .search-box button {
+            padding: 10px 20px;
+            background-color: var(--color-primario);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .search-box button:hover {
+            opacity: 0.9;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+        /* </CHANGE> */
     </style>
 </head>
 <body>
@@ -155,12 +215,26 @@
 
         <section class="admin-content">
 
+            <!-- PRODUCTOS Panel with primary key search and dynamic table -->
             <div id="panel-productos" class="section-panel active">
                 <h2>Gestión de Inventario</h2>
                 <p class="subtitulo-catalogo">Control de productos en venta.</p>
                 
-                <button class="btn-cita" style="margin-bottom: 20px;">+ Nuevo Producto</button>
+                <!-- Primary Key Search: Search by Product ID -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Primaria (ID Producto)</h3>
+                    <label for="buscar-producto-id">Selecciona un Producto:</label>
+                    <select id="buscar-producto-id">
+                        <option value="">-- Cargar productos --</option>
+                    </select>
+                    <button onclick="buscarProductoPorId()">Buscar</button>
+                    <button onclick="editarProducto()">Editar</button>
+                    <button onclick="eliminarProducto()">Eliminar</button>
+                </div>
+
+                <button class="btn-cita" style="margin-bottom: 20px;" onclick="mostrarFormularioNuevoProducto()">+ Nuevo Producto</button>
                 
+                <!-- Dynamic Table 1: Products Grid -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -178,40 +252,173 @@
                     </table>
                 </div>
             </div>
+            <!-- </CHANGE> -->
 
+            <!-- CITAS Panel with foreign key searches and dynamic tables -->
             <div id="panel-citas" class="section-panel">
                 <h2>Citas Programadas</h2>
                 <p class="subtitulo-catalogo">Agenda de la barbería.</p>
+                
+                <!-- Primary Key Search: Search by Appointment ID -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Primaria (ID Cita)</h3>
+                    <label for="buscar-cita-id">Selecciona una Cita:</label>
+                    <select id="buscar-cita-id">
+                        <option value="">-- Cargar citas --</option>
+                    </select>
+                    <button onclick="buscarCitaPorId()">Buscar</button>
+                    <button onclick="actualizarCita()">Actualizar</button>
+                    <button onclick="eliminarCita()">Eliminar</button>
+                </div>
+
+                <!-- Foreign Key Search 1: Search by Barber (id_barbero) -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Foránea (Barbero)</h3>
+                    <label for="buscar-barbero">Selecciona un Barbero:</label>
+                    <select id="buscar-barbero">
+                        <option value="">-- Seleccionar barbero --</option>
+                    </select>
+                    <button onclick="buscarCitasPorBarbero()">Mostrar Citas</button>
+                </div>
+
+                <!-- Foreign Key Search 2: Search by Client (id_cliente) -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Foránea (Cliente)</h3>
+                    <label for="buscar-cliente">Selecciona un Cliente:</label>
+                    <select id="buscar-cliente">
+                        <option value="">-- Seleccionar cliente --</option>
+                    </select>
+                    <button onclick="buscarCitasPorCliente()">Mostrar Citas</button>
+                </div>
+
+                <!-- Dynamic Table 2: Appointments Grid -->
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>Cliente</th><th>Fecha</th><th>Estado</th></tr></thead>
-                        <tbody><tr><td colspan="3" style="text-align:center;">Próximamente...</td></tr></tbody>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Barbero</th>
+                                <th>Fecha</th>
+                                <th>Servicio</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-citas-body">
+                            <tr><td colspan="6" style="text-align:center;">Cargando...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
+            <!-- </CHANGE> -->
 
+            <!-- USUARIOS Panel with primary key search and foreign key search -->
             <div id="panel-usuarios" class="section-panel">
-                 <h2>Usuarios Registrados</h2>
-                 <p class="subtitulo-catalogo">Clientes y personal.</p>
+                <h2>Usuarios Registrados</h2>
+                <p class="subtitulo-catalogo">Clientes y personal.</p>
+
+                <!-- Primary Key Search: Search by User ID -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Primaria (ID Usuario)</h3>
+                    <label for="buscar-usuario-id">Selecciona un Usuario:</label>
+                    <select id="buscar-usuario-id">
+                        <option value="">-- Cargar usuarios --</option>
+                    </select>
+                    <button onclick="buscarUsuarioPorId()">Buscar</button>
+                    <button onclick="actualizarUsuario()">Actualizar</button>
+                    <button onclick="eliminarUsuario()">Eliminar</button>
+                </div>
+
+                <!-- Foreign Key Search 3: Search by Role (rol) -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Llave Foránea (Rol)</h3>
+                    <label for="buscar-rol">Selecciona un Rol:</label>
+                    <select id="buscar-rol">
+                        <option value="">-- Todos los roles --</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Barbero</option>
+                        <option value="3">Cliente</option>
+                    </select>
+                    <button onclick="buscarUsuariosPorRol()">Mostrar Usuarios</button>
+                </div>
+
+                <!-- Dynamic Table 3: Users Grid -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Rol</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-usuarios-body">
+                            <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <!-- </CHANGE> -->
 
         </section>
     </main>
 
     <script>
+        let productosData = [];
+        let citasData = [];
+        let usuariosData = [];
+        let barberosData = [];
+        let clientesData = [];
+        // </CHANGE>
+
         function mostrarSeccion(id) {
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
             document.getElementById('panel-' + id).classList.add('active');
             event.target.classList.add('active');
+
+            if (id === 'productos') {
+                cargarProductos();
+            } else if (id === 'citas') {
+                cargarCitas();
+                cargarBarberos();
+                cargarClientes();
+            } else if (id === 'usuarios') {
+                cargarUsuarios();
+            }
+            // </CHANGE>
         }
+
+        function validarPrecio(precio) {
+            if (isNaN(precio) || precio <= 0) {
+                alert('❌ VALIDACIÓN: El precio debe ser un número positivo mayor a 0');
+                return false;
+            }
+            return true;
+        }
+
+        // CLIENT-SIDE VALIDATION 2: Validate stock is non-negative integer
+        function validarStock(stock) {
+            if (!Number.isInteger(Number(stock)) || stock < 0) {
+                alert('❌ VALIDACIÓN: El stock debe ser un número entero no negativo');
+                return false;
+            }
+            return true;
+        }
+        // </CHANGE>
 
         function cargarProductos() {
             fetch('../php/productos_get.php')
                 .then(res => res.json())
                 .then(data => {
+                    productosData = data;
                     const tbody = document.getElementById('tabla-productos-body');
+                    const select = document.getElementById('buscar-producto-id');
+                    
                     tbody.innerHTML = ''; 
+                    select.innerHTML = '<option value="">-- Seleccionar producto --</option>';
 
                     if(data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay productos registrados</td></tr>';
@@ -219,6 +426,10 @@
                     }
 
                     data.forEach(prod => {
+                        // Populate combo box for primary key search
+                        select.innerHTML += `<option value="${prod.id_producto}">#${prod.id_producto} - ${prod.nombre}</option>`;
+                        
+                        // Populate dynamic table
                         tbody.innerHTML += `
                             <tr>
                                 <td>#${prod.id_producto}</td>
@@ -226,8 +437,8 @@
                                 <td>$${prod.precio}</td>
                                 <td>${prod.stock} un.</td>
                                 <td>
-                                    <button class="btn-accion btn-editar">Editar</button>
-                                    <button class="btn-accion btn-borrar">Borrar</button>
+                                    <button class="btn-accion btn-editar" onclick="editarProductoDirecto(${prod.id_producto})">Editar</button>
+                                    <button class="btn-accion btn-borrar" onclick="eliminarProductoDirecto(${prod.id_producto})">Borrar</button>
                                 </td>
                             </tr>
                         `;
@@ -239,6 +450,280 @@
                         '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos</td></tr>';
                 });
         }
+
+        function buscarProductoPorId() {
+            const id = document.getElementById('buscar-producto-id').value;
+            if (!id) {
+                alert('Por favor selecciona un producto');
+                return;
+            }
+            const producto = productosData.find(p => p.id_producto == id);
+            if (producto) {
+                alert(`📦 PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}`);
+            }
+        }
+
+        function editarProducto() {
+            const id = document.getElementById('buscar-producto-id').value;
+            if (!id) {
+                alert('Por favor selecciona un producto para editar');
+                return;
+            }
+            const producto = productosData.find(p => p.id_producto == id);
+            if (producto) {
+                const nuevoNombre = prompt('Nuevo nombre:', producto.nombre);
+                const nuevoPrecio = prompt('Nuevo precio:', producto.precio);
+                const nuevoStock = prompt('Nuevo stock:', producto.stock);
+                
+                // Apply client-side validations
+                if (nuevoNombre && nuevoPrecio && nuevoStock) {
+                    if (!validarPrecio(nuevoPrecio)) return;
+                    if (!validarStock(nuevoStock)) return;
+                    alert('✅ Producto actualizado (simulado)');
+                    // Here you would call a PHP endpoint to update
+                }
+            }
+        }
+
+        function eliminarProducto() {
+            const id = document.getElementById('buscar-producto-id').value;
+            if (!id) {
+                alert('Por favor selecciona un producto para eliminar');
+                return;
+            }
+            if (confirm('¿Estás seguro de eliminar este producto?')) {
+                alert('🗑️ Producto eliminado (simulado)');
+                // Here you would call a PHP endpoint to delete
+            }
+        }
+
+        function editarProductoDirecto(id) {
+            alert(`Editar producto ID: ${id} (función a implementar con UPDATE SQL)`);
+        }
+
+        function eliminarProductoDirecto(id) {
+            if (confirm('¿Eliminar este producto?')) {
+                alert(`Producto ${id} eliminado (simulado)`);
+            }
+        }
+
+        function mostrarFormularioNuevoProducto() {
+            alert('Aquí se mostraría un formulario para crear un nuevo producto');
+        }
+        // </CHANGE>
+
+        function cargarCitas() {
+            // Simulated data - replace with actual fetch to PHP endpoint
+            fetch('../php/citas_barbero_get.php')
+                .then(res => res.json())
+                .then(data => {
+                    citasData = data;
+                    const tbody = document.getElementById('tabla-citas-body');
+                    const select = document.getElementById('buscar-cita-id');
+                    
+                    tbody.innerHTML = '';
+                    select.innerHTML = '<option value="">-- Seleccionar cita --</option>';
+
+                    if(data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas registradas</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(cita => {
+                        select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${cita.fecha_hora}</option>`;
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${cita.id_cita}</td>
+                                <td>${cita.cliente_nombre}</td>
+                                <td>Barbero</td>
+                                <td>${new Date(cita.fecha_hora).toLocaleString()}</td>
+                                <td>${cita.servicio}</td>
+                                <td>${cita.estado}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => console.error(err));
+        }
+
+        function buscarCitaPorId() {
+            const id = document.getElementById('buscar-cita-id').value;
+            if (!id) {
+                alert('Por favor selecciona una cita');
+                return;
+            }
+            const cita = citasData.find(c => c.id_cita == id);
+            if (cita) {
+                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nFecha: ${cita.fecha_hora}\nServicio: ${cita.servicio}`);
+            }
+        }
+
+        function actualizarCita() {
+            const id = document.getElementById('buscar-cita-id').value;
+            if (!id) {
+                alert('Por favor selecciona una cita para actualizar');
+                return;
+            }
+            alert('✅ Actualizar cita (implementar con UPDATE SQL)');
+        }
+
+        function eliminarCita() {
+            const id = document.getElementById('buscar-cita-id').value;
+            if (!id) {
+                alert('Por favor selecciona una cita para eliminar');
+                return;
+            }
+            if (confirm('¿Eliminar esta cita?')) {
+                alert('🗑️ Cita eliminada (simulado)');
+            }
+        }
+        // </CHANGE>
+
+        function cargarBarberos() {
+            // This would fetch users with rol=2 (barberos)
+            barberosData = [
+                {id: 2, nombre: 'Barbero Christian'},
+                {id: 3, nombre: 'Barbero Moroni'},
+                {id: 4, nombre: 'Barbero Luis'},
+                {id: 5, nombre: 'Barbero Angel'},
+                {id: 6, nombre: 'Barbero Sergio'}
+            ];
+            
+            const select = document.getElementById('buscar-barbero');
+            select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
+            barberosData.forEach(b => {
+                select.innerHTML += `<option value="${b.id}">${b.nombre}</option>`;
+            });
+        }
+
+        function buscarCitasPorBarbero() {
+            const idBarbero = document.getElementById('buscar-barbero').value;
+            if (!idBarbero) {
+                alert('Por favor selecciona un barbero');
+                return;
+            }
+            alert(`🔍 Mostrando citas del barbero ID: ${idBarbero}\n(Implementar filtro en tabla)`);
+            // Here you would filter citasData by id_barbero
+        }
+        // </CHANGE>
+
+        function cargarClientes() {
+            // This would fetch users with rol=3 (clientes)
+            clientesData = [
+                {id: 7, nombre: 'Cliente Juan'},
+                {id: 8, nombre: 'Cliente María'},
+                {id: 9, nombre: 'Cliente Pedro'}
+            ];
+            
+            const select = document.getElementById('buscar-cliente');
+            select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+            clientesData.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+        }
+
+        function buscarCitasPorCliente() {
+            const idCliente = document.getElementById('buscar-cliente').value;
+            if (!idCliente) {
+                alert('Por favor selecciona un cliente');
+                return;
+            }
+            alert(`🔍 Mostrando citas del cliente ID: ${idCliente}\n(Implementar filtro en tabla)`);
+            // Here you would filter citasData by id_cliente
+        }
+        // </CHANGE>
+
+        function cargarUsuarios() {
+            // Simulated - replace with actual PHP endpoint
+            usuariosData = [
+                {id_usuario: 1, nombre: 'Admin', email: 'admin@barber.com', telefono: '555-000-0000', rol: 1},
+                {id_usuario: 2, nombre: 'Barbero Christian', email: 'chris@barber.com', telefono: '555-111-1111', rol: 2},
+                {id_usuario: 3, nombre: 'Barbero Moroni', email: 'moroni@barber.com', telefono: '555-222-2222', rol: 2},
+            ];
+
+            const tbody = document.getElementById('tabla-usuarios-body');
+            const select = document.getElementById('buscar-usuario-id');
+            
+            tbody.innerHTML = '';
+            select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
+
+            usuariosData.forEach(user => {
+                const rolNombre = user.rol === 1 ? 'Admin' : user.rol === 2 ? 'Barbero' : 'Cliente';
+                
+                select.innerHTML += `<option value="${user.id_usuario}">#${user.id_usuario} - ${user.nombre}</option>`;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${user.id_usuario}</td>
+                        <td>${user.nombre}</td>
+                        <td>${user.email}</td>
+                        <td>${user.telefono}</td>
+                        <td>${rolNombre}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function buscarUsuarioPorId() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if (!id) {
+                alert('Por favor selecciona un usuario');
+                return;
+            }
+            const usuario = usuariosData.find(u => u.id_usuario == id);
+            if (usuario) {
+                const rolNombre = usuario.rol === 1 ? 'Admin' : usuario.rol === 2 ? 'Barbero' : 'Cliente';
+                alert(`👤 USUARIO ENCONTRADO:\n\nID: ${usuario.id_usuario}\nNombre: ${usuario.nombre}\nEmail: ${usuario.email}\nRol: ${rolNombre}`);
+            }
+        }
+
+        function actualizarUsuario() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if (!id) {
+                alert('Por favor selecciona un usuario');
+                return;
+            }
+            alert('✅ Actualizar usuario (implementar con UPDATE SQL)');
+        }
+
+        function eliminarUsuario() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if (!id) {
+                alert('Por favor selecciona un usuario');
+                return;
+            }
+            if (confirm('¿Eliminar este usuario?')) {
+                alert('🗑️ Usuario eliminado (simulado)');
+            }
+        }
+
+        function buscarUsuariosPorRol() {
+            const rol = document.getElementById('buscar-rol').value;
+            const tbody = document.getElementById('tabla-usuarios-body');
+            tbody.innerHTML = '';
+            
+            const filtrados = rol ? usuariosData.filter(u => u.rol == rol) : usuariosData;
+            
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios con ese rol</td></tr>';
+                return;
+            }
+
+            filtrados.forEach(user => {
+                const rolNombre = user.rol === 1 ? 'Admin' : user.rol === 2 ? 'Barbero' : 'Cliente';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${user.id_usuario}</td>
+                        <td>${user.nombre}</td>
+                        <td>${user.email}</td>
+                        <td>${user.telefono}</td>
+                        <td>${rolNombre}</td>
+                    </tr>
+                `;
+            });
+        }
+        // </CHANGE>
 
         document.addEventListener('DOMContentLoaded', cargarProductos);
 
