@@ -188,6 +188,21 @@
         .error-message.show {
             display: block;
         }
+
+        .btn-cita {
+            padding: 12px 24px;
+            background-color: var(--color-primario);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .btn-cita:hover {
+            opacity: 0.9;
+        }
         /* </CHANGE> */
     </style>
 </head>
@@ -301,10 +316,11 @@
                                 <th>Fecha</th>
                                 <th>Servicio</th>
                                 <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-citas-body">
-                            <tr><td colspan="6" style="text-align:center;">Cargando...</td></tr>
+                            <tr><td colspan="7" style="text-align:center;">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -362,7 +378,6 @@
         </section>
     </main>
 
-    <script src="../JS/admin-dashboard.js"></script>
     <script>
         let productosData = [];
         let citasData = [];
@@ -373,6 +388,7 @@
         console.log('[v0] Dashboard de Admin iniciado');
 
         function mostrarSeccion(id) {
+            console.log('[v0] Mostrando sección:', id);
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
             document.getElementById('panel-' + id).classList.add('active');
@@ -390,7 +406,8 @@
         }
 
         function validarPrecio(precio) {
-            if (isNaN(precio) || precio <= 0) {
+            const precioNum = parseFloat(precio);
+            if (isNaN(precioNum) || precioNum <= 0) {
                 alert('❌ VALIDACIÓN: El precio debe ser un número positivo mayor a 0');
                 return false;
             }
@@ -398,7 +415,8 @@
         }
 
         function validarStock(stock) {
-            if (!Number.isInteger(Number(stock)) || stock < 0) {
+            const stockNum = parseInt(stock);
+            if (isNaN(stockNum) || stockNum < 0 || !Number.isInteger(parseFloat(stock))) {
                 alert('❌ VALIDACIÓN: El stock debe ser un número entero no negativo');
                 return false;
             }
@@ -406,10 +424,10 @@
         }
 
         function cargarProductos() {
-            console.log('[v0] Cargando productos...');
+            console.log('[v0] Cargando productos desde productos_get.php...');
             fetch('../php/productos_get.php')
                 .then(res => {
-                    console.log('[v0] Respuesta recibida de productos_get.php');
+                    console.log('[v0] Respuesta recibida de productos_get.php, status:', res.status);
                     if (!res.ok) throw new Error('Error HTTP: ' + res.status);
                     return res.json();
                 })
@@ -422,7 +440,7 @@
                     tbody.innerHTML = ''; 
                     select.innerHTML = '<option value="">-- Seleccionar producto --</option>';
 
-                    if(data.length === 0) {
+                    if(!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay productos registrados</td></tr>';
                         return;
                     }
@@ -459,7 +477,9 @@
             }
             const producto = productosData.find(p => p.id_producto == id);
             if (producto) {
-                alert(`📦 PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}`);
+                alert(`📦 PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
+            } else {
+                alert('Producto no encontrado');
             }
         }
 
@@ -495,7 +515,8 @@
             if (!nuevoPrecio || !validarPrecio(nuevoPrecio)) return;
             
             const nuevoStock = prompt('Nuevo stock:', producto.stock);
-            if (!nuevoStock || !validarStock(nuevoStock)) return;
+            if (nuevoStock === null) return;
+            if (!validarStock(nuevoStock)) return;
             
             const nuevaDescripcion = prompt('Nueva descripción:', producto.descripcion || '');
             
@@ -511,18 +532,22 @@
                     descripcion: nuevaDescripcion
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log('[v0] Respuesta de actualización:', data);
                 if (data.success) {
                     alert('✅ Producto actualizado correctamente');
                     cargarProductos();
                 } else {
-                    alert('❌ Error: ' + data.mensaje);
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
                 console.error('[v0] Error:', err);
-                alert('Error de conexión');
+                alert('Error de conexión: ' + err.message);
             });
         }
 
@@ -535,18 +560,22 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id_producto: id })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log('[v0] Respuesta de eliminación:', data);
                 if (data.success) {
-                    alert('🗑️ Producto eliminado correctamente');
+                    alert('✅ Producto eliminado correctamente');
                     cargarProductos();
                 } else {
-                    alert('❌ Error: ' + data.mensaje);
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
                 console.error('[v0] Error:', err);
-                alert('Error de conexión');
+                alert('Error de conexión: ' + err.message);
             });
         }
 
@@ -558,11 +587,12 @@
             if (!precio || !validarPrecio(precio)) return;
             
             const stock = prompt('Stock inicial:');
-            if (!stock || !validarStock(stock)) return;
+            if (stock === null) return;
+            if (!validarStock(stock)) return;
             
             const descripcion = prompt('Descripción (opcional):') || '';
             
-            console.log('[v0] Creando producto nuevo');
+            console.log('[v0] Creando nuevo producto');
             fetch('../php/productos_crear.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -573,26 +603,30 @@
                     descripcion: descripcion
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log('[v0] Respuesta de creación:', data);
                 if (data.success) {
                     alert('✅ Producto creado correctamente');
                     cargarProductos();
                 } else {
-                    alert('❌ Error: ' + data.mensaje);
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
                 console.error('[v0] Error:', err);
-                alert('Error de conexión');
+                alert('Error de conexión: ' + err.message);
             });
         }
 
         function cargarCitas() {
-            console.log('[v0] Cargando citas...');
+            console.log('[v0] Cargando citas desde citas_admin_get.php...');
             fetch('../php/citas_admin_get.php')
                 .then(res => {
-                    console.log('[v0] Respuesta recibida de citas_admin_get.php');
+                    console.log('[v0] Respuesta recibida de citas_admin_get.php, status:', res.status);
                     if (!res.ok) throw new Error('Error HTTP: ' + res.status);
                     return res.json();
                 })
@@ -602,18 +636,18 @@
                     const tbody = document.getElementById('tabla-citas-body');
                     const select = document.getElementById('buscar-cita-id');
                     
-                    tbody.innerHTML = ''; 
+                    tbody.innerHTML = '';
                     select.innerHTML = '<option value="">-- Seleccionar cita --</option>';
 
-                    if(data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas registradas</td></tr>';
+                    if(!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas registradas</td></tr>';
                         return;
                     }
 
                     data.forEach(cita => {
                         const fechaObj = new Date(cita.fecha_hora);
-                        const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+                        const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                        
                         select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${fechaStr}</option>`;
                         
                         tbody.innerHTML += `
@@ -623,10 +657,10 @@
                                 <td>${cita.barbero_nombre}</td>
                                 <td>${fechaStr}</td>
                                 <td>${cita.servicio}</td>
+                                <td>${cita.estado}</td>
                                 <td>
-                                    <span style="color: ${cita.estado === 'pendiente' ? '#ffc107' : cita.estado === 'completada' ? '#4CAF50' : '#ff4d4d'}">
-                                        ${cita.estado}
-                                    </span>
+                                    <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                                    <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
                                 </td>
                             </tr>
                         `;
@@ -635,7 +669,55 @@
                 .catch(err => {
                     console.error('[v0] Error al cargar citas:', err);
                     document.getElementById('tabla-citas-body').innerHTML = 
-                        '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                        '<tr><td colspan="7" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                });
+        }
+
+        function cargarBarberos() {
+            console.log('[v0] Cargando barberos...');
+            fetch('../php/barberos_get_admin.php')
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Barberos recibidos:', data);
+                    barberosData = data;
+                    const select = document.getElementById('buscar-barbero');
+                    select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
+                    
+                    if(data && data.length > 0) {
+                        data.forEach(barbero => {
+                            select.innerHTML += `<option value="${barbero.id_usuario}">${barbero.nombre}</option>`;
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar barberos:', err);
+                });
+        }
+
+        function cargarClientes() {
+            console.log('[v0] Cargando clientes...');
+            fetch('../php/usuarios_get.php')
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Usuarios recibidos:', data);
+                    clientesData = data.filter(u => u.rol_id == 3);
+                    const select = document.getElementById('buscar-cliente');
+                    select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+                    
+                    if(clientesData && clientesData.length > 0) {
+                        clientesData.forEach(cliente => {
+                            select.innerHTML += `<option value="${cliente.id_usuario}">${cliente.nombre}</option>`;
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar clientes:', err);
                 });
         }
 
@@ -647,8 +729,10 @@
             }
             const cita = citasData.find(c => c.id_cita == id);
             if (cita) {
-                const fechaObj = new Date(cita.fecha_hora);
-                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nBarbero: ${cita.barbero_nombre}\nFecha: ${fechaObj.toLocaleString()}\nServicio: ${cita.servicio}\nEstado: ${cita.estado}`);
+                const fechaStr = new Date(cita.fecha_hora).toLocaleString();
+                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nBarbero: ${cita.barbero_nombre}\nFecha: ${fechaStr}\nServicio: ${cita.servicio}\nEstado: ${cita.estado}`);
+            } else {
+                alert('Cita no encontrada');
             }
         }
 
@@ -658,16 +742,7 @@
                 alert('Por favor selecciona una cita');
                 return;
             }
-            
-            const nuevoEstado = prompt('Nuevo estado (pendiente/completada/cancelada):');
-            if (!nuevoEstado) return;
-            
-            if (!['pendiente', 'completada', 'cancelada'].includes(nuevoEstado)) {
-                alert('❌ Estado inválido. Usa: pendiente, completada o cancelada');
-                return;
-            }
-            
-            actualizarEstadoCita(id, nuevoEstado);
+            editarCitaDirecto(id);
         }
 
         function eliminarCita() {
@@ -679,110 +754,98 @@
             eliminarCitaDirecto(id);
         }
 
-        function actualizarEstadoCita(idCita, nuevoEstado) {
-            if (!confirm(`¿Confirmar cambio de estado a "${nuevoEstado}"?`)) return;
+        function editarCitaDirecto(id) {
+            const cita = citasData.find(c => c.id_cita == id);
+            if (!cita) {
+                alert('Cita no encontrada');
+                return;
+            }
             
-            console.log('[v0] Actualizando estado de cita:', idCita, 'a', nuevoEstado);
+            const nuevoEstado = prompt('Nuevo estado (pendiente/completada/cancelada):', cita.estado);
+            if (!nuevoEstado) return;
+            
+            if(!['pendiente', 'completada', 'cancelada'].includes(nuevoEstado.toLowerCase())) {
+                alert('❌ Estado inválido. Debe ser: pendiente, completada o cancelada');
+                return;
+            }
+            
+            console.log('[v0] Actualizando estado de cita:', id);
             fetch('../php/citas_actualizar.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    id_cita: idCita,
-                    estado: nuevoEstado
+                    id_cita: id,
+                    estado: nuevoEstado.toLowerCase()
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log('[v0] Respuesta de actualización:', data);
                 if (data.success) {
-                    alert('✅ Estado actualizado correctamente');
+                    alert('✅ Cita actualizada correctamente');
                     cargarCitas();
                 } else {
-                    alert('❌ Error: ' + data.mensaje);
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
                 console.error('[v0] Error:', err);
-                alert('Error de conexión');
+                alert('Error de conexión: ' + err.message);
             });
         }
 
-        function eliminarCitaDirecto(idCita) {
-            if (!confirm('¿Estás seguro de eliminar esta cita? Esta acción no se puede deshacer.')) return;
+        function eliminarCitaDirecto(id) {
+            if (!confirm('¿Estás seguro de eliminar esta cita?')) return;
             
-            console.log('[v0] Eliminando cita:', idCita);
+            console.log('[v0] Eliminando cita:', id);
             fetch('../php/citas_eliminar.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_cita: idCita })
+                body: JSON.stringify({ id_cita: id })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log('[v0] Respuesta de eliminación:', data);
                 if (data.success) {
-                    alert('🗑️ Cita eliminada correctamente');
+                    alert('✅ Cita eliminada correctamente');
                     cargarCitas();
                 } else {
-                    alert('❌ Error: ' + data.mensaje);
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
                 console.error('[v0] Error:', err);
-                alert('Error de conexión');
+                alert('Error de conexión: ' + err.message);
             });
         }
 
-        function cargarBarberos() {
-            console.log('[v0] Cargando barberos...');
-            fetch('../php/barberos_get_admin.php')
-                .then(res => res.json())
-                .then(data => {
-                    console.log('[v0] Barberos recibidos:', data);
-                    barberosData = data;
-                    const select = document.getElementById('buscar-barbero');
-                    select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
-                    data.forEach(b => {
-                        select.innerHTML += `<option value="${b.id_usuario}">${b.nombre}</option>`;
-                    });
-                })
-                .catch(err => console.error('[v0] Error al cargar barberos:', err));
-        }
-
-        function cargarClientes() {
-            console.log('[v0] Cargando clientes...');
-            fetch('../php/clientes_get_admin.php')
-                .then(res => res.json())
-                .then(data => {
-                    console.log('[v0] Clientes recibidos:', data);
-                    clientesData = data;
-                    const select = document.getElementById('buscar-cliente');
-                    select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
-                    data.forEach(c => {
-                        select.innerHTML += `<option value="${c.id_usuario}">${c.nombre}</option>`;
-                    });
-                })
-                .catch(err => console.error('[v0] Error al cargar clientes:', err));
-        }
-
         function buscarCitasPorBarbero() {
-            const idBarbero = document.getElementById('buscar-barbero').value;
-            if (!idBarbero) {
-                alert('Por favor selecciona un barbero');
+            const barberoId = document.getElementById('buscar-barbero').value;
+            if (!barberoId) {
+                cargarCitas();
                 return;
             }
             
             const tbody = document.getElementById('tabla-citas-body');
             tbody.innerHTML = '';
             
-            const citasFiltradas = citasData.filter(c => c.id_barbero == idBarbero);
+            const citasFiltradas = citasData.filter(c => c.id_barbero == barberoId);
             
             if (citasFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas para este barbero</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas para este barbero</td></tr>';
                 return;
             }
 
             citasFiltradas.forEach(cita => {
                 const fechaObj = new Date(cita.fecha_hora);
-                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                
                 tbody.innerHTML += `
                     <tr>
                         <td>#${cita.id_cita}</td>
@@ -790,10 +853,10 @@
                         <td>${cita.barbero_nombre}</td>
                         <td>${fechaStr}</td>
                         <td>${cita.servicio}</td>
+                        <td>${cita.estado}</td>
                         <td>
-                            <span style="color: ${cita.estado === 'pendiente' ? '#ffc107' : cita.estado === 'completada' ? '#4CAF50' : '#ff4d4d'}">
-                                ${cita.estado}
-                            </span>
+                            <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
                         </td>
                     </tr>
                 `;
@@ -801,26 +864,26 @@
         }
 
         function buscarCitasPorCliente() {
-            const idCliente = document.getElementById('buscar-cliente').value;
-            if (!idCliente) {
-                alert('Por favor selecciona un cliente');
+            const clienteId = document.getElementById('buscar-cliente').value;
+            if (!clienteId) {
+                cargarCitas();
                 return;
             }
             
             const tbody = document.getElementById('tabla-citas-body');
             tbody.innerHTML = '';
             
-            const citasFiltradas = citasData.filter(c => c.id_cliente == idCliente);
+            const citasFiltradas = citasData.filter(c => c.id_cliente == clienteId);
             
             if (citasFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas para este cliente</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas para este cliente</td></tr>';
                 return;
             }
 
             citasFiltradas.forEach(cita => {
                 const fechaObj = new Date(cita.fecha_hora);
-                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                
                 tbody.innerHTML += `
                     <tr>
                         <td>#${cita.id_cita}</td>
@@ -828,10 +891,10 @@
                         <td>${cita.barbero_nombre}</td>
                         <td>${fechaStr}</td>
                         <td>${cita.servicio}</td>
+                        <td>${cita.estado}</td>
                         <td>
-                            <span style="color: ${cita.estado === 'pendiente' ? '#ffc107' : cita.estado === 'completada' ? '#4CAF50' : '#ff4d4d'}">
-                                ${cita.estado}
-                            </span>
+                            <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
                         </td>
                     </tr>
                 `;
@@ -839,9 +902,10 @@
         }
 
         function cargarUsuarios() {
-            console.log('[v0] Cargando usuarios...');
+            console.log('[v0] Cargando usuarios desde usuarios_get.php...');
             fetch('../php/usuarios_get.php')
                 .then(res => {
+                    console.log('[v0] Respuesta recibida de usuarios_get.php, status:', res.status);
                     if (!res.ok) throw new Error('Error HTTP: ' + res.status);
                     return res.json();
                 })
@@ -851,24 +915,25 @@
                     const tbody = document.getElementById('tabla-usuarios-body');
                     const select = document.getElementById('buscar-usuario-id');
                     
-                    tbody.innerHTML = ''; 
+                    tbody.innerHTML = '';
                     select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
 
-                    if(data.length === 0) {
+                    if(!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios registrados</td></tr>';
                         return;
                     }
 
-                    data.forEach(user => {
-                        const rolNombre = user.rol_nombre || 'Desconocido';
-                        select.innerHTML += `<option value="${user.id_usuario}">#${user.id_usuario} - ${user.nombre}</option>`;
+                    data.forEach(usuario => {
+                        const rolNombre = usuario.rol_id == 1 ? 'Admin' : (usuario.rol_id == 2 ? 'Barbero' : 'Cliente');
+                        
+                        select.innerHTML += `<option value="${usuario.id_usuario}">#${usuario.id_usuario} - ${usuario.nombre}</option>`;
                         
                         tbody.innerHTML += `
                             <tr>
-                                <td>#${user.id_usuario}</td>
-                                <td>${user.nombre}</td>
-                                <td>${user.email}</td>
-                                <td>${user.telefono || 'N/A'}</td>
+                                <td>#${usuario.id_usuario}</td>
+                                <td>${usuario.nombre}</td>
+                                <td>${usuario.email}</td>
+                                <td>${usuario.telefono || 'N/A'}</td>
                                 <td>${rolNombre}</td>
                             </tr>
                         `;
@@ -889,8 +954,29 @@
             }
             const usuario = usuariosData.find(u => u.id_usuario == id);
             if (usuario) {
-                alert(`👤 USUARIO ENCONTRADO:\n\nID: ${usuario.id_usuario}\nNombre: ${usuario.nombre}\nEmail: ${usuario.email}\nTeléfono: ${usuario.telefono || 'N/A'}\nRol: ${usuario.rol_nombre}`);
+                const rolNombre = usuario.rol_id == 1 ? 'Admin' : (usuario.rol_id == 2 ? 'Barbero' : 'Cliente');
+                alert(`👤 USUARIO ENCONTRADO:\n\nID: ${usuario.id_usuario}\nNombre: ${usuario.nombre}\nEmail: ${usuario.email}\nTeléfono: ${usuario.telefono || 'N/A'}\nRol: ${rolNombre}`);
+            } else {
+                alert('Usuario no encontrado');
             }
+        }
+
+        function actualizarUsuario() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if (!id) {
+                alert('Por favor selecciona un usuario');
+                return;
+            }
+            alert('Función de actualizar usuario próximamente disponible');
+        }
+
+        function eliminarUsuario() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if (!id) {
+                alert('Por favor selecciona un usuario');
+                return;
+            }
+            alert('Función de eliminar usuario próximamente disponible');
         }
 
         function buscarUsuariosPorRol() {
@@ -901,48 +987,44 @@
             
             let usuariosFiltrados = usuariosData;
             if (rolId) {
-                usuariosFiltrados = usuariosData.filter(u => u.id_rol == rolId);
+                usuariosFiltrados = usuariosData.filter(u => u.rol_id == rolId);
             }
             
             if (usuariosFiltrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios con este rol</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios para este rol</td></tr>';
                 return;
             }
 
-            usuariosFiltrados.forEach(user => {
-                const rolNombre = user.rol_nombre || 'Desconocido';
+            usuariosFiltrados.forEach(usuario => {
+                const rolNombre = usuario.rol_id == 1 ? 'Admin' : (usuario.rol_id == 2 ? 'Barbero' : 'Cliente');
+                
                 tbody.innerHTML += `
                     <tr>
-                        <td>#${user.id_usuario}</td>
-                        <td>${user.nombre}</td>
-                        <td>${user.email}</td>
-                        <td>${user.telefono || 'N/A'}</td>
+                        <td>#${usuario.id_usuario}</td>
+                        <td>${usuario.nombre}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.telefono || 'N/A'}</td>
                         <td>${rolNombre}</td>
                     </tr>
                 `;
             });
         }
 
-        function actualizarUsuario() {
-            alert('Función de actualizar usuario en desarrollo');
-        }
-
-        function eliminarUsuario() {
-            alert('Función de eliminar usuario en desarrollo');
-        }
-        // </CHANGE>
-
         function cerrarSesion() {
-            if (confirm("¿Cerrar sesión?")) {
-                localStorage.removeItem("usuario");
-                window.location.href = "../index.html";
+            if(confirm("¿Cerrar sesión?")) {
+                localStorage.removeItem('usuario');
+                window.location.href = '../index.html';
             }
         }
 
-        // Cargar productos al inicio
-        cargarProductos();
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('[v0] Página cargada, iniciando carga de productos');
+            cargarProductos();
+        });
     </script>
+
 </body>
 </html>
+
 
 
