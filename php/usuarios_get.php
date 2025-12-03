@@ -1,14 +1,7 @@
 <?php
-// php/usuarios_get.php - Obtener todos los usuarios
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 include 'conexion.php';
-session_start();
-
-// Validar que el usuario sea admin
-if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] != 1) {
-    echo json_encode([]);
-    exit;
-}
 
 // Consulta SQL: Obtener todos los usuarios
 $sql = "SELECT id_usuario, nombre, email, telefono, rol FROM usuarios ORDER BY id_usuario DESC";
