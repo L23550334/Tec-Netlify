@@ -17,7 +17,6 @@
         h2 { color: var(--color-primario); margin-bottom: 0.5rem; }
         .subtitulo { color: #888; margin-bottom: 2rem; }
 
-        /* Added search box styles */
         .search-box {
             background-color: #1a1a1a;
             padding: 20px;
@@ -58,7 +57,6 @@
         .search-box button:hover {
             opacity: 0.9;
         }
-        /* </CHANGE> */
 
         .table-container { overflow-x: auto; background-color: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
         table { width: 100%; border-collapse: collapse; color: #eee; }
@@ -98,25 +96,21 @@
         </aside>
 
         <section class="content">
-            <!-- AGENDA Panel with primary key search and foreign key search -->
             <div id="panel-agenda" class="section-panel active">
                 <h2>Citas Programadas</h2>
                 <p class="subtitulo">Gestiona tus clientes asignados.</p>
                 
-                <!-- PRIMARY KEY SEARCH 4: Search appointment by ID -->
                 <div class="search-box">
-                    
+                    <h3>🔍 Búsqueda por ID de Cita</h3>
                     <label for="barbero-buscar-cita-id">Selecciona una Cita:</label>
                     <select id="barbero-buscar-cita-id">
                         <option value="">-- Cargar mis citas --</option>
                     </select>
                     <button onclick="buscarMiCitaPorId()">Buscar</button>
-                    
                 </div>
 
-                <!-- FOREIGN KEY SEARCH 4: Search by Client -->
                 <div class="search-box">
-                    
+                    <h3>🔍 Búsqueda por Cliente</h3>
                     <label for="barbero-buscar-cliente">Selecciona un Cliente:</label>
                     <select id="barbero-buscar-cliente">
                         <option value="">-- Seleccionar cliente --</option>
@@ -124,7 +118,6 @@
                     <button onclick="mostrarCitasDelCliente()">Mostrar Citas</button>
                 </div>
 
-                <!-- Dynamic Table 4: Barber's Appointments Grid -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -143,16 +136,13 @@
                     </table>
                 </div>
             </div>
-            <!-- </CHANGE> -->
 
-            <!-- PRODUCTOS Panel with primary key search -->
             <div id="panel-productos" class="section-panel">
                 <h2>Catálogo de Productos</h2>
                 <p class="subtitulo">Productos disponibles para recomendar.</p>
 
-                <!-- PRIMARY KEY SEARCH 5: Product search by ID -->
                 <div class="search-box">
-                    
+                    <h3>🔍 Búsqueda por ID de Producto</h3>
                     <label for="barbero-buscar-producto-id">Selecciona un Producto:</label>
                     <select id="barbero-buscar-producto-id">
                         <option value="">-- Cargar productos --</option>
@@ -160,7 +150,6 @@
                     <button onclick="verDetalleProducto()">Ver Detalle</button>
                 </div>
 
-                <!-- Dynamic Table 5: Products Grid for Barber -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -178,16 +167,13 @@
                     </table>
                 </div>
             </div>
-            <!-- </CHANGE> -->
 
-            <!-- CLIENTES Panel with primary key and foreign key search -->
             <div id="panel-clientes" class="section-panel">
                 <h2>Mis Clientes</h2>
                 <p class="subtitulo">Clientes que has atendido.</p>
 
-                <!-- PRIMARY KEY SEARCH 6: Client search by ID -->
                 <div class="search-box">
-                    <h3>🔍 Búsqueda por Llave Primaria (ID Cliente)</h3>
+                    <h3>🔍 Búsqueda por ID de Cliente</h3>
                     <label for="barbero-buscar-cliente-id">Selecciona un Cliente:</label>
                     <select id="barbero-buscar-cliente-id">
                         <option value="">-- Cargar clientes --</option>
@@ -195,7 +181,6 @@
                     <button onclick="verHistorialCliente()">Ver Historial</button>
                 </div>
 
-                <!-- FOREIGN KEY SEARCH 5: Search clients by service type -->
                 <div class="search-box">
                     <h3>🔍 Búsqueda por Tipo de Servicio</h3>
                     <label for="barbero-buscar-servicio">Selecciona un Servicio:</label>
@@ -208,7 +193,6 @@
                     <button onclick="filtrarClientesPorServicio()">Filtrar</button>
                 </div>
 
-                <!-- FOREIGN KEY SEARCH 6: Search by appointment status -->
                 <div class="search-box">
                     <h3>🔍 Búsqueda por Estado de Cita</h3>
                     <label for="barbero-buscar-estado">Selecciona un Estado:</label>
@@ -221,7 +205,6 @@
                     <button onclick="filtrarCitasPorEstado()">Filtrar</button>
                 </div>
 
-                <!-- Dynamic Table 6: Clients Grid -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -239,7 +222,6 @@
                     </table>
                 </div>
             </div>
-            <!-- </CHANGE> -->
         </section>
     </main>
 
@@ -251,6 +233,7 @@
         console.log('[v0] Dashboard del Barbero iniciado');
 
         function mostrarSeccion(id) {
+            console.log('[v0] Mostrando sección:', id);
             document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
             document.getElementById('panel-' + id).classList.add('active');
@@ -273,12 +256,23 @@
             console.log('[v0] Cargando citas del barbero...');
             fetch('../php/citas_barbero_get.php')
                 .then(response => {
-                    console.log('[v0] Respuesta recibida de citas_barbero_get.php');
-                    if (!response.ok) throw new Error('Error HTTP: ' + response.status);
-                    return response.json();
+                    console.log('[v0] Respuesta recibida, status:', response.status);
+                    return response.text().then(text => {
+                        console.log('[v0] Respuesta raw:', text);
+                        try {
+                            return JSON.parse(text);
+                        } catch(e) {
+                            console.error('[v0] Error parseando JSON:', e);
+                            throw new Error('La respuesta no es JSON válido');
+                        }
+                    });
                 })
                 .then(data => {
                     console.log('[v0] Citas recibidas:', data);
+                    if(data.error) {
+                        throw new Error(data.error);
+                    }
+                    
                     misCitasData = data;
                     const tbody = document.getElementById('tabla-citas-body');
                     const select = document.getElementById('barbero-buscar-cita-id');
@@ -288,7 +282,7 @@
                     select.innerHTML = '<option value="">-- Seleccionar cita --</option>';
                     selectCliente.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
 
-                    if (data.length === 0) {
+                    if (!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No tienes citas pendientes</td></tr>';
                         return;
                     }
@@ -314,8 +308,8 @@
                             <td>${cita.servicio}</td>
                             <td>${cita.telefono}</td>
                             <td>
-                                <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅</button>
-                                <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌</button>
+                                <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
+                                <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -323,7 +317,8 @@
                 })
                 .catch(error => {
                     console.error('[v0] Error al cargar citas:', error);
-                    document.getElementById('tabla-citas-body').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error de conexión: ' + error.message + '</td></tr>';
+                    document.getElementById('tabla-citas-body').innerHTML = 
+                        '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos: ' + error.message + '</td></tr>';
                 });
         }
 
@@ -335,14 +330,15 @@
             }
             const cita = misCitasData.find(c => c.id_cita == id);
             if (cita) {
-                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nServicio: ${cita.servicio}\nFecha: ${new Date(cita.fecha_hora).toLocaleString()}\nTeléfono: ${cita.telefono}`);
+                const fechaStr = new Date(cita.fecha_hora).toLocaleString();
+                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nServicio: ${cita.servicio}\nFecha: ${fechaStr}\nTeléfono: ${cita.telefono}`);
             }
         }
 
         function mostrarCitasDelCliente() {
             const clienteNombre = document.getElementById('barbero-buscar-cliente').value;
             if (!clienteNombre) {
-                alert('Por favor selecciona un cliente');
+                cargarCitas();
                 return;
             }
             
@@ -368,8 +364,8 @@
                     <td>${cita.servicio}</td>
                     <td>${cita.telefono}</td>
                     <td>
-                        <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅</button>
-                        <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌</button>
+                        <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
+                        <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -380,11 +376,23 @@
             console.log('[v0] Cargando productos...');
             fetch('../php/productos_get.php')
                 .then(res => {
-                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
-                    return res.json();
+                    console.log('[v0] Respuesta productos, status:', res.status);
+                    return res.text().then(text => {
+                        console.log('[v0] Respuesta raw productos:', text);
+                        try {
+                            return JSON.parse(text);
+                        } catch(e) {
+                            console.error('[v0] Error parseando JSON:', e);
+                            throw new Error('La respuesta no es JSON válido');
+                        }
+                    });
                 })
                 .then(data => {
                     console.log('[v0] Productos recibidos:', data);
+                    if(data.error) {
+                        throw new Error(data.error);
+                    }
+                    
                     productosData = data;
                     const tbody = document.getElementById('tabla-productos-barbero-body');
                     const select = document.getElementById('barbero-buscar-producto-id');
@@ -392,7 +400,7 @@
                     tbody.innerHTML = '';
                     select.innerHTML = '<option value="">-- Seleccionar producto --</option>';
 
-                    if (data.length === 0) {
+                    if (!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay productos</td></tr>';
                         return;
                     }
@@ -431,14 +439,26 @@
         }
 
         function cargarClientesBarbero() {
-            console.log('[v0] Cargando clientes del barbero...');
-            fetch('../php/clientes_barbero_get.php')
+            console.log('[v0] Cargando clientes...');
+            fetch('../php/clientes_get_admin.php')
                 .then(res => {
-                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
-                    return res.json();
+                    console.log('[v0] Respuesta clientes, status:', res.status);
+                    return res.text().then(text => {
+                        console.log('[v0] Respuesta raw clientes:', text);
+                        try {
+                            return JSON.parse(text);
+                        } catch(e) {
+                            console.error('[v0] Error parseando JSON:', e);
+                            throw new Error('La respuesta no es JSON válido');
+                        }
+                    });
                 })
                 .then(data => {
                     console.log('[v0] Clientes recibidos:', data);
+                    if(data.error) {
+                        throw new Error(data.error);
+                    }
+                    
                     clientesData = data;
                     const tbody = document.getElementById('tabla-clientes-body');
                     const select = document.getElementById('barbero-buscar-cliente-id');
@@ -446,7 +466,7 @@
                     tbody.innerHTML = '';
                     select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
 
-                    if (data.length === 0) {
+                    if (!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No tienes clientes registrados</td></tr>';
                         return;
                     }
@@ -504,24 +524,30 @@
                     estado: nuevoEstado
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                console.log('[v0] Respuesta actualización, status:', res.status);
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log('[v0] Respuesta actualización:', data);
                 if (data.success) {
                     alert('✅ Estado actualizado correctamente');
                     cargarCitas();
                 } else {
-                    alert('❌ Error: ' + data.mensaje);
+                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
                 console.error('[v0] Error:', err);
-                alert('Error de conexión');
+                alert('Error de conexión: ' + err.message);
             });
         }
 
-        document.addEventListener('DOMContentLoaded', cargarCitas);
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[v0] Página cargada, iniciando carga de citas');
+            cargarCitas();
+        });
     </script>
 </body>
 </html>
-
-
