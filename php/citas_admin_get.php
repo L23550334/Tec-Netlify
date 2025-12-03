@@ -45,9 +45,3 @@ try {
     echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
 }
 ?>
-
-
-echo json_encode($citas);
-$conn->close();
-?>
-
