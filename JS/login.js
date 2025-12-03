@@ -31,11 +31,13 @@ function ocultarError(errorDiv) {
 function guardarUsuarioLocal(data) {
   const usuario = {
     id_usuario: data.id_usuario,
+    username: data.nombre, // Usamos "username" para compatibilidad con script.js
     nombre: data.nombre,
     email: data.email,
     rol: data.rol,
+    role: data.rol == 1 ? "admin" : data.rol == 2 ? "barbero" : "cliente", // Agregamos role como string
   }
-  localStorage.setItem("usuario", JSON.stringify(usuario))
+  localStorage.setItem("loggedInUser", JSON.stringify(usuario))
 }
 
 // 1. ESPERAR A QUE EL HTML CARGUE COMPLETO
@@ -86,6 +88,11 @@ document.addEventListener("DOMContentLoaded", () => {
         .then((data) => {
           if (data.success) {
             guardarUsuarioLocal(data)
+
+            const modal = document.getElementById("login-modal")
+            if (modal) {
+              modal.style.display = "none"
+            }
 
             alert("¡Bienvenido " + (data.nombre || "") + "!")
 
