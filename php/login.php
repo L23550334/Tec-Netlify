@@ -22,7 +22,7 @@ if (empty($email) || empty($password)) {
 }
 
 // 2. Buscamos al usuario en la BD
-$sql = "SELECT id_usuario, nombre, password, id_rol FROM usuarios WHERE email = ?";
+$sql = "SELECT id_usuario, nombre, email, password, id_rol FROM usuarios WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
@@ -40,8 +40,12 @@ if ($result->num_rows > 0) {
         $_SESSION['rol'] = $row['id_rol'];
 
         $response['success'] = true;
-        $response['rol'] = $row['id_rol']; // Mandamos el rol para saber a dónde redirigir
         $response['message'] = 'Login correcto';
+        
+        $response['id_usuario'] = $row['id_usuario'];
+        $response['nombre'] = $row['nombre'];
+        $response['email'] = $row['email'];
+        $response['rol'] = $row['id_rol'];
         
     } else {
         // Contraseña incorrecta
