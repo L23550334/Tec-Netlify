@@ -48,54 +48,8 @@
             <h2>Nuestro Catálogo</h2>
             <p class="subtitulo-catalogo">Productos premium para tu cuidado diario.</p>
 
-            <div class="product-grid">
-
-                <div class="product-card" data-id="1" data-name="Cera para Peinar" data-price="250" data-img="../img/cera2.webp"> 
-                    <img src="../img/cera2.webp" alt="Producto 1">
-                    <h3>Cera para Peinar</h3>
-                    <p>Fijación fuerte, acabado mate. Ideal para estilos definidos.</p>
-                    <span class="precio">$250</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-
-                <div class="product-card" data-id="2" data-name="Aceite para Barba" data-price="300" data-img="../img/aceite.png"> 
-                    <img src="../img/aceite.png" alt="Producto 2">
-                    <h3>Aceite para Barba</h3>
-                    <p>Hidrata la barba y la piel, con aroma a sándalo.</p>
-                    <span class="precio">$300</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-
-                <div class="product-card" data-id="3" data-name="Shampoo Especializado" data-price="280" data-img="../img/shampoo.webp"> 
-                    <img src="../img/shampoo.webp" alt="Producto 3">
-                    <h3>Shampoo Especializado</h3>
-                    <p>Limpieza profunda anti-caída y anti-grasa.</p>
-                    <span class="precio">$280</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-                
-                <div class="product-card" data-id="4" data-name="Tónico Facial" data-price="220" data-img="../img/tonico.webp"> 
-                    <img src="../img/tonico.webp" alt="Producto 4">
-                    <h3>Tónico Facial</h3>
-                    <p>Refrescante para después del afeitado. Cierra poros.</p>
-                    <span class="precio">$220</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-                <div class="product-card" data-id="5" data-name="Cepillo de Cerdas de Jabalí" data-price="250" data-img="../img/cepillo.png"> 
-                    <img src="../img/cepillo.png" alt="Producto 5">
-                    <h3>Cepillo de Cerdas de Jabalí</h3>
-                    <p>Herramienta premium para desenredar la barba.</p>
-                    <span class="precio">$250</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-                <div class="product-card" data-id="6" data-name="The Growler Beard Oil" data-price="220" data-img="../img/Growth_Oil.webp"> 
-                    <img src="../img/Growth_Oil.webp" alt="Producto 6">
-                    <h3>The Growler" Beard Oil</h3>
-                    <p>Calma la comezón, hidrata la piel debajo de la barba y da brillo.</p>
-                    <span class="precio">$220</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-
+            <div class="product-grid" id="product-grid">
+                <!-- Los productos se cargarán aquí dinámicamente -->
             </div>
         </section>
 
@@ -106,7 +60,53 @@
     </footer>
 
     <script src="/JS/validaciones.js"></script>
-    <script src="/JS/script.js"></script> 
+    <script src="/JS/script.js"></script>
+    
+    <!-- Script para cargar productos dinámicamente desde la API -->
+    <script>
+        function cargarProductosDinamicamente() {
+            fetch('../php/productos_get.php')
+                .then(res => res.json())
+                .then(productos => {
+                    const gridContainer = document.getElementById('product-grid');
+                    gridContainer.innerHTML = ''; // Limpiar productos anteriores
+                    
+                    if (productos.length === 0) {
+                        gridContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay productos disponibles</p>';
+                        return;
+                    }
+                    
+                    productos.forEach(producto => {
+                        const card = document.createElement('div');
+                        card.className = 'product-card';
+                        card.setAttribute('data-id', producto.id_producto);
+                        card.setAttribute('data-name', producto.nombre);
+                        card.setAttribute('data-price', producto.precio);
+                        card.setAttribute('data-img', '../img/placeholder.svg?height=200&width=200&query=' + encodeURIComponent(producto.nombre));
+                        
+                        card.innerHTML = `
+                            <img src="../img/placeholder.svg?height=200&width=200&query=${encodeURIComponent(producto.nombre)}" alt="${producto.nombre}">
+                            <h3>${producto.nombre}</h3>
+                            <p>${producto.descripcion || 'Producto de calidad premium'}</p>
+                            <span class="precio">$${parseFloat(producto.precio).toFixed(2)}</span>
+                            <button class="btn-comprar">Agregar al carrito</button>
+                        `;
+                        
+                        gridContainer.appendChild(card);
+                    });
+                    
+                    // Re-agregar event listeners a los botones después de cargar
+                    agregarEventListenersProductos();
+                })
+                .catch(err => console.error('Error al cargar productos:', err));
+        }
+        
+        // Cargar productos cuando la página carga
+        document.addEventListener('DOMContentLoaded', cargarProductosDinamicamente);
+        
+        // Recargar productos cada 5 segundos para sincronización en tiempo real
+        setInterval(cargarProductosDinamicamente, 5000);
+    </script>
 
     <!-- Estructura del Modal del Carrito (Oculto por defecto) -->
     <div id="cart-modal" class="modal-overlay">
