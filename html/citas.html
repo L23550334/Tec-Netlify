@@ -10,20 +10,16 @@
 
     <header>
         <nav>
-            <!-- Icono de Menú Hamburguesa -->
             <div id="hamburger-btn">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
-            <!-- Logo Centrado -->
             <a href="../index.html" class="logo">Small Dick's Barber</a>
-            <!-- Espacio a la derecha -->
             <div class="nav-placeholder"></div>
         </nav>
     </header>
 
-    <!-- Menú Lateral Desplegable -->
     <div id="side-menu" class="side-nav">
         <a href="#" class="close-side-menu">&times;</a>
         <ul>
@@ -36,65 +32,70 @@
     <main>
         <section id="agendar-cita-form">
             <h2>Agenda tu Cita</h2>
-            <p class="subtitulo-catalogo">Completa el formulario y nos pondremos en contacto para confirmar.</p>
+            <p class="subtitulo-catalogo">Selecciona tu barbero, fecha y horario preferido.</p>
 
-            <form class="form-container">
+            <!-- Formulario completamente rediseñado con selector de barbero y horarios -->
+            <form class="form-container" id="form-cita">
+                
+                <!-- Paso 1: Seleccionar Barbero -->
                 <div class="form-group">
-                    <label for="nombre">Nombre Completo</label>
-                    <!-- Agregado pattern, minlength, maxlength y placeholder -->
-                    <input type="text" id="nombre" name="nombre" 
-                           placeholder="Ej: Juan Pérez García"
-                           pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}"
-                           minlength="3" 
-                           maxlength="100"
-                           title="El nombre debe tener al menos 3 caracteres y solo letras"
-                           required>
+                    <label for="barbero">Selecciona tu Barbero</label>
+                    <select id="barbero" name="barbero" required>
+                        <option value="">Cargando barberos...</option>
+                    </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="telefono">Teléfono</label>
-                    <!-- Agregado pattern, minlength, maxlength y placeholder -->
-                    <input type="tel" id="telefono" name="telefono" 
-                           placeholder="Ej: 5512345678"
-                           pattern="[0-9]{10}"
-                           minlength="10" 
-                           maxlength="10"
-                           title="El teléfono debe tener exactamente 10 dígitos"
-                           required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Correo Electrónico</label>
-                    <!-- Agregado pattern, minlength, maxlength y placeholder -->
-                    <input type="email" id="email" name="email" 
-                           placeholder="ejemplo@correo.com"
-                           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-                           minlength="5" 
-                           maxlength="100"
-                           title="Ingresa un correo electrónico válido"
-                           required>
-                </div>
-
+                <!-- Paso 2: Seleccionar Servicio -->
                 <div class="form-group">
                     <label for="servicio">Servicio Deseado</label>
                     <select id="servicio" name="servicio" required>
                         <option value="">Selecciona un servicio...</option>
-                        <option value="corte">Corte de Cabello ($200)</option>
-                        <option value="corte-barba">Corte y Barba ($350)</option>
-                        <option value="afeitado">Afeitado Clásico ($150)</option>
+                        <option value="Corte de Cabello">Corte de Cabello - $200 (30 min)</option>
+                        <option value="Corte y Barba">Corte y Barba - $350 (45 min)</option>
+                        <option value="Afeitado Clásico">Afeitado Clásico - $150 (20 min)</option>
+                        <option value="Diseño de Barba">Diseño de Barba - $180 (25 min)</option>
+                        <option value="Tratamiento Capilar">Tratamiento Capilar - $400 (40 min)</option>
                     </select>
                 </div>
 
+                <!-- Paso 3: Seleccionar Fecha -->
                 <div class="form-group">
-                    <label for="fecha">Fecha Preferida</label>
-                    <!-- Agregado min para evitar fechas pasadas -->
-                    <input type="date" id="fecha" name="fecha" 
-                           title="Selecciona una fecha válida (no domingos)"
-                           required>
+                    <label for="fecha">Fecha</label>
+                    <input type="date" id="fecha" name="fecha" required>
+                    <small class="form-hint">Lunes a Sábado. No se trabaja domingos.</small>
                 </div>
 
-                <button type="submit" class="btn-enviar">Enviar Solicitud</button>
+                <!-- Paso 4: Seleccionar Hora -->
+                <div class="form-group">
+                    <label for="hora">Horario Disponible</label>
+                    <select id="hora" name="hora" required disabled>
+                        <option value="">Primero selecciona fecha y barbero</option>
+                    </select>
+                    <small class="form-hint">Horario: 9:00 AM - 8:00 PM</small>
+                </div>
+
+                <!-- Resumen de la cita -->
+                <div id="resumen-cita" class="resumen-cita" style="display: none;">
+                    <h3>Resumen de tu Cita</h3>
+                    <p><strong>Barbero:</strong> <span id="resumen-barbero">-</span></p>
+                    <p><strong>Servicio:</strong> <span id="resumen-servicio">-</span></p>
+                    <p><strong>Fecha:</strong> <span id="resumen-fecha">-</span></p>
+                    <p><strong>Hora:</strong> <span id="resumen-hora">-</span></p>
+                </div>
+
+                <!-- Mensaje de estado -->
+                <div id="mensaje-cita" class="mensaje-form" style="display: none;"></div>
+
+                <button type="submit" class="btn-enviar" id="btn-agendar">Confirmar Cita</button>
             </form>
+        </section>
+
+        <!-- Sección para ver mis citas (si está logueado) -->
+        <section id="mis-citas" class="mis-citas-section" style="display: none;">
+            <h2>Mis Citas</h2>
+            <div id="lista-mis-citas" class="lista-citas">
+                <p>Cargando tus citas...</p>
+            </div>
         </section>
     </main>
 
@@ -102,7 +103,9 @@
         <p>&copy; 2025 Small Dick's Barber. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="../js/script.js"></script>
+    <script src="../JS/validaciones.js"></script>
+    <script src="../JS/citas.js"></script>
+    <script src="../JS/script.js"></script>
 
 </body>
 </html>
