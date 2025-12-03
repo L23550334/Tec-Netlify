@@ -1,6 +1,6 @@
 <?php
-// php/productos_get.php
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 include 'conexion.php';
 
 // Consulta para traer todos los productos
@@ -9,8 +9,10 @@ $result = $conn->query($sql);
 
 $productos = [];
 
-while($row = $result->fetch_assoc()) {
-    $productos[] = $row;
+if ($result) {
+    while($row = $result->fetch_assoc()) {
+        $productos[] = $row;
+    }
 }
 
 // Devolvemos el JSON
