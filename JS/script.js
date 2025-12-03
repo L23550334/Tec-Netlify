@@ -1,3 +1,15 @@
+// ----- FUNCIÓN DE SANITIZACIÓN -----
+/**
+ * Sanitiza una cadena de texto para prevenir ataques XSS (Cross-Site Scripting).
+ * Reemplaza los caracteres especiales de HTML con sus entidades correspondientes.
+ * @param {string} str La cadena a sanitizar.
+ * @returns {string} La cadena sanitizada.
+ */
+function sanitizeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'})[m]);
+}
+
 // ----- LÓGICA DE AUTENTICACIÓN (SIMULADA) -----
 let DUMMY_USERS = [ // Cambiado a let para poder añadir nuevos usuarios
     { username: 'cliente', password: '123', role: 'cliente' },
@@ -501,11 +513,11 @@ function handleAdminDashboard() {
         e.preventDefault();
         const id = document.getElementById('cita-id').value;
         const nuevaCita = {
-            id: id ? parseInt(id) : Date.now(), // Usa el ID existente o crea uno nuevo
-            nombre: document.getElementById('cita-nombre').value,
-            telefono: document.getElementById('cita-telefono').value,
-            servicio: document.getElementById('cita-servicio').value,
-            fecha: document.getElementById('cita-fecha').value,
+            id: id ? parseInt(id) : Date.now(),
+            nombre: sanitizeHTML(document.getElementById('cita-nombre').value),
+            telefono: sanitizeHTML(document.getElementById('cita-telefono').value),
+            servicio: sanitizeHTML(document.getElementById('cita-servicio').value),
+            fecha: document.getElementById('cita-fecha').value, // La fecha no necesita sanitización de HTML
         };
 
         let citas = getCitas();
@@ -612,14 +624,14 @@ function handleReseñasForm() {
             event.preventDefault();
 
             // 1. Obtener los datos del formulario
-            const nombre = document.getElementById('reseña-nombre').value;
-            const comentario = document.getElementById('reseña-comentario').value;
+            const nombre = sanitizeHTML(document.getElementById('reseña-nombre').value);
+            const comentario = sanitizeHTML(document.getElementById('reseña-comentario').value);
             const rating = document.querySelector('input[name="rating"]:checked').value;
 
             // 2. Crear la nueva tarjeta de reseña
             const reseñaGrid = document.querySelector('.reseñas-grid');
             const nuevaReseña = document.createElement('div');
-            nuevaReseña.classList.add('reseña-card');
+            nuevaReseña.className = 'reseña-card';
 
             let estrellasHTML = '';
             for (let i = 0; i < rating; i++) {
@@ -628,9 +640,17 @@ function handleReseñasForm() {
 
             nuevaReseña.innerHTML = `
                 <div class="reseña-estrellas">${estrellasHTML}</div>
-                <p class="reseña-texto">"${comentario}"</p>
-                <h4 class="reseña-autor">- ${nombre}</h4>
+                <p class="reseña-texto"></p>
+                <h4 class="reseña-autor"></h4>
             `;
+
+            // 3. Usar .textContent para insertar los datos sanitizados.
+            // Esto es aún más seguro que usar innerHTML con datos del usuario.
+            const textoP = nuevaReseña.querySelector('.reseña-texto');
+            const autorH4 = nuevaReseña.querySelector('.reseña-autor');
+            
+            textoP.textContent = `"${comentario}"`;
+            autorH4.textContent = `- ${nombre}`;
 
             // 3. Añadir la nueva reseña al grid
             reseñaGrid.appendChild(nuevaReseña);

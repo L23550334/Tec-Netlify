@@ -1,5 +1,17 @@
 // JS/login.js
 
+// ----- FUNCIÓN DE SANITIZACIÓN -----
+/**
+ * Sanitiza una cadena de texto para prevenir ataques XSS (Cross-Site Scripting).
+ * Reemplaza los caracteres especiales de HTML con sus entidades correspondientes.
+ * @param {string} str La cadena a sanitizar.
+ * @returns {string} La cadena sanitizada.
+ */
+function sanitizeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&gt;', '"': '&quot;', "'": '&#039;'})[m]);
+}
+
 // 1. ESPERAR A QUE EL HTML CARGUE COMPLETO (Todo debe ir aquí adentro)
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -18,8 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!emailInput || !passwordInput) return;
 
-            const email = emailInput.value;
-            const password = passwordInput.value;
+            const email = sanitizeHTML(emailInput.value);
+            const password = sanitizeHTML(passwordInput.value);
 
             if (email.trim() === '' || password.trim() === '') {
                 errorDiv.textContent = "Por favor, completa todos los campos.";
@@ -68,10 +80,10 @@ document.addEventListener('DOMContentLoaded', function() {
         registerForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const nombre = document.getElementById('reg-nombre').value;
-            const email = document.getElementById('reg-email').value;
-            const telefono = document.getElementById('reg-telefono').value;
-            const password = document.getElementById('reg-password').value;
+            const nombre = sanitizeHTML(document.getElementById('reg-nombre').value);
+            const email = sanitizeHTML(document.getElementById('reg-email').value);
+            const telefono = sanitizeHTML(document.getElementById('reg-telefono').value);
+            const password = sanitizeHTML(document.getElementById('reg-password').value);
             const errorDiv = document.getElementById('register-error');
 
             if (password.length < 6) {
