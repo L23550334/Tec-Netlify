@@ -706,7 +706,7 @@
                 })
                 .then(data => {
                     console.log('[v0] Usuarios recibidos:', data);
-                    clientesData = data.filter(u => u.rol_id == 3);
+                    clientesData = data.filter(u => u.rol == 3);
                     const select = document.getElementById('buscar-cliente');
                     select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
                     
@@ -924,7 +924,7 @@
                     }
 
                     data.forEach(usuario => {
-                        const rolNombre = usuario.rol_id == 1 ? 'Admin' : (usuario.rol_id == 2 ? 'Barbero' : 'Cliente');
+                        const rolNombre = usuario.rol_texto || 'N/A';
                         
                         select.innerHTML += `<option value="${usuario.id_usuario}">#${usuario.id_usuario} - ${usuario.nombre}</option>`;
                         
@@ -948,16 +948,23 @@
 
         function buscarUsuarioPorId() {
             const id = document.getElementById('buscar-usuario-id').value;
-            if (!id) {
-                alert('Por favor selecciona un usuario');
+            if(!id) {
+                alert('Selecciona un usuario');
                 return;
             }
             const usuario = usuariosData.find(u => u.id_usuario == id);
-            if (usuario) {
-                const rolNombre = usuario.rol_id == 1 ? 'Admin' : (usuario.rol_id == 2 ? 'Barbero' : 'Cliente');
-                alert(`👤 USUARIO ENCONTRADO:\n\nID: ${usuario.id_usuario}\nNombre: ${usuario.nombre}\nEmail: ${usuario.email}\nTeléfono: ${usuario.telefono || 'N/A'}\nRol: ${rolNombre}`);
-            } else {
-                alert('Usuario no encontrado');
+            if(usuario) {
+                const tbody = document.getElementById('tabla-usuarios-body');
+                const rolNombre = usuario.rol_texto || 'N/A';
+                tbody.innerHTML = `
+                    <tr>
+                        <td>#${usuario.id_usuario}</td>
+                        <td>${usuario.nombre}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.telefono || 'N/A'}</td>
+                        <td>${rolNombre}</td>
+                    </tr>
+                `;
             }
         }
 
@@ -980,24 +987,25 @@
         }
 
         function buscarUsuariosPorRol() {
-            const rolId = document.getElementById('buscar-rol').value;
-            
+            const rol = document.getElementById('buscar-rol').value;
             const tbody = document.getElementById('tabla-usuarios-body');
+            
             tbody.innerHTML = '';
             
-            let usuariosFiltrados = usuariosData;
-            if (rolId) {
-                usuariosFiltrados = usuariosData.filter(u => u.rol_id == rolId);
-            }
-            
-            if (usuariosFiltrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios para este rol</td></tr>';
+            if(!rol) {
+                cargarUsuarios();
                 return;
             }
-
-            usuariosFiltrados.forEach(usuario => {
-                const rolNombre = usuario.rol_id == 1 ? 'Admin' : (usuario.rol_id == 2 ? 'Barbero' : 'Cliente');
-                
+            
+            const filtrados = usuariosData.filter(u => u.rol == rol);
+            
+            if(filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios con ese rol</td></tr>';
+                return;
+            }
+            
+            filtrados.forEach(usuario => {
+                const rolNombre = usuario.rol_texto || 'N/A';
                 tbody.innerHTML += `
                     <tr>
                         <td>#${usuario.id_usuario}</td>
@@ -1025,6 +1033,3 @@
 
 </body>
 </html>
-
-
-
