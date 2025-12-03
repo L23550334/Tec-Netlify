@@ -305,6 +305,19 @@
                     <button onclick="buscarCitasPorCliente()">Mostrar Citas</button>
                 </div>
 
+                <!-- Foreign Key Search 3: Search by State (estado) -->
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Estado de Cita</h3>
+                    <label for="buscar-estado">Selecciona un Estado:</label>
+                    <select id="buscar-estado">
+                        <option value="">-- Todos los estados --</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                    <button onclick="buscarCitasPorEstado()">Mostrar Citas</button>
+                </div>
+
                 <!-- Dynamic Table 2: Appointments Grid -->
                 <div class="table-container">
                     <table>
@@ -699,19 +712,19 @@
 
         function cargarClientes() {
             console.log('[v0] Cargando clientes...');
-            fetch('../php/usuarios_get.php')
+            fetch('../php/clientes_get_admin.php')
                 .then(res => {
                     if (!res.ok) throw new Error('Error HTTP: ' + res.status);
                     return res.json();
                 })
                 .then(data => {
-                    console.log('[v0] Usuarios recibidos:', data);
-                    clientesData = data.filter(u => u.rol == 3);
+                    console.log('[v0] Clientes recibidos:', data);
+                    clientesData = data;
                     const select = document.getElementById('buscar-cliente');
                     select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
                     
-                    if(clientesData && clientesData.length > 0) {
-                        clientesData.forEach(cliente => {
+                    if(data && data.length > 0) {
+                        data.forEach(cliente => {
                             select.innerHTML += `<option value="${cliente.id_usuario}">${cliente.nombre}</option>`;
                         });
                     }
@@ -899,6 +912,56 @@
                     </tr>
                 `;
             });
+        }
+
+        function buscarCitasPorEstado() {
+            const estado = document.getElementById('buscar-estado').value;
+            if (!estado) {
+                cargarCitas();
+                return;
+            }
+            
+            console.log('[v0] Buscando citas por estado:', estado);
+            fetch('../php/citas_por_estado_get.php?estado=' + encodeURIComponent(estado))
+                .then(res => {
+                    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Citas por estado recibidas:', data);
+                    const tbody = document.getElementById('tabla-citas-body');
+                    tbody.innerHTML = '';
+                    
+                    if (!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas en ese estado</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(cita => {
+                        const fechaObj = new Date(cita.fecha_hora);
+                        const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${cita.id_cita}</td>
+                                <td>${cita.cliente_nombre}</td>
+                                <td>${cita.barbero_nombre}</td>
+                                <td>${fechaStr}</td>
+                                <td>${cita.servicio}</td>
+                                <td>${cita.estado}</td>
+                                <td>
+                                    <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                                    <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error('[v0] Error:', err);
+                    document.getElementById('tabla-citas-body').innerHTML = 
+                        '<tr><td colspan="7" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                });
         }
 
         function cargarUsuarios() {
