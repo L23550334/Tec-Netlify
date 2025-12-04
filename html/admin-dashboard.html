@@ -127,6 +127,7 @@
         }
         .btn-editar { background-color: #ffc107; color: black; }
         .btn-borrar { background-color: #ff4d4d; color: white; }
+        .btn-eliminar { background-color: #ff4d4d; color: white; } /* Added for consistency in user deletion */
 
         .section-panel { display: none; }
         .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
@@ -443,7 +444,7 @@
 
                 <!-- Foreign Key Search 3: Search by Role (rol) -->
                 <div class="search-box">
-                    <h3>Búsqueda por Llave Foránea (Rol)</h3>
+                    <h3>Filtrar por Rol</h3>
                     <label for="buscar-rol">Selecciona un Rol:</label>
                     <select id="buscar-rol">
                         <option value="">-- Todos los roles --</option>
@@ -451,7 +452,7 @@
                         <option value="2">Barbero</option>
                         <option value="3">Cliente</option>
                     </select>
-                    <button onclick="buscarUsuariosPorRol()">Mostrar Usuarios</button>
+                    <button onclick="buscarUsuariosPorRol()">Filtrar</button>
                 </div>
 
                 <!-- Dynamic Table 3: Users Grid -->
@@ -464,10 +465,11 @@
                                 <th>Email</th>
                                 <th>Teléfono</th>
                                 <th>Rol</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-usuarios-body">
-                            <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
+                            <tr><td colspan="6" style="text-align:center;">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1078,7 +1080,7 @@
                     select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
 
                     if(!data || data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios registrados</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay usuarios registrados</td></tr>';
                         return;
                     }
 
@@ -1094,6 +1096,10 @@
                                 <td>${usuario.email}</td>
                                 <td>${usuario.telefono || 'N/A'}</td>
                                 <td>${rolNombre}</td>
+                                <td>
+                                    <button onclick="editarUsuario(${usuario.id_usuario})" class="btn-accion">Editar</button>
+                                    <button onclick="eliminarUsuarioDirecto(${usuario.id_usuario})" class="btn-accion btn-eliminar">Eliminar</button>
+                                </td>
                             </tr>
                         `;
                     });
@@ -1101,7 +1107,7 @@
                 .catch(err => {
                     console.error('[v0] Error al cargar usuarios:', err);
                     document.getElementById('tabla-usuarios-body').innerHTML = 
-                        '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                        '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
                 });
         }
 
@@ -1122,27 +1128,105 @@
                         <td>${usuario.email}</td>
                         <td>${usuario.telefono || 'N/A'}</td>
                         <td>${rolNombre}</td>
+                        <td>
+                            <button class="btn-accion btn-editar" onclick="editarUsuarioDirecto(${usuario.id_usuario})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarUsuarioDirecto(${usuario.id_usuario})">Borrar</button>
+                        </td>
                     </tr>
                 `;
+            } else {
+                 alert('Usuario no encontrado');
             }
         }
 
-        function actualizarUsuario() {
-            const id = document.getElementById('buscar-usuario-id').value;
-            if (!id) {
-                alert('Por favor selecciona un usuario');
+        function editarUsuario(id) {
+            const usuario = usuariosData.find(u => u.id_usuario == id);
+            if (!usuario) {
+                alert('Usuario no encontrado');
                 return;
             }
-            alert('Función de actualizar usuario próximamente disponible');
+            
+            const nuevoNombre = prompt('Nuevo nombre:', usuario.nombre);
+            if (nuevoNombre === null) return; // User cancelled
+            
+            const nuevoEmail = prompt('Nuevo email:', usuario.email);
+            if (nuevoEmail === null) return; // User cancelled
+            
+            const nuevoTelefono = prompt('Nuevo teléfono:', usuario.telefono || '');
+            if (nuevoTelefono === null) return; // User cancelled
+            
+            const nuevoRol = prompt('Nuevo rol (1=Admin, 2=Barbero, 3=Cliente):', usuario.rol);
+            if (nuevoRol === null) return; // User cancelled
+
+            // Basic validation for role
+            if (!['1', '2', '3'].includes(nuevoRol)) {
+                alert('Rol inválido. Introduce 1, 2 o 3.');
+                return;
+            }
+            
+            console.log('[v0] Actualizando usuario:', id);
+            fetch('../php/usuarios_actualizar.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_usuario: id,
+                    nombre: nuevoNombre,
+                    email: nuevoEmail,
+                    telefono: nuevoTelefono,
+                    rol: parseInt(nuevoRol) // Ensure role is sent as a number
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('[v0] Respuesta de actualización:', data);
+                if (data.success) {
+                    alert('✅ Usuario actualizado correctamente');
+                    cargarUsuarios(); // Reload the table
+                } else {
+                    alert('❌ Error: ' + (data.mensaje || 'No se pudo actualizar'));
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error actualizando usuario:', err);
+                alert('Error de conexión: ' + err.message);
+            });
         }
 
-        function eliminarUsuario() {
-            const id = document.getElementById('buscar-usuario-id').value;
-            if (!id) {
-                alert('Por favor selecciona un usuario');
+        function eliminarUsuarioDirecto(id) {
+            if (!confirm('¿Estás seguro que deseas eliminar este usuario?')) {
                 return;
             }
-            alert('Función de eliminar usuario próximamente disponible');
+            
+            console.log('[v0] Eliminando usuario:', id);
+            fetch('../php/usuarios_eliminar.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_usuario: id })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('[v0] Respuesta de eliminación:', data);
+                if (data.success) {
+                    alert('✅ Usuario eliminado correctamente');
+                    cargarUsuarios(); // Reload the table
+                } else {
+                    alert('❌ Error: ' + (data.mensaje || 'No se pudo eliminar'));
+                }
+            })
+            .catch(err => {
+                console.error('[v0] Error eliminando usuario:', err);
+                alert('Error de conexión: ' + err.message);
+            });
         }
 
         function buscarUsuariosPorRol() {
@@ -1152,14 +1236,14 @@
             tbody.innerHTML = '';
             
             if(!rol) {
-                cargarUsuarios();
+                cargarUsuarios(); // If no role selected, show all users
                 return;
             }
             
             const filtrados = usuariosData.filter(u => u.rol == rol);
             
             if(filtrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios con ese rol</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay usuarios con ese rol</td></tr>';
                 return;
             }
             
@@ -1172,6 +1256,10 @@
                         <td>${usuario.email}</td>
                         <td>${usuario.telefono || 'N/A'}</td>
                         <td>${rolNombre}</td>
+                        <td>
+                            <button onclick="editarUsuario(${usuario.id_usuario})" class="btn-accion">Editar</button>
+                            <button onclick="eliminarUsuarioDirecto(${usuario.id_usuario})" class="btn-accion btn-eliminar">Eliminar</button>
+                        </td>
                     </tr>
                 `;
             });
@@ -1186,7 +1274,7 @@
 
         window.addEventListener('DOMContentLoaded', function() {
             console.log('[v0] Página cargada, iniciando carga de productos');
-            cargarProductos();
+            mostrarSeccion('productos'); // Cargar la primera sección por defecto
         });
     </script>
 
