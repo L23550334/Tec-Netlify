@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
   handleProductCardParticles() // Nueva función para las partículas
   handleShoppingCart() // Nueva función para el carrito
   handleSideMenu() // Nueva función para el menú lateral
+  cargarProductosCatalogo(); // Cargar productos dinámicamente
 })
 
 function handleAuth() {
@@ -229,6 +230,58 @@ function handleShoppingCart() {
   updateCartCount()
 }
 
+function cargarProductosCatalogo() {
+    // Solo ejecutar en la página de productos
+    if (!window.location.pathname.includes("productos.html")) return;
+
+    const productGrid = document.querySelector('.product-grid');
+    if (!productGrid) return;
+
+    productGrid.innerHTML = '<p style="color: white; text-align: center;">Cargando productos...</p>';
+
+    fetch('../php/productos_get.php')
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Error al cargar los productos: ' + res.status);
+            }
+            return res.json();
+        })
+        .then(productos => {
+            productGrid.innerHTML = ''; // Limpiar mensaje de carga
+
+            if (!productos || productos.length === 0) {
+                productGrid.innerHTML = '<p style="color: #888; text-align: center;">No hay productos disponibles en este momento.</p>';
+                return;
+            }
+
+            productos.forEach(prod => {
+                // Usar una imagen por defecto si la URL está vacía o es nula
+                const imageUrl = prod.imagen_url || '../img/placeholder_producto.webp';
+
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.dataset.id = prod.id_producto;
+                card.dataset.name = prod.nombre;
+                card.dataset.price = prod.precio;
+                card.dataset.img = imageUrl;
+
+                card.innerHTML = `
+                    <img src="${imageUrl}" alt="${prod.nombre}">
+                    <h3>${prod.nombre}</h3>
+                    <p>${prod.descripcion || 'Sin descripción.'}</p>
+                    <span class="precio">$${parseFloat(prod.precio).toFixed(2)}</span>
+                    <button class="btn-comprar">Agregar al carrito</button>
+                `;
+                productGrid.appendChild(card);
+            });
+            handleShoppingCart(); // Volver a inicializar los listeners para los nuevos botones
+        })
+        .catch(err => {
+            console.error('Error al cargar productos del catálogo:', err);
+            productGrid.innerHTML = `<p style="color: red; text-align: center;">Error al cargar productos. Intenta recargar la página.</p>`;
+        });
+}
+
 function handlePickupButton() {
   const pickupBtn = document.getElementById("pickup-btn")
   if (!pickupBtn) return
@@ -386,11 +439,15 @@ function renderCartItems() {
   const cart = getCart()
   const itemsContainer = document.getElementById("cart-items-container")
   const totalContainer = document.getElementById("cart-total")
+  const checkoutOptions = document.getElementById("checkout-options")
   itemsContainer.innerHTML = ""
 
   if (cart.length === 0) {
     itemsContainer.innerHTML = "<p>Tu carrito está vacío.</p>"
     totalContainer.innerHTML = ""
+    if (checkoutOptions) {
+        checkoutOptions.classList.add('disabled');
+    }
     return
   }
 
@@ -415,6 +472,10 @@ function renderCartItems() {
             </div>
         `
   })
+
+  if (checkoutOptions) {
+    checkoutOptions.classList.remove('disabled');
+  }
 
   totalContainer.innerHTML = `<h3>Total: $${total.toFixed(2)}</h3>`
 
