@@ -108,6 +108,44 @@
     <script src="/JS/validaciones.js"></script>
     <script src="/JS/script.js"></script> 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const pickupButton = document.getElementById('pickup-btn');
+            const cartModal = document.getElementById('cart-modal');
+            
+            // Elementos del modal de alerta genérico
+            const alertModal = document.getElementById('alert-modal');
+            const alertModalTitle = document.getElementById('alert-modal-title');
+            const alertModalMessage = document.getElementById('alert-modal-message');
+            const alertModalClose = document.getElementById('alert-modal-close');
+
+            if (pickupButton && cartModal && alertModal) {
+                pickupButton.addEventListener('click', () => {
+                    const cartTotalElement = document.getElementById('cart-total');
+                    const totalText = cartTotalElement ? cartTotalElement.textContent : 'Total no disponible';
+
+                    // Ocultamos el modal del carrito
+                    cartModal.style.display = 'none';
+
+                    // Preparamos y mostramos el modal de alerta
+                    alertModalTitle.textContent = '¡Pedido Confirmado!';
+                    alertModalMessage.innerHTML = `¡Gracias por tu compra! 🛍️<br><br>Tus productos están listos para ser recogidos en la tienda.<br><br><strong>Total a pagar: ${totalText}</strong>`;
+                    alertModal.style.display = 'flex';
+                });
+
+                // Funcionalidad para cerrar el modal de alerta
+                const closeAlertAndReset = () => {
+                    alertModal.style.display = 'none';
+                    // Aquí podrías agregar lógica para vaciar el carrito si es necesario
+                    // Por ejemplo: window.location.reload(); para reiniciar la página.
+                };
+
+                alertModalClose.addEventListener('click', closeAlertAndReset);
+            }
+        });
+    </script>
+
+
     <!-- Estructura del Modal del Carrito (Oculto por defecto) -->
     <div id="cart-modal" class="modal-overlay">
         <div class="modal-content">
