@@ -135,12 +135,25 @@
 
                 // Funcionalidad para cerrar el modal de alerta
                 const closeAlertAndReset = () => {
-                    alertModal.style.display = 'none';
-                    // Aquí podrías agregar lógica para vaciar el carrito si es necesario
-                    // Por ejemplo: window.location.reload(); para reiniciar la página.
+                    vaciarCarrito();
+                    alertModal.style.display = 'none'; // Ocultamos el modal de alerta
                 };
 
                 alertModalClose.addEventListener('click', closeAlertAndReset);
+            }
+
+            // Función para vaciar el carrito
+            function vaciarCarrito() {
+                // Limpiamos el almacenamiento local
+                localStorage.removeItem('cart');
+
+                // Actualizamos el contador del carrito en el header
+                document.getElementById('cart-count').textContent = '0';
+
+                // Limpiamos los contenedores visuales del carrito
+                document.getElementById('cart-items-container').innerHTML = '<p>Tu carrito está vacío.</p>';
+                document.getElementById('cart-total').innerHTML = '<strong>Total: $0.00</strong>';
+                console.log('El carrito ha sido vaciado.');
             }
         });
     </script>
