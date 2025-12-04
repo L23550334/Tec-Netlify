@@ -5,7 +5,7 @@
 $host = getenv('DB_HOST') ?: 'mysql-354ac1c6-2';  //  host de MySQL
 $port = getenv('DB_PORT') ?: '13275';              //  puerto de MySQL
 $user = getenv('DB_USER') ?: 'avnadmin';                
-$pass = getenv('DB_PASS') ?: 'mysql-354ac1c6-chihuahua2-5706.g.aivencloud.com';                   
+$pass = getenv('DB_PASS') ?: 'AVNS_famV8Ji4b3lZtBcT66u';                   
 $db   = getenv('DB_NAME') ?: 'defaultdb';
 
 // Crear conexión con manejo de errores mejorado
