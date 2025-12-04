@@ -430,19 +430,7 @@
                 <h2>Gestión de Usuarios</h2>
                 <p class="subtitulo-catalogo">Clientes y personal.</p>
 
-                <!-- Primary Key Search: Search by User ID -->
-                <div class="search-box">
-                    <h3>Búsqueda por Llave Primaria (ID Usuario)</h3>
-                    <label for="buscar-usuario-id">Selecciona un Usuario:</label>
-                    <select id="buscar-usuario-id">
-                        <option value="">-- Cargar usuarios --</option>
-                    </select>
-                    <button onclick="buscarUsuarioPorId()">Buscar</button>
-                    <!-- Updated button text/functionality -->
-                    <button onclick="eliminarUsuario()">Eliminar</button>
-                </div>
-
-                <!-- Foreign Key Search 3: Search by Role (rol) -->
+                <!-- Foreign Key Search: Search by Role (rol) -->
                 <div class="search-box">
                     <h3>Filtrar por Rol</h3>
                     <label for="buscar-rol">Selecciona un Rol:</label>
@@ -453,6 +441,7 @@
                         <option value="3">Cliente</option>
                     </select>
                     <button onclick="buscarUsuariosPorRol()">Filtrar</button>
+                    <button onclick="cargarUsuarios()">Mostrar Todos</button>
                 </div>
 
                 <!-- Dynamic Table 3: Users Grid -->
@@ -1262,7 +1251,7 @@
                 return;
             }
             
-            const filtrados = usuariosData.filter(u => u.rol == rol);
+            const filtrados = usuariosData.filter(u => u.id_rol == rol);
             
             if(filtrados.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay usuarios con ese rol</td></tr>';
@@ -1279,8 +1268,8 @@
                         <td>${usuario.telefono || 'N/A'}</td>
                         <td>${rolNombre}</td>
                         <td>
-                            <button onclick="editarUsuario(${usuario.id_usuario})" class="btn-accion">Editar</button>
-                            <button onclick="eliminarUsuarioDirecto(${usuario.id_usuario})" class="btn-accion btn-eliminar">Eliminar</button>
+                            <button class="btn-accion btn-editar" onclick="editarUsuario(${usuario.id_usuario})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarUsuarioDirecto(${usuario.id_usuario})">Borrar</button>
                         </td>
                     </tr>
                 `;
