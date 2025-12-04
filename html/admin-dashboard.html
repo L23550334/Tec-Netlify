@@ -353,7 +353,7 @@
                 
                 <!-- Primary Key Search: Search by Product ID -->
                 <div class="search-box">
-                    <h3>🔍 Búsqueda por Llave Primaria (ID Producto)</h3>
+                    <h3>Búsqueda por Producto</h3>
                     <label for="buscar-producto-id">Selecciona un Producto:</label>
                     <select id="buscar-producto-id">
                         <option value="">-- Cargar productos --</option>
@@ -390,40 +390,11 @@
                 <p class="subtitulo-catalogo">Agenda de la barbería.</p>
                 
                 <!-- Primary Key Search: Search by Appointment ID -->
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por Llave Primaria (ID Cita)</h3>
-                    <label for="buscar-cita-id">Selecciona una Cita:</label>
-                    <select id="buscar-cita-id">
-                        <option value="">-- Cargar citas --</option>
-                    </select>
-                    <button onclick="buscarCitaPorId()">Buscar</button>
-                    <button onclick="actualizarCita()">Actualizar</button>
-                    <button onclick="eliminarCita()">Eliminar</button>
-                </div>
-
-                <!-- Foreign Key Search 1: Search by Barber -->
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por Barbero</h3>
-                    <label for="buscar-barbero">Selecciona un Barbero:</label>
-                    <select id="buscar-barbero">
-                        <option value="">-- Cargar barberos --</option>
-                    </select>
-                    <button onclick="buscarCitasPorBarbero()">Mostrar Citas</button>
-                </div>
-
-                <!-- Foreign Key Search 2: Search by Customer -->
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por Cliente</h3>
-                    <label for="buscar-cliente">Selecciona un Cliente:</label>
-                    <select id="buscar-cliente">
-                        <option value="">-- Cargar clientes --</option>
-                    </select>
-                    <button onclick="buscarCitasPorCliente()">Mostrar Citas</button>
-                </div>
+                
 
                 <!-- Foreign Key Search 3: Search by State (estado) -->
                 <div class="search-box">
-                    <h3>🔍 Búsqueda por Estado de Cita</h3>
+                    <h3>Búsqueda por Estado de Cita</h3>
                     <label for="buscar-estado">Selecciona un Estado:</label>
                     <select id="buscar-estado">
                         <option value="">-- Todos los estados --</option>
@@ -462,7 +433,7 @@
 
                 <!-- Primary Key Search: Search by User ID -->
                 <div class="search-box">
-                    <h3>🔍 Búsqueda por Llave Primaria (ID Usuario)</h3>
+                    <h3> Búsqueda por Usuario</h3>
                     <label for="buscar-usuario-id">Selecciona un Usuario:</label>
                     <select id="buscar-usuario-id">
                         <option value="">-- Cargar usuarios --</option>
@@ -472,18 +443,7 @@
                     <button onclick="eliminarUsuario()">Eliminar</button>
                 </div>
 
-                <!-- Foreign Key Search 3: Search by Role (rol) -->
-                <div class="search-box">
-                    <h3>🔍 Búsqueda por Llave Foránea (Rol)</h3>
-                    <label for="buscar-rol">Selecciona un Rol:</label>
-                    <select id="buscar-rol">
-                        <option value="">-- Todos los roles --</option>
-                        <option value="1">Admin</option>
-                        <option value="2">Barbero</option>
-                        <option value="3">Cliente</option>
-                    </select>
-                    <button onclick="buscarUsuariosPorRol()">Mostrar Usuarios</button>
-                </div>
+                
 
                 <!-- Dynamic Table 3: Users Grid -->
                 <div class="table-container">
@@ -494,7 +454,7 @@
                                 <th>Nombre</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
-                                <th>Rol</th>
+                                
                             </tr>
                         </thead>
                         <tbody id="tabla-usuarios-body">
