@@ -30,11 +30,11 @@ function actualizarEstado(idCita, nuevoEstado) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("✅ Estado actualizado correctamente")
+        alert("Estado actualizado correctamente")
         // Recargar la tabla de citas
         cargarCitas()
       } else {
-        alert("❌ Error: " + data.mensaje)
+        alert("Error: " + data.mensaje)
       }
     })
     .catch((error) => {
@@ -60,10 +60,10 @@ function eliminarCitaDirecto(idCita) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("🗑️ Cita eliminada correctamente")
+        alert("Cita eliminada correctamente")
         cargarCitas()
       } else {
-        alert("❌ Error: " + data.mensaje)
+        alert("Error: " + data.mensaje)
       }
     })
     .catch((error) => {
@@ -92,12 +92,12 @@ function editarProductoDirecto(id) {
 
   // Validaciones del lado del cliente
   if (Number.parseFloat(nuevoPrecio) <= 0) {
-    alert("❌ El precio debe ser mayor a 0")
+    alert("El precio debe ser mayor a 0")
     return
   }
 
   if (Number.parseInt(nuevoStock) < 0) {
-    alert("❌ El stock no puede ser negativo")
+    alert("El stock no puede ser negativo")
     return
   }
 
@@ -117,10 +117,10 @@ function editarProductoDirecto(id) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("✅ Producto actualizado correctamente")
+        alert("Producto actualizado correctamente")
         cargarProductos()
       } else {
-        alert("❌ Error: " + data.mensaje)
+        alert("Error: " + data.mensaje)
       }
     })
     .catch((error) => {
@@ -146,10 +146,10 @@ function eliminarProductoDirecto(id) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("🗑️ Producto eliminado correctamente")
+        alert("Producto eliminado correctamente")
         cargarProductos()
       } else {
-        alert("❌ Error: " + data.mensaje)
+        alert("Error: " + data.mensaje)
       }
     })
     .catch((error) => {
@@ -172,12 +172,12 @@ function mostrarFormularioNuevoProducto() {
 
   // Validaciones
   if (Number.parseFloat(precio) <= 0) {
-    alert("❌ El precio debe ser mayor a 0")
+    alert("El precio debe ser mayor a 0")
     return
   }
 
   if (Number.parseInt(stock) < 0) {
-    alert("❌ El stock no puede ser negativo")
+    alert("El stock no puede ser negativo")
     return
   }
 
@@ -196,10 +196,10 @@ function mostrarFormularioNuevoProducto() {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("✅ Producto creado correctamente")
+        alert("Producto creado correctamente")
         cargarProductos()
       } else {
-        alert("❌ Error: " + data.mensaje)
+        alert("Error: " + data.mensaje)
       }
     })
     .catch((error) => {
