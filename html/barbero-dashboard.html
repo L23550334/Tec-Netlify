@@ -206,18 +206,19 @@
         let barberoActual = null;
 
         function inicializarDashboard() {
-            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            const usuario = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
             
-            if (!usuario.id_usuario || usuario.rol != 2) {
+            const esBarbero = usuario.rol == 2 || usuario.role === 'barbero';
+            
+            if (!usuario.id_usuario || !esBarbero) {
                 alert('Acceso denegado. Debes iniciar sesion como barbero.');
-                window.location.href = '../html/login.html';
+                window.location.href = '../index.html';
                 return;
             }
             
             barberoActual = usuario;
-            document.getElementById('nombre-barbero').textContent = usuario.nombre || 'Barbero';
+            document.getElementById('nombre-barbero').textContent = usuario.nombre || usuario.username || 'Barbero';
             
-            // Mostrar fecha actual
             const hoy = new Date();
             document.getElementById('fecha-actual').textContent = hoy.toLocaleDateString('es-MX', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -385,12 +386,11 @@
 
         function cerrarSesion() {
             if (confirm("¿Cerrar sesión?")) {
-                localStorage.removeItem('usuario');
+                localStorage.removeItem('loggedInUser');
                 window.location.href = '../index.html';
             }
         }
 
-        // Inicializar al cargar
         document.addEventListener('DOMContentLoaded', inicializarDashboard);
     </script>
 
