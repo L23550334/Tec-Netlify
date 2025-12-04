@@ -21,10 +21,16 @@ try {
 
     $productos = [];
     while($row = $result->fetch_assoc()) {
-        // REGLA DE NEGOCIO: Asegurarse de que la ruta de la imagen sea correcta
-        // para que el frontend la pueda encontrar desde la carpeta /html.
-        if (!empty($row['imagen_url']) && strpos($row['imagen_url'], '../') !== 0) {
-            $row['imagen_url'] = '../' . $row['imagen_url'];
+        // REGLA DE NEGOCIO: Asegurarse de que la ruta de la imagen sea absoluta desde la raíz del sitio.
+        if (!empty($row['imagen_url'])) {
+            // Limpiar cualquier prefijo relativo o absoluto incorrecto
+            $cleaned_path = ltrim($row['imagen_url'], './'); // Eliminar './'
+            $cleaned_path = str_replace('../', '', $cleaned_path); // Eliminar '../'
+            // Asegurarse de que la ruta comience con '/img/'
+            if (strpos($cleaned_path, 'img/') !== 0) {
+                $cleaned_path = 'img/' . $cleaned_path;
+            }
+            $row['imagen_url'] = '/' . $cleaned_path; // Hacerla absoluta desde la raíz
         }
         $productos[] = $row;
     }
