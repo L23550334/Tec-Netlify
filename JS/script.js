@@ -6,12 +6,24 @@
  * @returns {string} La cadena sanitizada.
  */
 function sanitizeHTML(str) {
-    if (!str) return '';
-    return str.replace(/[&<>"']/g, (m) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'})[m]);
+  if (!str) return ""
+  return str.replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[m])
 }
 
 let slideIndex = 1
-showSlides(slideIndex)
+
+function initSlider() {
+  const slides = document.getElementsByClassName("slide")
+  const dots = document.getElementsByClassName("dot")
+
+  // Solo ejecutar si estamos en una página que tiene el carrusel
+  if (slides.length > 0 && dots.length > 0) {
+    showSlides(slideIndex)
+  }
+}
+
+// Llamar a initSlider en lugar de showSlides directamente
+initSlider()
 
 function plusSlides(n) {
   showSlides((slideIndex += n))
@@ -27,7 +39,6 @@ function showSlides(n) {
   const dots = document.getElementsByClassName("dot")
 
   if (slides.length === 0 || dots.length === 0) {
-    console.error("Error: No se encontraron los elementos 'slide' o 'dot'.")
     return
   }
 

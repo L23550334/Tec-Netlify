@@ -48,54 +48,9 @@
             <h2>Nuestro Catálogo</h2>
             <p class="subtitulo-catalogo">Productos premium para tu cuidado diario.</p>
 
-            <div class="product-grid">
-
-                <div class="product-card" data-id="1" data-name="Cera para Peinar" data-price="250" data-img="../img/cera2.webp"> 
-                    <img src="../img/cera2.webp" alt="Producto 1">
-                    <h3>Cera para Peinar</h3>
-                    <p>Fijación fuerte, acabado mate. Ideal para estilos definidos.</p>
-                    <span class="precio">$250</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-
-                <div class="product-card" data-id="2" data-name="Aceite para Barba" data-price="300" data-img="../img/aceite.png"> 
-                    <img src="../img/aceite.png" alt="Producto 2">
-                    <h3>Aceite para Barba</h3>
-                    <p>Hidrata la barba y la piel, con aroma a sándalo.</p>
-                    <span class="precio">$300</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-
-                <div class="product-card" data-id="3" data-name="Shampoo Especializado" data-price="280" data-img="../img/shampoo.webp"> 
-                    <img src="../img/shampoo.webp" alt="Producto 3">
-                    <h3>Shampoo Especializado</h3>
-                    <p>Limpieza profunda anti-caída y anti-grasa.</p>
-                    <span class="precio">$280</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-                
-                <div class="product-card" data-id="4" data-name="Tónico Facial" data-price="220" data-img="../img/tonico.webp"> 
-                    <img src="../img/tonico.webp" alt="Producto 4">
-                    <h3>Tónico Facial</h3>
-                    <p>Refrescante para después del afeitado. Cierra poros.</p>
-                    <span class="precio">$220</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-                <div class="product-card" data-id="5" data-name="Cepillo de Cerdas de Jabalí" data-price="250" data-img="../img/cepillo.png"> 
-                    <img src="../img/cepillo.png" alt="Producto 5">
-                    <h3>Cepillo de Cerdas de Jabalí</h3>
-                    <p>Herramienta premium para desenredar la barba.</p>
-                    <span class="precio">$250</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-                <div class="product-card" data-id="6" data-name="The Growler Beard Oil" data-price="220" data-img="../img/Growth_Oil.webp"> 
-                    <img src="../img/Growth_Oil.webp" alt="Producto 6">
-                    <h3>The Growler" Beard Oil</h3>
-                    <p>Calma la comezón, hidrata la piel debajo de la barba y da brillo.</p>
-                    <span class="precio">$220</span>
-                    <button class="btn-comprar">Agregar al carrito</button>
-                </div>
-
+            <!-- Eliminados productos hardcodeados, ahora se cargan dinámicamente -->
+            <div class="product-grid" id="product-grid-container">
+                <p style="text-align: center; padding: 40px;">Cargando productos...</p>
             </div>
         </section>
 
@@ -107,6 +62,210 @@
 
     <script src="/JS/validaciones.js"></script>
     <script src="/JS/script.js"></script> 
+
+    <!-- Script para cargar productos dinámicamente desde la BD -->
+    <script>
+        // Cargar productos dinámicamente al iniciar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarProductosDinamicos();
+            
+            const pickupButton = document.getElementById('pickup-btn');
+            const deliveryButton = document.getElementById('delivery-btn');
+            const deliveryModal = document.getElementById('delivery-modal');
+            const deliveryForm = document.getElementById('form-delivery');
+            const closeDeliveryModal = deliveryModal.querySelector('.close-modal');
+
+            const cartModal = document.getElementById('cart-modal');
+            
+            // Elementos del modal de alerta genérico
+            const alertModal = document.getElementById('alert-modal');
+            const alertModalTitle = document.getElementById('alert-modal-title');
+            const alertModalMessage = document.getElementById('alert-modal-message');
+            const alertModalClose = document.getElementById('alert-modal-close');
+
+            if (pickupButton && cartModal && alertModal && deliveryButton && deliveryModal && deliveryForm) {
+                pickupButton.addEventListener('click', () => {
+                    const cartTotalElement = document.getElementById('cart-total');
+                    const totalText = cartTotalElement ? cartTotalElement.textContent : 'Total no disponible';
+
+                    // Ocultamos el modal del carrito
+                    cartModal.style.display = 'none';
+
+                    // Preparamos y mostramos el modal de alerta
+                    alertModalTitle.textContent = '¡Pedido Confirmado!';
+                    alertModalMessage.innerHTML = `¡Gracias por tu compra! 🛍️<br><br>Tus productos están listos para ser recogidos en la tienda.<br><br><strong>Total a pagar: ${totalText}</strong>`;
+                    alertModal.style.display = 'flex';
+                });
+
+                // --- Lógica para Servicio a Domicilio ---
+
+                // 1. Abrir el modal de datos de entrega
+                deliveryButton.addEventListener('click', () => {
+                    cartModal.style.display = 'none'; // Ocultar modal del carrito
+                    deliveryModal.style.display = 'flex'; // Mostrar modal de entrega
+                });
+
+                // 2. Manejar el envío del formulario de entrega
+                deliveryForm.addEventListener('submit', (event) => {
+                    event.preventDefault(); // Evitar que la página se recargue
+
+                    const cartTotalElement = document.getElementById('cart-total');
+                    const totalText = cartTotalElement ? cartTotalElement.textContent : 'Total no disponible';
+
+                    deliveryModal.style.display = 'none'; // Ocultar modal de entrega
+
+                    // Mostrar modal de alerta con mensaje de éxito
+                    alertModalTitle.textContent = '¡Guardado con éxito!';
+                    alertModalMessage.innerHTML = `Tu pedido ha sido confirmado y llegará pronto. 🚚<br><br><strong>${totalText}</strong>`;
+                    alertModal.style.display = 'flex';
+                });
+
+                // Funcionalidad para cerrar el modal de alerta
+                const closeAlertAndReset = () => {
+                    vaciarCarrito();
+                    alertModal.style.display = 'none'; // Ocultamos el modal de alerta
+                };
+
+                alertModalClose.addEventListener('click', closeAlertAndReset);
+
+                // Funcionalidad para cerrar el modal de entrega con la 'X'
+                closeDeliveryModal.addEventListener('click', () => {
+                    deliveryModal.style.display = 'none';
+                });
+            }
+
+            // Función para vaciar el carrito
+            function vaciarCarrito() {
+                // Limpiamos el almacenamiento local
+                localStorage.removeItem('cart');
+
+                // Actualizamos el contador del carrito en el header
+                document.getElementById('cart-count').textContent = '0';
+
+                // Limpiamos los contenedores visuales del carrito
+                document.getElementById('cart-items-container').innerHTML = '<p>Tu carrito está vacío.</p>';
+                document.getElementById('cart-total').innerHTML = '<strong>Total: $0.00</strong>';
+                console.log('El carrito ha sido vaciado.');
+            }
+        });
+
+        function cargarProductosDinamicos() {
+            const productGrid = document.getElementById('product-grid-container');
+            
+            fetch('../php/productos_get.php')
+                .then(response => {
+                    if (!response.ok) throw new Error('Error HTTP: ' + response.status);
+                    return response.json();
+                })
+                .then(productos => {
+                    console.log('Productos cargados:', productos);
+                    
+                    if (!productos || productos.length === 0) {
+                        productGrid.innerHTML = '<p style="text-align: center; padding: 40px;">No hay productos disponibles en este momento.</p>';
+                        return;
+                    }
+
+                    // Generar las tarjetas de productos dinámicamente
+                    productGrid.innerHTML = '';
+                    productos.forEach(producto => {
+                        const imagenDefault = '../img/placeholder.svg?height=200&width=200&query=producto';
+                        const descripcionCorta = producto.descripcion || 'Producto de calidad premium para tu cuidado.';
+                        
+                        const card = document.createElement('div');
+                        card.className = 'product-card';
+                        card.setAttribute('data-id', producto.id_producto);
+                        card.setAttribute('data-name', producto.nombre);
+                        card.setAttribute('data-price', producto.precio);
+                        card.setAttribute('data-img', imagenDefault);
+                        
+                        card.innerHTML = `
+                            <img src="${imagenDefault}" alt="${producto.nombre}">
+                            <h3>${producto.nombre}</h3>
+                            <p>${descripcionCorta}</p>
+                            <span class="precio">$${parseFloat(producto.precio).toFixed(2)}</span>
+                            ${producto.stock > 0 
+                                ? '<button class="btn-comprar">Agregar al carrito</button>' 
+                                : '<button class="btn-comprar" disabled style="opacity: 0.5; cursor: not-allowed;">Sin stock</button>'
+                            }
+                        `;
+                        
+                        productGrid.appendChild(card);
+                    });
+
+                    // Reactivar los event listeners para los botones de compra
+                    activarBotonesCompra();
+                })
+                .catch(error => {
+                    console.error('Error al cargar productos:', error);
+                    productGrid.innerHTML = '<p style="text-align: center; padding: 40px; color: red;">Error al cargar los productos. Por favor intenta más tarde.</p>';
+                });
+        }
+
+        function activarBotonesCompra() {
+            const buyButtons = document.querySelectorAll('.btn-comprar');
+            const quantityModal = document.getElementById('quantity-modal');
+            const quantityForm = document.getElementById('form-quantity');
+            const quantityInput = document.getElementById('quantity-input');
+            const closeModalBtn = quantityModal.querySelector('.close-modal');
+            const minusBtn = document.getElementById('quantity-minus');
+            const plusBtn = document.getElementById('quantity-plus');
+
+            let currentProduct = null;
+
+            buyButtons.forEach(button => {
+                if (button.disabled) return; // Ignorar botones deshabilitados (sin stock)
+                
+                button.addEventListener('click', (event) => {
+                    const productCard = event.target.closest('.product-card');
+                    currentProduct = {
+                        id: productCard.dataset.id,
+                        name: productCard.dataset.name,
+                        price: parseFloat(productCard.dataset.price),
+                        img: productCard.dataset.img
+                    };
+
+                    quantityInput.value = 1;
+                    quantityModal.style.display = 'flex';
+                });
+            });
+
+            minusBtn.addEventListener('click', () => {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+
+            plusBtn.addEventListener('click', () => {
+                let currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                quantityModal.style.display = 'none';
+            });
+
+            quantityForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const quantity = parseInt(quantityInput.value);
+                if (currentProduct && quantity > 0) {
+                    addToCart(currentProduct, quantity);
+                    quantityModal.style.display = 'none';
+                    
+                    // Mostrar confirmación visual
+                    alert(`✅ ${currentProduct.name} (x${quantity}) agregado al carrito`);
+                }
+            });
+
+            // Cerrar modal al hacer clic fuera
+            quantityModal.addEventListener('click', (event) => {
+                if (event.target === quantityModal) {
+                    quantityModal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
 
     <!-- Estructura del Modal del Carrito (Oculto por defecto) -->
     <div id="cart-modal" class="modal-overlay">
@@ -267,3 +426,4 @@
 
 </body>
 </html>
+
