@@ -168,7 +168,7 @@
                     // Generar las tarjetas de productos dinámicamente
                     productGrid.innerHTML = '';
                     productos.forEach(producto => {
-                        const imagenDefault = '../img/placeholder.svg?height=200&width=200&query=producto';
+                        const imagenUrl = obtenerImagenProducto(producto.nombre, producto.imagen_url);
                         const descripcionCorta = producto.descripcion || 'Producto de calidad premium para tu cuidado.';
                         
                         const card = document.createElement('div');
@@ -176,17 +176,18 @@
                         card.setAttribute('data-id', producto.id_producto);
                         card.setAttribute('data-name', producto.nombre);
                         card.setAttribute('data-price', producto.precio);
-                        card.setAttribute('data-img', imagenDefault);
+                        card.setAttribute('data-img', imagenUrl);
                         
                         const img = document.createElement('img');
-                        img.src = imagenDefault;
-                        img.alt = producto.nombre; // .alt también es seguro
+                        img.src = imagenUrl;
+                        img.alt = producto.nombre;
+                        img.onerror = function() { this.src = '../img/cera2.webp'; };
 
                         const h3 = document.createElement('h3');
-                        h3.textContent = producto.nombre; // Sanitiza el nombre
+                        h3.textContent = producto.nombre;
 
                         const p = document.createElement('p');
-                        p.textContent = descripcionCorta; // Sanitiza la descripción
+                        p.textContent = descripcionCorta;
 
                         const span = document.createElement('span');
                         span.className = 'precio';
@@ -203,19 +204,44 @@
                             button.style.cursor = 'not-allowed';
                         }
 
-                        // Agregamos los elementos creados de forma segura a la tarjeta
                         card.append(img, h3, p, span, button);
                         
                         productGrid.appendChild(card);
                     });
 
-                    // Reactivar los event listeners para los botones de compra
                     activarBotonesCompra();
                 })
                 .catch(error => {
                     console.error('Error al cargar productos:', error);
                     productGrid.innerHTML = '<p style="text-align: center; padding: 40px; color: red;">Error al cargar los productos. Por favor intenta más tarde.</p>';
                 });
+        }
+
+        function obtenerImagenProducto(nombreProducto, imagenUrl) {
+            const nombre = nombreProducto.toLowerCase();
+            
+            // Mapeo basado en el nombre del producto a las imágenes reales disponibles
+            if (nombre.includes('cera') || nombre.includes('mate')) {
+                return '../img/cera2.webp';
+            }
+            if (nombre.includes('aceite') || nombre.includes('barba')) {
+                return '../img/aceite.png';
+            }
+            if (nombre.includes('shampoo') || nombre.includes('anti-caída') || nombre.includes('anticaida')) {
+                return '../img/shampoo.webp';
+            }
+            if (nombre.includes('after') || nombre.includes('tonico') || nombre.includes('tónico') || nombre.includes('loción')) {
+                return '../img/tonico.webp';
+            }
+            if (nombre.includes('navaja') || nombre.includes('cepillo')) {
+                return '../img/cepillo.png';
+            }
+            if (nombre.includes('growth') || nombre.includes('oil')) {
+                return '../img/Growth_Oil.webp';
+            }
+            
+            // Fallback: imagen por defecto
+            return '../img/cera2.webp';
         }
 
         function activarBotonesCompra() {
