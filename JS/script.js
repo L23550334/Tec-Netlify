@@ -255,12 +255,12 @@ function cargarProductosCatalogo() {
             }
 
             productos.forEach(prod => {
-                // SOLUCIÓN DEFINITIVA: Forzar la ruta correcta desde el frontend.
-                // 1. Extraemos solo el nombre del archivo de la URL que viene de la BD.
-                const nombreArchivo = prod.imagen_url ? prod.imagen_url.split('/').pop() : 'placeholder_producto.webp';
+                // SOLUCIÓN DE EMERGENCIA: Forzar la ruta correcta.
+                // 1. Extraemos solo el nombre del archivo de la URL que viene de la BD (ej: "cera2.webp").
+                const nombreArchivo = prod.imagen_url ? prod.imagen_url.split(/[\\/]/).pop() : 'placeholder_producto.webp';
                 
-                // 2. Construimos la ruta relativa correcta desde productos.html
-                const imageUrl = `../img/${nombreArchivo}`;
+                // 2. Construimos la ruta relativa correcta desde la página productos.html.
+                const imageUrl = `../img/${nombreArchivo}`; // Sube un nivel desde /html/ y luego entra a /img/
 
                 const card = document.createElement('div');
                 card.className = 'product-card';
