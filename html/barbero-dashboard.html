@@ -3,110 +3,549 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendar Cita - Small Dick's Barber</title>
+    <title>Panel Barbero - La Quinta Esencia Barber Shop</title>
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body { background-color: #0a0a0a; color: white; }
+        .admin-layout { display: flex; min-height: calc(100vh - 80px); }
+        
+        .sidebar { width: 250px; background-color: #151515; border-right: 1px solid #333; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .sidebar button { background: none; border: 1px solid #333; color: #ccc; padding: 15px; text-align: left; cursor: pointer; border-radius: 5px; width: 100%; transition: 0.3s; }
+        .sidebar button:hover, .sidebar button.active { background-color: var(--color-primario); color: #0a0a0a; font-weight: bold; border-color: var(--color-primario); }
+
+        .content { flex: 1; padding: 2rem; }
+        h2 { color: var(--color-primario); margin-bottom: 0.5rem; }
+        .subtitulo { color: #888; margin-bottom: 2rem; }
+
+        .search-box {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+
+        .search-box label {
+            display: block;
+            color: var(--color-primario);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .search-box select,
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .search-box button {
+            padding: 10px 20px;
+            background-color: var(--color-primario);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .search-box button:hover {
+            opacity: 0.9;
+        }
+
+        .table-container { overflow-x: auto; background-color: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
+        table { width: 100%; border-collapse: collapse; color: #eee; }
+        thead { background-color: #252525; border-bottom: 2px solid var(--color-primario); }
+        th { padding: 15px; text-align: left; color: var(--color-primario); font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
+        td { padding: 15px; border-bottom: 1px solid #333; }
+        tr:hover { background-color: #222; }
+
+        .btn-estado { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; margin-right: 5px; }
+        .btn-completar { background-color: #4CAF50; color: white; }
+        .btn-cancelar { background-color: #ff4d4d; color: white; }
+        
+        .section-panel { display: none; }
+        .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .estado-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .estado-badge.pendiente { background-color: #ff9800; color: white; }
+        .estado-badge.completada { background-color: #4caf50; color: white; }
+        .estado-badge.cancelada { background-color: #ff4d4d; color: white; }
+    </style>
 </head>
 <body>
 
     <header>
         <nav>
-            <div id="hamburger-btn">
-                <span></span>
-                <span></span>
-                <span></span>
+            <a href="../index.html" class="logo">La Quinta Esencia Barber Shop </a>
+            <div class="nav-links-group">
+                <ul style="list-style: none; display: flex; gap: 20px;">
+                    <li><a href="../index.html" style="text-decoration: none; color: var(--color-primario);">🏠 Volver al Inicio</a></li>
+                    <li><a href="#" onclick="cerrarSesion()" style="text-decoration: none; color: #888;">🚪 Cerrar Sesión</a></li>
+                </ul>
             </div>
-            <a href="../index.html" class="logo">Small Dick's Barber</a>
-            <div class="nav-placeholder"></div>
         </nav>
     </header>
 
-    <div id="side-menu" class="side-nav">
-        <a href="#" class="close-side-menu">&times;</a>
-        <ul>
-            <li><a href="../index.html">Inicio</a></li>
-            <li><a href="productos.html">Productos</a></li>
-        </ul>
-        <div id="auth-container" class="side-menu-auth"></div>
-    </div>
+    <main class="admin-layout">
+        <aside class="sidebar">
+            <button onclick="mostrarSeccion('agenda')" class="active">📅 Mi Agenda</button>
+            <button onclick="mostrarSeccion('productos')">📦 Productos</button>
+            <button onclick="mostrarSeccion('clientes')">👥 Mis Clientes</button>
+        </aside>
 
-    <main>
-        <section id="agendar-cita-form">
-            <h2>Agenda tu Cita</h2>
-            <p class="subtitulo-catalogo">Selecciona tu barbero, fecha y horario preferido.</p>
-
-            <!-- Formulario completamente rediseñado con selector de barbero y horarios -->
-            <form class="form-container" id="form-cita">
+        <section class="content">
+            <div id="panel-agenda" class="section-panel active">
+                <h2>Citas Programadas</h2>
+                <p class="subtitulo">Gestiona tus clientes asignados.</p>
                 
-                <!-- Paso 1: Seleccionar Barbero -->
-                <div class="form-group">
-                    <label for="barbero">Selecciona tu Barbero</label>
-                    <select id="barbero" name="barbero" required>
-                        <option value="">Cargando barberos...</option>
+                <div class="search-box">
+                    <h3>🔍 Buscar Mis Citas</h3>
+                    <label for="barbero-cliente-search">Buscar por Cliente:</label>
+                    <select id="barbero-cliente-search">
+                        <option value="">-- Selecciona un cliente --</option>
                     </select>
+                    <button onclick="mostrarCitasBarberPorCliente()" style="margin-top: 10px;">Mostrar</button>
                 </div>
 
-                <!-- Paso 2: Seleccionar Servicio -->
-                <div class="form-group">
-                    <label for="servicio">Servicio Deseado</label>
-                    <select id="servicio" name="servicio" required>
-                        <option value="">Selecciona un servicio...</option>
-                        <option value="Corte de Cabello">Corte de Cabello - $200 (30 min)</option>
-                        <option value="Corte y Barba">Corte y Barba - $350 (45 min)</option>
-                        <option value="Afeitado Clásico">Afeitado Clásico - $150 (20 min)</option>
-                        <option value="Diseño de Barba">Diseño de Barba - $180 (25 min)</option>
-                        <option value="Tratamiento Capilar">Tratamiento Capilar - $400 (40 min)</option>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Servicio</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-citas-barbero-body">
+                            <tr><td colspan="7" style="text-align:center; padding: 20px;">Cargando citas...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-productos" class="section-panel">
+                <h2>Catálogo de Productos</h2>
+                <p class="subtitulo">Productos disponibles para recomendar.</p>
+
+                <div class="search-box">
+                    <h3>Búsqueda por Producto</h3>
+                    <label for="barbero-buscar-producto-id">Buscar por Producto:</label>
+                    <select id="barbero-buscar-producto-id">
+                        <option value="">-- Seleccionar producto --</option>
                     </select>
+                    <button onclick="verDetalleProducto()">Ver Detalle</button>
                 </div>
 
-                <!-- Paso 3: Seleccionar Fecha -->
-                <div class="form-group">
-                    <label for="fecha">Fecha</label>
-                    <input type="date" id="fecha" name="fecha" required>
-                    <small class="form-hint">Lunes a Sábado. No se trabaja domingos.</small>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-productos-barbero-body">
+                            <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-                <!-- Paso 4: Seleccionar Hora -->
-                <div class="form-group">
-                    <label for="hora">Horario Disponible</label>
-                    <select id="hora" name="hora" required disabled>
-                        <option value="">Primero selecciona fecha y barbero</option>
+            <div id="panel-clientes" class="section-panel">
+                <h2>Mis Clientes</h2>
+                <p class="subtitulo">Clientes que has atendido.</p>
+
+                <div class="search-box">
+                    <h3>Búsqueda por ID de Cliente</h3>
+                    <label for="barbero-buscar-cliente-id">Selecciona un Cliente:</label>
+                    <select id="barbero-buscar-cliente-id">
+                        <option value="">-- Cargar clientes --</option>
                     </select>
-                    <small class="form-hint">Horario: 9:00 AM - 8:00 PM</small>
+                    <button onclick="verHistorialCliente()">Ver Historial</button>
                 </div>
 
-                <!-- Resumen de la cita -->
-                <div id="resumen-cita" class="resumen-cita" style="display: none;">
-                    <h3>Resumen de tu Cita</h3>
-                    <p><strong>Barbero:</strong> <span id="resumen-barbero">-</span></p>
-                    <p><strong>Servicio:</strong> <span id="resumen-servicio">-</span></p>
-                    <p><strong>Fecha:</strong> <span id="resumen-fecha">-</span></p>
-                    <p><strong>Hora:</strong> <span id="resumen-hora">-</span></p>
+                <div class="search-box">
+                    <h3>Búsqueda por Tipo de Servicio</h3>
+                    <label for="barbero-buscar-servicio">Selecciona un Servicio:</label>
+                    <select id="barbero-buscar-servicio">
+                        <option value="">-- Todos los servicios --</option>
+                        <option value="Corte">Corte</option>
+                        <option value="Barba">Barba</option>
+                        <option value="Completo">Corte + Barba</option>
+                    </select>
+                    <button onclick="filtrarClientesPorServicio()">Filtrar</button>
                 </div>
 
-                <!-- Mensaje de estado -->
-                <div id="mensaje-cita" class="mensaje-form" style="display: none;"></div>
+                <div class="search-box">
+                    <h3>Búsqueda por Estado de Cita</h3>
+                    <label for="barbero-buscar-estado">Selecciona un Estado:</label>
+                    <select id="barbero-buscar-estado">
+                        <option value="">-- Todos los estados --</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                    <button onclick="filtrarCitasPorEstado()">Filtrar</button>
+                </div>
 
-                <button type="submit" class="btn-enviar" id="btn-agendar">Confirmar Cita</button>
-            </form>
-        </section>
-
-        <!-- Sección para ver mis citas (si está logueado) -->
-        <section id="mis-citas" class="mis-citas-section" style="display: none;">
-            <h2>Mis Citas</h2>
-            <div id="lista-mis-citas" class="lista-citas">
-                <p>Cargando tus citas...</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Total Citas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-clientes-body">
+                            <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Small Dick's Barber. Todos los derechos reservados.</p>
-    </footer>
+    <script>
+        let misCitasData = [];
+        let productosData = [];
+        let clientesData = [];
+        
+        console.log('[v0] Dashboard del Barbero iniciado');
 
-    <script src="../JS/validaciones.js"></script>
-    <script src="../JS/citas.js"></script>
-    <script src="../JS/script.js"></script>
+        function mostrarSeccion(id) {
+            console.log('[v0] Mostrando sección:', id);
+            document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + id).classList.add('active');
+            event.target.classList.add('active');
 
+            if (id === 'agenda') {
+                cargarCitasDelBarbero();
+            } else if (id === 'productos') {
+                cargarProductosBarbero();
+            } else if (id === 'clientes') {
+                cargarClientesBarbero();
+            }
+        }
+
+        function cargarCitasDelBarbero() {
+            console.log("[v0] Iniciando carga de citas del barbero...");
+            const tbody = document.getElementById('tabla-citas-barbero-body');
+            
+            fetch('../php/citas_barbero_get.php')
+                .then(response => {
+                    console.log("[v0] Respuesta recibida, status:", response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("[v0] Datos recibidos:", data);
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    misCitasData = Array.isArray(data) ? data : [];
+                    console.log("[v0] Citas almacenadas:", misCitasData.length);
+                    
+                    cargarClientesParaBarbero();
+                    
+                    if (misCitasData.length > 0) {
+                        tbody.innerHTML = '';
+                        misCitasData.forEach(cita => {
+                            const fechaHora = new Date(cita.fecha_hora);
+                            const fecha = fechaHora.toISOString().split('T')[0];
+                            const hora = fechaHora.toTimeString().split(' ')[0].substring(0, 5);
+                            
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${cita.id_cita}</td>
+                                    <td>${cita.cliente_nombre}</td>
+                                    <td>${cita.servicio}</td>
+                                    <td>${fecha}</td>
+                                    <td>${hora}</td>
+                                    <td><span class="estado-badge ${cita.estado}">${cita.estado}</span></td>
+                                    <td>
+                                        ${cita.estado === 'pendiente' ? `
+                                            <button class="btn-accion completar" onclick="completarCitaBarbero(${cita.id_cita})">✓ Completar</button>
+                                            <button class="btn-accion cancelar" onclick="cancelarCitaBarbero(${cita.id_cita})">✗ Cancelar</button>
+                                        ` : `
+                                            <span style="font-size: 0.85em; color: #666;">${cita.estado === 'completada' ? '✓ Completado' : '✗ Cancelado'}</span>
+                                        `}
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No tienes citas asignadas</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error("[v0] Error cargando citas:", error);
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Error: ${error.message}</td></tr>`;
+                });
+        }
+
+        function cargarClientesParaBarbero() {
+            console.log("[v0] Populando combobox de clientes...");
+            const selectClientes = document.getElementById('barbero-cliente-search');
+            const clientesUnicos = [...new Set(misCitasData.map(c => c.cliente_nombre))];
+            
+            selectClientes.innerHTML = '<option value="">-- Selecciona un cliente --</option>';
+            clientesUnicos.forEach(cliente => {
+                selectClientes.innerHTML += `<option value="${cliente}">${cliente}</option>`;
+            });
+            console.log("[v0] Clientes cargados:", clientesUnicos);
+        }
+
+        function mostrarCitasBarberPorCliente() {
+            const clienteSeleccionado = document.getElementById('barbero-cliente-search').value;
+            
+            if (!clienteSeleccionado) {
+                alert('Por favor selecciona un cliente');
+                return;
+            }
+            
+            console.log("[v0] Filtrando citas para cliente:", clienteSeleccionado);
+            const citasFiltradas = misCitasData.filter(cita => cita.cliente_nombre === clienteSeleccionado);
+            
+            const tbody = document.getElementById('tabla-citas-barbero-body');
+            tbody.innerHTML = '';
+            
+            if (citasFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas para este cliente</td></tr>';
+                return;
+            }
+            
+            citasFiltradas.forEach(cita => {
+                const fechaHora = new Date(cita.fecha_hora);
+                const fecha = fechaHora.toISOString().split('T')[0];
+                const hora = fechaHora.toTimeString().split(' ')[0].substring(0, 5);
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${cita.id_cita}</td>
+                        <td>${cita.cliente_nombre}</td>
+                        <td>${cita.servicio}</td>
+                        <td>${fecha}</td>
+                        <td>${hora}</td>
+                        <td><span class="estado-badge ${cita.estado}">${cita.estado}</span></td>
+                        <td>
+                            ${cita.estado === 'pendiente' ? `
+                                <button class="btn-accion completar" onclick="completarCitaBarbero(${cita.id_cita})">✓ Completar</button>
+                                <button class="btn-accion cancelar" onclick="cancelarCitaBarbero(${cita.id_cita})">✗ Cancelar</button>
+                            ` : `
+                                <span style="font-size: 0.85em; color: #666;">${cita.estado === 'completada' ? '✓ Completado' : '✗ Cancelado'}</span>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function completarCitaBarbero(idCita) {
+            if (!confirm('¿Marcar esta cita como completada?')) return;
+            
+            fetch('../php/citas_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cita: idCita, estado: 'completada' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("[v0] Completar respuesta:", data);
+                if (data.success) {
+                    alert('✓ Cita completada exitosamente');
+                    cargarCitasDelBarbero();
+                    document.getElementById('barbero-cliente-search').value = '';
+                } else {
+                    alert('Error: ' + (data.mensaje || 'No se pudo completar la cita'));
+                }
+            })
+            .catch(err => console.error('[v0] Error:', err));
+        }
+
+        function cancelarCitaBarbero(idCita) {
+            if (!confirm('¿Cancelar esta cita?')) return;
+            
+            fetch('../php/citas_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cita: idCita, estado: 'cancelada' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("[v0] Cancelar respuesta:", data);
+                if (data.success) {
+                    alert('✗ Cita cancelada');
+                    cargarCitasDelBarbero();
+                    document.getElementById('barbero-cliente-search').value = '';
+                } else {
+                    alert('Error: ' + (data.mensaje || 'No se pudo cancelar la cita'));
+                }
+            })
+            .catch(err => console.error('[v0] Error:', err));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                cargarCitasDelBarbero();
+            }, 100);
+        });
+
+        function cerrarSesion() {
+            if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
+        }
+
+        function cargarProductosBarbero() {
+            console.log('[v0] Cargando productos...');
+            fetch('../php/productos_get.php')
+                .then(res => {
+                    console.log('[v0] Respuesta productos, status:', res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Productos recibidos:', data);
+                    if(data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    productosData = data;
+                    const tbody = document.getElementById('tabla-productos-barbero-body');
+                    const select = document.getElementById('barbero-buscar-producto-id');
+                    
+                    tbody.innerHTML = '';
+                    select.innerHTML = '<option value="">-- Seleccionar producto --</option>';
+
+                    if (!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay productos</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(prod => {
+                        select.innerHTML += `<option value="${prod.id_producto}">#${prod.id_producto} - ${prod.nombre}</option>`;
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${prod.id_producto}</td>
+                                <td>${prod.nombre}</td>
+                                <td>$${prod.precio}</td>
+                                <td>${prod.stock} un.</td>
+                                <td>${prod.descripcion || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar productos:', err);
+                    document.getElementById('tabla-productos-barbero-body').innerHTML = 
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + err.message + '</td></tr>';
+                });
+        }
+
+        function verDetalleProducto() {
+            const id = document.getElementById('barbero-buscar-producto-id').value;
+            if (!id) {
+                alert('Por favor selecciona un producto');
+                return;
+            }
+            const producto = productosData.find(p => p.id_producto == id);
+            if (producto) {
+                alert(`📦 PRODUCTO:\n\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
+            }
+        }
+
+        function cargarClientesBarbero() {
+            console.log('[v0] Cargando clientes...');
+            fetch('../php/clientes_get_admin.php')
+                .then(res => {
+                    console.log('[v0] Respuesta clientes, status:', res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('[v0] Clientes recibidos:', data);
+                    if(data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    clientesData = data;
+                    const tbody = document.getElementById('tabla-clientes-body');
+                    const select = document.getElementById('barbero-buscar-cliente-id');
+                    
+                    tbody.innerHTML = '';
+                    select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+
+                    if (!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No tienes clientes registrados</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(cliente => {
+                        select.innerHTML += `<option value="${cliente.id_usuario}">#${cliente.id_usuario} - ${cliente.nombre}</option>`;
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${cliente.id_usuario}</td>
+                                <td>${cliente.nombre}</td>
+                                <td>${cliente.email}</td>
+                                <td>${cliente.telefono || 'N/A'}</td>
+                                <td>${cliente.total_citas || 0}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar clientes:', err);
+                    document.getElementById('tabla-clientes-body').innerHTML = 
+                        '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + err.message + '</td></tr>';
+                });
+        }
+
+        function verHistorialCliente() {
+            const id = document.getElementById('barbero-buscar-cliente-id').value;
+            if (!id) {
+                alert('Por favor selecciona un cliente');
+                return;
+            }
+            const cliente = clientesData.find(c => c.id_usuario == id);
+            if (cliente) {
+                alert(`👤 CLIENTE:\n\nNombre: ${cliente.nombre}\nEmail: ${cliente.email}\nTeléfono: ${cliente.telefono || 'N/A'}\nTotal Citas: ${cliente.total_citas || 0}`);
+            }
+        }
+
+        function filtrarClientesPorServicio() {
+            alert('Función de filtrar clientes por servicio en desarrollo');
+        }
+
+        function filtrarCitasPorEstado() {
+            alert('Función de filtrar citas por estado en desarrollo');
+        }
+    </script>
 </body>
 </html>
-
