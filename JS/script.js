@@ -255,8 +255,12 @@ function cargarProductosCatalogo() {
             }
 
             productos.forEach(prod => {
-                // Usar una imagen por defecto si la URL está vacía o es nula
-                const imageUrl = prod.imagen_url || '../img/placeholder_producto.webp';
+                // SOLUCIÓN DEFINITIVA: Forzar la ruta correcta desde el frontend.
+                // 1. Extraemos solo el nombre del archivo de la URL que viene de la BD.
+                const nombreArchivo = prod.imagen_url ? prod.imagen_url.split('/').pop() : 'placeholder_producto.webp';
+                
+                // 2. Construimos la ruta relativa correcta desde productos.html
+                const imageUrl = `../img/${nombreArchivo}`;
 
                 const card = document.createElement('div');
                 card.className = 'product-card';
