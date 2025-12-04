@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes Gerenciales - La Quinta Esencia Barber Shop</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Estilos base del panel de administrador (oscuro) */
+        body { background-color: #0a0a0a; color: white; }
+        .admin-layout { display: flex; min-height: calc(100vh - 80px); }
+        .sidebar { width: 250px; background-color: #151515; border-right: 1px solid #333; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .sidebar button { background: none; border: 1px solid #333; color: #ccc; padding: 15px; text-align: left; cursor: pointer; border-radius: 5px; width: 100%; transition: 0.3s; }
+        .sidebar button:hover, .sidebar button.active { background-color: var(--color-primario); color: #0a0a0a; font-weight: bold; border-color: var(--color-primario); }
+
+        .content { flex: 1; padding: 2rem; }
+        h2 { color: var(--color-primario); margin-bottom: 0.5rem; }
+        .subtitulo { color: #888; margin-bottom: 2rem; }
+
+        .report-section {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Estilos para el Reporte de Barras (simulación visual sin librería de gráficos) */
+        .bar-chart-container {
+            margin-top: 20px;
+        }
+        .bar-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .bar-label {
+            width: 120px;
+            font-size: 0.9em;
+            color: var(--color-primario);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .bar {
+            height: 20px;
+            background-color: #333;
+            border-radius: 4px;
+            margin-left: 10px;
+            flex-grow: 1;
+            position: relative;
+        }
+        .bar-inner {
+            height: 100%;
+            background-color: #4CAF50; /* Color de rendimiento */
+            transition: width 1s ease-out;
+            border-radius: 4px;
+        }
+        .bar-value {
+            position: absolute;
+            right: 5px;
+            color: white;
+            font-size: 0.8em;
+            line-height: 20px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #0a0a0a;
+        }
+        
+        /* Estilos de tabla para Bajo Stock */
+        .report-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .report-section th, .report-section td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #252525;
+        }
+        .report-section th {
+            background-color: #252525;
+            color: var(--color-primario);
+        }
+        .report-section .stock-low {
+            color: #ff4d4d; /* Rojo */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">La Quinta Esencia Barber Shop</a>
+            <div class="nav-links-group">
+                <ul style="list-style: none; display: flex; gap: 20px;">
+                    <li><a href="../index.html" style="text-decoration: none; color: var(--color-primario);">🏠 Volver al Inicio</a></li>
+                    <li><a href="#" onclick="cerrarSesion()" style="text-decoration: none; color: #888;">🚪 Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="admin-layout">
+        <aside class="sidebar">
+            <button onclick="cargarReporte('barbero')" class="active">👨‍💼 Rendimiento Barbero</button>
+            <button onclick="cargarReporte('servicios')">✂️ Servicios Populares</button>
+            <button onclick="cargarReporte('stock')">📦 Productos - Bajo Stock</button>
+            <hr style="width: 100%; border-color: #333; margin: 10px 0;">
+            <button onclick="window.location.href='agenda_barbero.html'">📅 Panel Barbero</button>
+        </aside>
+
+        <section class="content">
+            <h2>Panel de Reportes Gerenciales</h2>
+            <p class="subtitulo">Información clave para la toma de decisiones.</p>
+            
+            <div id="reporte-container" class="report-grid">
+                </div>
+        </section>
+    </main>
+
+    <script>
+        // Datos simulados (MOCK DATA) que normalmente vendrían de ../php/reportes_get.php
+        const MOCK_DATA = {
+            'barbero': [
+                { barbero: 'Juan Perez', citas_completadas: 150, ingresos_estimados: 30000.00 },
+                { barbero: 'Pedro Gómez', citas_completadas: 120, ingresos_estimados: 25000.00 },
+                { barbero: 'Miguel Ángel', citas_completadas: 80, ingresos_estimados: 16000.00 },
+                { barbero: 'Andrea M.', citas_completadas: 95, ingresos_estimados: 19500.00 }
+            ],
+            'servicios': [
+                { servicio: 'Corte y Barba', cantidad: 450 },
+                { servicio: 'Corte de Cabello', cantidad: 320 },
+                { servicio: 'Diseño de Barba', cantidad: 180 },
+                { servicio: 'Afeitado Clásico', cantidad: 100 }
+            ],
+            'stock': [
+                { id: 101, producto: 'Cera Fijadora Deluxe', stock: 5, precio: 250.00 },
+                { id: 105, producto: 'Shampoo para Barba Orgánico', stock: 8, precio: 180.00 },
+                { id: 112, producto: 'Navajas Desechables (Pack)', stock: 2, precio: 50.00 }
+            ]
+        };
+
+        const REPORTE_CONTAINER = document.getElementById('reporte-container');
+        const STOCK_THRESHOLD = 10;
+        
+        // Función principal para cargar y renderizar el reporte
+        function cargarReporte(reportType) {
+            REPORTE_CONTAINER.innerHTML = '<div class="report-section" style="text-align:center;">Cargando datos...</div>';
+            
+            // Simulación de fetch a PHP (ej. fetch('../php/reportes_get.php?type=' + reportType))
+            setTimeout(() => {
+                const data = MOCK_DATA[reportType];
+                REPORTE_CONTAINER.innerHTML = '';
+                
+                switch (reportType) {
+                    case 'barbero':
+                        renderizarRendimientoBarbero(data);
+                        break;
+                    case 'servicios':
+                        renderizarServiciosPopulares(data);
+                        break;
+                    case 'stock':
+                        renderizarBajoStock(data);
+                        break;
+                }
+                actualizarBotonActivo(reportType);
+            }, 500); // Retardo simulado
+        }
+
+        // Función para cambiar el estilo del botón activo
+        function actualizarBotonActivo(reportType) {
+            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+            // Usamos un selector de atributo simple para los 3 primeros botones
+            const activeBtn = document.querySelector(`button[onclick="cargarReporte('${reportType}')"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+
+
+        /* ----------------------------------------------------------------------
+           REPORTE 1: Rendimiento y Ingresos por Barbero (Monthly Performance)
+           ---------------------------------------------------------------------- */
+        function renderizarRendimientoBarbero(data) {
+            const totalCitas = data.reduce((sum, item) => sum + item.citas_completadas, 0);
+            const totalIngresos = data.reduce((sum, item) => sum + item.ingresos_estimados, 0);
+
+            let html = `
+                <div class="report-section">
+                    <h3>📈 Rendimiento Total (Último Mes)</h3>
+                    <p class="subtitulo">Ingresos: <strong>$${totalIngresos.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</strong> | Citas: <strong>${totalCitas}</strong></p>
+                    <hr style="border-color: #333; margin: 15px 0;">
+                    <h4>Citas Completadas por Barbero</h4>
+                    <div class="bar-chart-container">
+            `;
+
+            const maxCitas = Math.max(...data.map(i => i.citas_completadas));
+
+            data.forEach(item => {
+                const percentage = (item.citas_completadas / maxCitas) * 100;
+                html += `
+                    <div class="bar-item">
+                        <span class="bar-label">${item.barbero}</span>
+                        <div class="bar">
+                            <div class="bar-inner" style="width: ${percentage}%;">
+                                <span class="bar-value">${item.citas_completadas}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+            REPORTE_CONTAINER.innerHTML = html;
+        }
+
+        /* ----------------------------------------------------------------------
+           REPORTE 2: Servicios más Populares (Service Demand)
+           ---------------------------------------------------------------------- */
+        function renderizarServiciosPopulares(data) {
+            let html = `
+                <div class="report-section">
+                    <h3>✂️ Ranking de Servicios Solicitados</h3>
+                    <p class="subtitulo">Top servicios con más demanda por los clientes.</p>
+                    <div class="bar-chart-container">
+            `;
+
+            const maxCantidad = Math.max(...data.map(i => i.cantidad));
+
+            data.sort((a, b) => b.cantidad - a.cantidad).forEach(item => {
+                const percentage = (item.cantidad / maxCantidad) * 100;
+                html += `
+                    <div class="bar-item">
+                        <span class="bar-label">${item.servicio}</span>
+                        <div class="bar">
+                            <div class="bar-inner" style="width: ${percentage}%; background-color: #2196f3;">
+                                <span class="bar-value">${item.cantidad}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            REPORTE_CONTAINER.innerHTML = html;
+        }
+
+
+        /* ----------------------------------------------------------------------
+           REPORTE 3: Productos con Bajo Stock (Inventory Alert)
+           ---------------------------------------------------------------------- */
+        function renderizarBajoStock(data) {
+            let html = `
+                <div class="report-section">
+                    <h3>🚨 Alerta de Inventario (Stock < ${STOCK_THRESHOLD})</h3>
+                    <p class="subtitulo">Productos que requieren ser reabastecidos con urgencia.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Producto</th>
+                                <th>Stock Actual</th>
+                                <th>Precio Venta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            data.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.producto}</td>
+                        <td class="stock-low">${item.stock} unidades</td>
+                        <td>$${item.precio.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            REPORTE_CONTAINER.innerHTML = html;
+        }
+
+
+        // Funciones auxiliares
+        function cerrarSesion() {
+            if (confirm("¿Cerrar sesión?")) {
+                localStorage.removeItem('loggedInUser');
+                window.location.href = '../index.html';
+            }
+        }
+        
+        // Inicializar: Cargar el primer reporte al abrir la página
+        document.addEventListener('DOMContentLoaded', () => {
+             // Simulación de verificación de rol de Admin/Gerencia
+             const usuario = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+             if (usuario.rol !== 1) { // Asumimos rol 1 es Administrador/Gerencia
+                // Esto podría redirigir o mostrar un mensaje de acceso denegado en un entorno real.
+             }
+
+            cargarReporte('barbero');
+        });
+    </script>
+
+</body>
+</html>
