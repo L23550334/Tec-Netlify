@@ -12,7 +12,7 @@ try {
     }
 
     // Consulta para traer todos los productos
-    $sql = "SELECT id_producto, nombre, descripcion, precio, stock FROM productos";
+    $sql = "SELECT id_producto, nombre, descripcion, precio, stock, imagen_url FROM productos";
     $result = $conn->query($sql);
 
     if (!$result) {
