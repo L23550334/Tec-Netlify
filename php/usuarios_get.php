@@ -11,7 +11,7 @@ try {
         throw new Exception("Error de conexión a la base de datos");
     }
 
-    $sql = "SELECT id_usuario, nombre, email, telefono, rol FROM usuarios ORDER BY id_usuario DESC";
+    $sql = "SELECT id_usuario, nombre, email, telefono, id_rol FROM usuarios ORDER BY id_usuario DESC";
     $result = $conn->query($sql);
 
     if (!$result) {
@@ -21,7 +21,7 @@ try {
     $usuarios = [];
     while($row = $result->fetch_assoc()) {
         $rol_map = [1 => 'Admin', 2 => 'Barbero', 3 => 'Cliente'];
-        $row['rol_texto'] = $rol_map[$row['rol']] ?? 'N/A';
+        $row['rol_texto'] = $rol_map[$row['id_rol']] ?? 'N/A';
         $usuarios[] = $row;
     }
 
