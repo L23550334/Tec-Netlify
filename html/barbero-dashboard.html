@@ -131,10 +131,11 @@
                                 <th>Fecha</th>
                                 <th>Hora</th>
                                 <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-citas-barbero-body">
-                            <tr><td colspan="6" style="text-align:center; padding: 20px;">Cargando citas...</td></tr>
+                            <tr><td colspan="7" style="text-align:center; padding: 20px;">Cargando citas...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -243,7 +244,7 @@
             event.target.classList.add('active');
 
             if (id === 'agenda') {
-                cargarCitas();
+                cargarCitasDelBarbero();
             } else if (id === 'productos') {
                 cargarProductosBarbero();
             } else if (id === 'clientes') {
@@ -251,19 +252,25 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            cargarClientesParaBarbero();
-            cargarProductosBarbero();
-            
-            const clienteSelect = document.getElementById('barbero-cliente-search');
-            if (clienteSelect) {
-                clienteSelect.addEventListener('change', function() {
-                    // Optional: could auto-load on selection
+        function cargarCitasDelBarbero() {
+            console.log("[v0] Iniciando carga de citas del barbero...");
+            fetch('../php/citas_barbero_get.php')
+                .then(response => {
+                    console.log("[v0] Respuesta recibida, status:", response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("[v0] Datos recibidos:", data);
+                    misCitasData = data;
+                    cargarClientesParaBarbero();
+                })
+                .catch(error => {
+                    console.error("[v0] Error cargando citas:", error);
                 });
-            }
-        });
+        }
 
         function cargarClientesParaBarbero() {
+            console.log("[v0] Populando combobox de clientes...");
             const selectClientes = document.getElementById('barbero-cliente-search');
             const clientesUnicos = [...new Set(misCitasData.map(c => c.cliente_nombre))];
             
@@ -271,6 +278,7 @@
             clientesUnicos.forEach(cliente => {
                 selectClientes.innerHTML += `<option value="${cliente}">${cliente}</option>`;
             });
+            console.log("[v0] Clientes cargados:", clientesUnicos);
         }
 
         function mostrarCitasBarberPorCliente() {
@@ -281,83 +289,91 @@
                 return;
             }
             
+            console.log("[v0] Filtrando citas para cliente:", clienteSeleccionado);
             const citasFiltradas = misCitasData.filter(cita => cita.cliente_nombre === clienteSeleccionado);
             
             const tbody = document.getElementById('tabla-citas-barbero-body');
             tbody.innerHTML = '';
             
             if (citasFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas para este cliente</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas para este cliente</td></tr>';
                 return;
             }
             
             citasFiltradas.forEach(cita => {
+                const fechaHora = new Date(cita.fecha_hora);
+                const fecha = fechaHora.toISOString().split('T')[0];
+                const hora = fechaHora.toTimeString().split(' ')[0].substring(0, 5);
+                
                 tbody.innerHTML += `
                     <tr>
                         <td>${cita.id_cita}</td>
                         <td>${cita.cliente_nombre}</td>
                         <td>${cita.servicio}</td>
-                        <td>${cita.fecha}</td>
-                        <td>${cita.hora}</td>
+                        <td>${fecha}</td>
+                        <td>${hora}</td>
                         <td><span class="estado-badge ${cita.estado}">${cita.estado}</span></td>
+                        <td>
+                            ${cita.estado === 'pendiente' ? `
+                                <button class="btn-accion completar" onclick="completarCitaBarbero(${cita.id_cita})">✓ Completar</button>
+                                <button class="btn-accion cancelar" onclick="cancelarCitaBarbero(${cita.id_cita})">✗ Cancelar</button>
+                            ` : `
+                                <span style="font-size: 0.85em; color: #666;">${cita.estado === 'completado' ? '✓ Completado' : '✗ Cancelado'}</span>
+                            `}
+                        </td>
                     </tr>
                 `;
             });
         }
 
-        function cerrarSesion() {
-            if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
+        function completarCitaBarbero(idCita) {
+            if (!confirm('¿Marcar esta cita como completada?')) return;
+            
+            fetch('../php/citas_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cita: idCita, estado: 'completado' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✓ Cita completada exitosamente');
+                    cargarCitasDelBarbero();
+                    document.getElementById('barbero-cliente-search').value = '';
+                } else {
+                    alert('Error al completar la cita');
+                }
+            })
+            .catch(err => console.error('[v0] Error:', err));
         }
 
-        function cargarCitas() {
-            console.log('[v0] Cargando citas del barbero...');
-            fetch('../php/citas_barbero_get.php')
-                .then(response => {
-                    console.log('[v0] Respuesta recibida, status:', response.status);
-                    return response.text().then(text => {
-                        console.log('[v0] Respuesta raw:', text);
-                        try {
-                            return JSON.parse(text);
-                        } catch(e) {
-                            console.error('[v0] Error parseando JSON:', e);
-                            throw new Error('La respuesta no es JSON válido');
-                        }
-                    });
-                })
-                .then(data => {
-                    console.log('[v0] Citas recibidas:', data);
-                    if(data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    misCitasData = data;
-                    const tbody = document.getElementById('tabla-citas-barbero-body');
-                    
-                    tbody.innerHTML = '';
+        function cancelarCitaBarbero(idCita) {
+            if (!confirm('¿Cancelar esta cita?')) return;
+            
+            fetch('../php/citas_actualizar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_cita: idCita, estado: 'cancelado' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✗ Cita cancelada');
+                    cargarCitasDelBarbero();
+                    document.getElementById('barbero-cliente-search').value = '';
+                } else {
+                    alert('Error al cancelar la cita');
+                }
+            })
+            .catch(err => console.error('[v0] Error:', err));
+        }
 
-                    if (!data || data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No tienes citas pendientes</td></tr>';
-                        return;
-                    }
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarCitasDelBarbero();
+        });
 
-                    data.forEach(cita => {
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>${cita.id_cita}</td>
-                                <td>${cita.cliente_nombre}</td>
-                                <td>${cita.servicio}</td>
-                                <td>${cita.fecha}</td>
-                                <td>${cita.hora}</td>
-                                <td><span class="estado-badge ${cita.estado}">${cita.estado}</span></td>
-                            </tr>
-                        `;
-                    });
-                })
-                .catch(error => {
-                    console.error('[v0] Error al cargar citas:', error);
-                    document.getElementById('tabla-citas-barbero-body').innerHTML = 
-                        '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos: ' + error.message + '</td></tr>';
-                });
+        function cerrarSesion() {
+            if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
         }
 
         function cargarProductosBarbero() {
@@ -365,15 +381,7 @@
             fetch('../php/productos_get.php')
                 .then(res => {
                     console.log('[v0] Respuesta productos, status:', res.status);
-                    return res.text().then(text => {
-                        console.log('[v0] Respuesta raw productos:', text);
-                        try {
-                            return JSON.parse(text);
-                        } catch(e) {
-                            console.error('[v0] Error parseando JSON:', e);
-                            throw new Error('La respuesta no es JSON válido');
-                        }
-                    });
+                    return res.json();
                 })
                 .then(data => {
                     console.log('[v0] Productos recibidos:', data);
@@ -431,15 +439,7 @@
             fetch('../php/clientes_get_admin.php')
                 .then(res => {
                     console.log('[v0] Respuesta clientes, status:', res.status);
-                    return res.text().then(text => {
-                        console.log('[v0] Respuesta raw clientes:', text);
-                        try {
-                            return JSON.parse(text);
-                        } catch(e) {
-                            console.error('[v0] Error parseando JSON:', e);
-                            throw new Error('La respuesta no es JSON válido');
-                        }
-                    });
+                    return res.json();
                 })
                 .then(data => {
                     console.log('[v0] Clientes recibidos:', data);
@@ -498,38 +498,6 @@
 
         function filtrarCitasPorEstado() {
             alert('Función de filtrar citas por estado en desarrollo');
-        }
-
-        function actualizarEstado(idCita, nuevoEstado) {
-            if (!confirm(`¿Confirmar cambio de estado a "${nuevoEstado}"?`)) return;
-            
-            console.log('[v0] Actualizando estado de cita:', idCita, 'a', nuevoEstado);
-            fetch('../php/citas_actualizar.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_cita: idCita,
-                    estado: nuevoEstado
-                })
-            })
-            .then(res => {
-                console.log('[v0] Respuesta actualización, status:', res.status);
-                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
-                return res.json();
-            })
-            .then(data => {
-                console.log('[v0] Respuesta actualización:', data);
-                if (data.success) {
-                    alert('✅ Estado actualizado correctamente');
-                    cargarCitas();
-                } else {
-                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
-                }
-            })
-            .catch(err => {
-                console.error('[v0] Error:', err);
-                alert('Error de conexión: ' + err.message);
-            });
         }
     </script>
 </body>
