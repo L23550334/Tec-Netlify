@@ -9,8 +9,8 @@ header('Access-Control-Allow-Methods: GET');
 try {
     include 'conexion.php';
     
-    if (!$conn) {
-        throw new Exception("Error de conexión a la base de datos");
+    if (!$conn || $conn->connect_error) {
+        throw new Exception("Error de conexión a la base de datos. Verifica que MySQL esté corriendo y las credenciales sean correctas. Host: " . (getenv('DB_HOST') ?: 'localhost'));
     }
 
     // Obtener solo usuarios con rol de barbero (rol = 2)
@@ -18,7 +18,7 @@ try {
     $result = $conn->query($sql);
 
     if (!$result) {
-        throw new Exception("Error en la consulta: " . $conn->error);
+        throw new Exception("Error en la consulta: " . $conn->error . ". Verifica que la tabla 'usuarios' exista.");
     }
 
     $barberos = [];
