@@ -438,7 +438,7 @@
                         <option value="">-- Cargar usuarios --</option>
                     </select>
                     <button onclick="buscarUsuarioPorId()">Buscar</button>
-                    <button onclick="actualizarUsuario()">Actualizar</button>
+                    <!-- Updated button text/functionality -->
                     <button onclick="eliminarUsuario()">Eliminar</button>
                 </div>
 
@@ -1164,6 +1164,11 @@
                 return;
             }
             
+            if (!nuevoNombre || !nuevoEmail) {
+                alert('Nombre y email son obligatorios');
+                return;
+            }
+            
             const updateData = {
                 id_usuario: id,
                 nombre: nuevoNombre,
@@ -1171,7 +1176,8 @@
                 telefono: nuevoTelefono,
                 id_rol: rolInt
             };
-            console.log('[v0] Enviando datos de actualización:', updateData);
+            
+            console.log('[v0] Enviando actualización:', updateData);
             
             fetch('../php/usuarios_actualizar.php', {
                 method: 'POST',
@@ -1181,29 +1187,35 @@
                 body: JSON.stringify(updateData)
             })
             .then(res => {
-                console.log('[v0] Status de respuesta:', res.status);
-                if (!res.ok) {
-                    return res.json().then(data => {
-                        throw new Error(data.message || 'Error HTTP: ' + res.status);
-                    }).catch(err => {
-                        // If response is not JSON or fails to parse, use generic error
-                        throw new Error('Error HTTP: ' + res.status);
-                    });
-                }
-                return res.json();
+                console.log('[v0] Status:', res.status);
+                return res.text().then(text => {
+                    console.log('[v0] Respuesta raw:', text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (!res.ok) {
+                            throw new Error(data.message || 'Error HTTP: ' + res.status);
+                        }
+                        return data;
+                    } catch (e) {
+                        if (!res.ok) {
+                            throw new Error('Error del servidor. Revisa los logs de PHP.');
+                        }
+                        throw new Error('Respuesta no válida del servidor: ' + text);
+                    }
+                });
             })
             .then(data => {
-                console.log('[v0] Respuesta de actualización:', data);
+                console.log('[v0] Respuesta exitosa:', data);
                 if (data.success) {
-                    alert('Usuario actualizado correctamente');
+                    alert('✅ Usuario actualizado correctamente');
                     cargarUsuarios();
                 } else {
-                    alert('Error: ' + (data.message || 'No se pudo actualizar'));
+                    alert('❌ Error: ' + (data.message || 'No se pudo actualizar'));
                 }
             })
             .catch(err => {
-                console.error('[v0] Error actualizando usuario:', err);
-                alert('Error de conexión: ' + err.message);
+                console.error('[v0] Error completo:', err);
+                alert('❌ Error de conexión: ' + err.message);
             });
         }
 
@@ -1290,4 +1302,3 @@
 
 </body>
 </html>
-
