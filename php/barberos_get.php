@@ -1,6 +1,9 @@
 <?php
 // php/barberos_get.php - Obtener lista de barberos para el formulario de citas
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 ob_start();
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -9,16 +12,20 @@ header('Access-Control-Allow-Methods: GET');
 try {
     include 'conexion.php';
     
-    if (!$conn || $conn->connect_error) {
-        throw new Exception("Error de conexión a la base de datos. Verifica que MySQL esté corriendo y las credenciales sean correctas. Host: " . (getenv('DB_HOST') ?: 'localhost'));
+    // Debug: Verificar si la conexión existe
+    if ($conn === null) {
+        throw new Exception("Conexión es NULL - Verifica usuario/contraseña en conexion.php");
+    }
+    
+    if ($conn->connect_error) {
+        throw new Exception("Error de conexión: " . $conn->connect_error);
     }
 
-    // Obtener solo usuarios con rol de barbero (rol = 2)
-    $sql = "SELECT id_usuario, nombre, email, telefono FROM usuarios WHERE rol = 2 ORDER BY nombre ASC";
+    $sql = "SELECT id_usuario, nombre, email, telefono FROM usuarios WHERE id_rol = 2 ORDER BY nombre ASC";
     $result = $conn->query($sql);
 
     if (!$result) {
-        throw new Exception("Error en la consulta: " . $conn->error . ". Verifica que la tabla 'usuarios' exista.");
+        throw new Exception("Error en la consulta: " . $conn->error);
     }
 
     $barberos = [];
@@ -31,7 +38,8 @@ try {
     ob_end_clean();
     echo json_encode([
         'success' => true,
-        'barberos' => $barberos
+        'barberos' => $barberos,
+        'count' => count($barberos)
     ], JSON_UNESCAPED_UNICODE);
     
 } catch (Exception $e) {
@@ -39,8 +47,13 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'mensaje' => $e->getMessage()
+        'mensaje' => $e->getMessage(),
+        'debug' => [
+            'host' => getenv('DB_HOST') ?: 'mysql-354ac1c6-2',
+            'port' => getenv('DB_PORT') ?: '13275',
+            'user' => getenv('DB_USER') ?: 'root',
+            'db' => getenv('DB_NAME') ?: 'defaultdb'
+        ]
     ], JSON_UNESCAPED_UNICODE);
 }
-    
 ?>
