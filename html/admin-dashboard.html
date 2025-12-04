@@ -732,10 +732,8 @@
                     console.log('[v0] Citas recibidas:', data);
                     citasData = data;
                     const tbody = document.getElementById('tabla-citas-body');
-                    const select = document.getElementById('buscar-cita-id');
                     
                     tbody.innerHTML = '';
-                    select.innerHTML = '<option value="">-- Seleccionar cita --</option>';
 
                     if(!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas registradas</td></tr>';
@@ -745,8 +743,6 @@
                     data.forEach(cita => {
                         const fechaObj = new Date(cita.fecha_hora);
                         const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-                        
-                        select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${fechaStr}</option>`;
                         
                         tbody.innerHTML += `
                             <tr>
@@ -766,8 +762,12 @@
                 })
                 .catch(err => {
                     console.error('[v0] Error al cargar citas:', err);
-                    document.getElementById('tabla-citas-body').innerHTML = 
-                        '<tr><td colspan="7" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                    console.log('[v0] Mensaje de error:', err.message);
+                    const tbody = document.getElementById('tabla-citas-body');
+                    if (tbody) {
+                        tbody.innerHTML = 
+                            '<tr><td colspan="7" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
+                    }
                 });
         }
 
