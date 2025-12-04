@@ -92,30 +92,28 @@
         <aside class="sidebar">
             <button onclick="mostrarSeccion('agenda')" class="active">📅 Mi Agenda</button>
             <button onclick="mostrarSeccion('productos')">📦 Productos</button>
-          
+            <button onclick="mostrarSeccion('clientes')">👥 Mis Clientes</button>
         </aside>
 
         <section class="content">
             <div id="panel-agenda" class="section-panel active">
                 <h2>Citas Programadas</h2>
                 <p class="subtitulo">Gestiona tus clientes asignados.</p>
-                <!-- 
+                
                 <div class="search-box">
-                    <h3>🔍 Búsqueda por ID de Cita</h3>
-                    <label for="barbero-buscar-cita-id">Selecciona una Cita:</label>
-                    <select id="barbero-buscar-cita-id">
-                        <option value="">-- Cargar mis citas --</option>
+                    <h3>🔍 Buscar Mis Citas</h3>
+                    <label for="barbero-filtro-citas">Buscar por:</label>
+                    <select id="barbero-filtro-citas">
+                        <option value="">-- Selecciona un filtro --</option>
+                        <option value="cliente">Cliente</option>
+                        <option value="servicio">Servicio</option>
+                        <option value="estado">Estado</option>
                     </select>
-                    <button onclick="buscarMiCitaPorId()">Buscar</button>
-                </div>
- -->
-                <div class="search-box">
-                    <h3>Búsqueda por Cliente</h3>
-                    <label for="barbero-buscar-cliente">Selecciona un Cliente:</label>
-                    <select id="barbero-buscar-cliente">
-                        <option value="">-- Seleccionar cliente --</option>
+                    <label for="barbero-valor-citas" style="margin-top: 15px;">Valor a buscar:</label>
+                    <select id="barbero-valor-citas">
+                        <option value="">-- Selecciona una opción --</option>
                     </select>
-                    <button onclick="mostrarCitasDelCliente()">Mostrar Citas</button>
+                    <button onclick="mostrarCitasBarberFiltradas()" style="margin-top: 10px;">Mostrar</button>
                 </div>
 
                 <div class="table-container">
@@ -248,6 +246,83 @@
             }
         }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            const filtroSelect = document.getElementById('barbero-filtro-citas');
+            if (filtroSelect) {
+                filtroSelect.addEventListener('change', actualizarOpcionesBarber);
+            }
+        });
+
+        function actualizarOpcionesBarber() {
+            const filtro = document.getElementById('barbero-filtro-citas').value;
+            const valorSelect = document.getElementById('barbero-valor-citas');
+            valorSelect.innerHTML = '<option value="">-- Selecciona una opción --</option>';
+
+            if (filtro === 'cliente') {
+                const clientesUnicos = [...new Set(misCitasData.map(c => c.cliente_nombre))];
+                clientesUnicos.forEach(cliente => {
+                    valorSelect.innerHTML += `<option value="${cliente}">${cliente}</option>`;
+                });
+            } else if (filtro === 'servicio') {
+                const servicios = ['Corte', 'Barba', 'Corte + Barba'];
+                servicios.forEach(servicio => {
+                    valorSelect.innerHTML += `<option value="${servicio}">${servicio}</option>`;
+                });
+            } else if (filtro === 'estado') {
+                const estados = ['pendiente', 'completada', 'cancelada'];
+                estados.forEach(estado => {
+                    valorSelect.innerHTML += `<option value="${estado}">${estado.charAt(0).toUpperCase() + estado.slice(1)}</option>`;
+                });
+            }
+        }
+
+        function mostrarCitasBarberFiltradas() {
+            const filtro = document.getElementById('barbero-filtro-citas').value;
+            const valor = document.getElementById('barbero-valor-citas').value;
+            const tbody = document.getElementById('tabla-citas-body');
+
+            if (!filtro || !valor) {
+                alert('Por favor selecciona un filtro y un valor');
+                return;
+            }
+
+            let citasFiltradas = [];
+
+            if (filtro === 'cliente') {
+                citasFiltradas = misCitasData.filter(c => c.cliente_nombre === valor);
+            } else if (filtro === 'servicio') {
+                citasFiltradas = misCitasData.filter(c => c.servicio === valor);
+            } else if (filtro === 'estado') {
+                citasFiltradas = misCitasData.filter(c => c.estado === valor);
+            }
+
+            tbody.innerHTML = '';
+
+            if (citasFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas con ese filtro</td></tr>';
+                return;
+            }
+
+            citasFiltradas.forEach(cita => {
+                const fechaObj = new Date(cita.fecha_hora);
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${cita.id_cita}</td>
+                    <td>${fechaStr}</td>
+                    <td>${cita.cliente_nombre}</td>
+                    <td>${cita.servicio}</td>
+                    <td>${cita.telefono}</td>
+                    <td>
+                        <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
+                        <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         function cerrarSesion() {
             if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
         }
@@ -275,12 +350,12 @@
                     
                     misCitasData = data;
                     const tbody = document.getElementById('tabla-citas-body');
-                    const select = document.getElementById('barbero-buscar-cita-id');
-                    const selectCliente = document.getElementById('barbero-buscar-cliente');
+                    const selectFiltro = document.getElementById('barbero-filtro-citas');
+                    const selectValor = document.getElementById('barbero-valor-citas');
                     
                     tbody.innerHTML = '';
-                    select.innerHTML = '<option value="">-- Seleccionar cita --</option>';
-                    selectCliente.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+                    selectFiltro.innerHTML = '<option value="">-- Selecciona un filtro --</option>';
+                    selectValor.innerHTML = '<option value="">-- Selecciona una opción --</option>';
 
                     if (!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No tienes citas pendientes</td></tr>';
@@ -288,16 +363,26 @@
                     }
 
                     const clientesUnicos = new Set();
+                    const serviciosUnicos = new Set();
+                    const estadosUnicos = new Set();
 
                     data.forEach(cita => {
                         const fechaObj = new Date(cita.fecha_hora);
                         const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                        select.innerHTML += `<option value="${cita.id_cita}">#${cita.id_cita} - ${cita.cliente_nombre} - ${fechaStr}</option>`;
-                        
                         if (!clientesUnicos.has(cita.cliente_nombre)) {
                             clientesUnicos.add(cita.cliente_nombre);
-                            selectCliente.innerHTML += `<option value="${cita.cliente_nombre}">${cita.cliente_nombre}</option>`;
+                            selectValor.innerHTML += `<option value="${cita.cliente_nombre}">${cita.cliente_nombre}</option>`;
+                        }
+
+                        if (!serviciosUnicos.has(cita.servicio)) {
+                            serviciosUnicos.add(cita.servicio);
+                            selectValor.innerHTML += `<option value="${cita.servicio}">${cita.servicio}</option>`;
+                        }
+
+                        if (!estadosUnicos.has(cita.estado)) {
+                            estadosUnicos.add(cita.estado);
+                            selectValor.innerHTML += `<option value="${cita.estado}">${cita.estado}</option>`;
                         }
 
                         const tr = document.createElement('tr');
@@ -320,56 +405,6 @@
                     document.getElementById('tabla-citas-body').innerHTML = 
                         '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos: ' + error.message + '</td></tr>';
                 });
-        }
-
-        function buscarMiCitaPorId() {
-            const id = document.getElementById('barbero-buscar-cita-id').value;
-            if (!id) {
-                alert('Por favor selecciona una cita');
-                return;
-            }
-            const cita = misCitasData.find(c => c.id_cita == id);
-            if (cita) {
-                const fechaStr = new Date(cita.fecha_hora).toLocaleString();
-                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nServicio: ${cita.servicio}\nFecha: ${fechaStr}\nTeléfono: ${cita.telefono}`);
-            }
-        }
-
-        function mostrarCitasDelCliente() {
-            const clienteNombre = document.getElementById('barbero-buscar-cliente').value;
-            if (!clienteNombre) {
-                cargarCitas();
-                return;
-            }
-            
-            const tbody = document.getElementById('tabla-citas-body');
-            tbody.innerHTML = '';
-            
-            const citasFiltradas = misCitasData.filter(c => c.cliente_nombre === clienteNombre);
-            
-            if (citasFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas para este cliente</td></tr>';
-                return;
-            }
-
-            citasFiltradas.forEach(cita => {
-                const fechaObj = new Date(cita.fecha_hora);
-                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>#${cita.id_cita}</td>
-                    <td>${fechaStr}</td>
-                    <td>${cita.cliente_nombre}</td>
-                    <td>${cita.servicio}</td>
-                    <td>${cita.telefono}</td>
-                    <td>
-                        <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
-                        <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
         }
 
         function cargarProductosBarbero() {
@@ -543,11 +578,7 @@
                 alert('Error de conexión: ' + err.message);
             });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('[v0] Página cargada, iniciando carga de citas');
-            cargarCitas();
-        });
     </script>
 </body>
 </html>
+
