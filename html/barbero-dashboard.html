@@ -101,7 +101,16 @@
                 <p class="subtitulo">Gestiona tus clientes asignados.</p>
                 
                 <div class="search-box">
-                    <h3>Búsqueda por Cliente</h3>
+                    <h3>🔍 Búsqueda por ID de Cita</h3>
+                    <label for="barbero-buscar-cita-id">Selecciona una Cita:</label>
+                    <select id="barbero-buscar-cita-id">
+                        <option value="">-- Cargar mis citas --</option>
+                    </select>
+                    <button onclick="buscarMiCitaPorId()">Buscar</button>
+                </div>
+
+                <div class="search-box">
+                    <h3>🔍 Búsqueda por Cliente</h3>
                     <label for="barbero-buscar-cliente">Selecciona un Cliente:</label>
                     <select id="barbero-buscar-cliente">
                         <option value="">-- Seleccionar cliente --</option>
@@ -133,7 +142,7 @@
                 <p class="subtitulo">Productos disponibles para recomendar.</p>
 
                 <div class="search-box">
-                    <h3>Búsqueda por Producto</h3>
+                    <h3>🔍 Búsqueda por ID de Producto</h3>
                     <label for="barbero-buscar-producto-id">Selecciona un Producto:</label>
                     <select id="barbero-buscar-producto-id">
                         <option value="">-- Cargar productos --</option>
@@ -240,10 +249,7 @@
         }
 
         function cerrarSesion() {
-            if(confirm("¿Cerrar sesión?")) {
-                localStorage.removeItem('loggedInUser');
-                window.location.href = '../index.html';
-            }
+            if(confirm("¿Cerrar sesión?")) window.location.href = '../index.html';
         }
 
         function cargarCitas() {
@@ -545,3 +551,4 @@
     </script>
 </body>
 </html>
+
