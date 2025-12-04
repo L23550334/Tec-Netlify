@@ -1129,7 +1129,7 @@
                         <td>${usuario.telefono || 'N/A'}</td>
                         <td>${rolNombre}</td>
                         <td>
-                            <button class="btn-accion btn-editar" onclick="editarUsuarioDirecto(${usuario.id_usuario})">Editar</button>
+                            <button class="btn-accion btn-editar" onclick="editarUsuario(${usuario.id_usuario})">Editar</button>
                             <button class="btn-accion btn-borrar" onclick="eliminarUsuarioDirecto(${usuario.id_usuario})">Borrar</button>
                         </td>
                     </tr>
@@ -1147,48 +1147,58 @@
             }
             
             const nuevoNombre = prompt('Nuevo nombre:', usuario.nombre);
-            if (nuevoNombre === null) return; // User cancelled
+            if (nuevoNombre === null) return;
             
             const nuevoEmail = prompt('Nuevo email:', usuario.email);
-            if (nuevoEmail === null) return; // User cancelled
+            if (nuevoEmail === null) return;
             
             const nuevoTelefono = prompt('Nuevo teléfono:', usuario.telefono || '');
-            if (nuevoTelefono === null) return; // User cancelled
+            if (nuevoTelefono === null) return;
             
             const nuevoRol = prompt('Nuevo rol (1=Admin, 2=Barbero, 3=Cliente):', usuario.id_rol);
-            if (nuevoRol === null) return; // User cancelled
+            if (nuevoRol === null) return;
 
-            // Basic validation for role
-            if (!['1', '2', '3'].includes(nuevoRol)) {
+            const rolInt = parseInt(nuevoRol);
+            if (![1, 2, 3].includes(rolInt)) {
                 alert('Rol inválido. Introduce 1, 2 o 3.');
                 return;
             }
             
-            console.log('[v0] Actualizando usuario:', id);
+            const updateData = {
+                id_usuario: id,
+                nombre: nuevoNombre,
+                email: nuevoEmail,
+                telefono: nuevoTelefono,
+                id_rol: rolInt
+            };
+            console.log('[v0] Enviando datos de actualización:', updateData);
+            
             fetch('../php/usuarios_actualizar.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    id_usuario: id,
-                    nombre: nuevoNombre,
-                    email: nuevoEmail,
-                    telefono: nuevoTelefono,
-                    id_rol: parseInt(nuevoRol) // Ensure role is sent as a number
-                })
+                body: JSON.stringify(updateData)
             })
             .then(res => {
-                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                console.log('[v0] Status de respuesta:', res.status);
+                if (!res.ok) {
+                    return res.json().then(data => {
+                        throw new Error(data.message || 'Error HTTP: ' + res.status);
+                    }).catch(err => {
+                        // If response is not JSON or fails to parse, use generic error
+                        throw new Error('Error HTTP: ' + res.status);
+                    });
+                }
                 return res.json();
             })
             .then(data => {
                 console.log('[v0] Respuesta de actualización:', data);
                 if (data.success) {
-                    alert('✅ Usuario actualizado correctamente');
-                    cargarUsuarios(); // Reload the table
+                    alert('Usuario actualizado correctamente');
+                    cargarUsuarios();
                 } else {
-                    alert('❌ Error: ' + (data.mensaje || 'No se pudo actualizar'));
+                    alert('Error: ' + (data.message || 'No se pudo actualizar'));
                 }
             })
             .catch(err => {
