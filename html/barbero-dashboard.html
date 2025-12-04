@@ -371,7 +371,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            cargarCitasDelBarbero();
+            setTimeout(() => {
+                cargarCitasDelBarbero();
+            }, 100);
         });
 
         function cerrarSesion() {
