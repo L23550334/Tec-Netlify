@@ -111,6 +111,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const pickupButton = document.getElementById('pickup-btn');
+            const deliveryButton = document.getElementById('delivery-btn');
+            const deliveryModal = document.getElementById('delivery-modal');
+            const deliveryForm = document.getElementById('form-delivery');
+            const closeDeliveryModal = deliveryModal.querySelector('.close-modal');
+
             const cartModal = document.getElementById('cart-modal');
             
             // Elementos del modal de alerta genérico
@@ -119,7 +124,7 @@
             const alertModalMessage = document.getElementById('alert-modal-message');
             const alertModalClose = document.getElementById('alert-modal-close');
 
-            if (pickupButton && cartModal && alertModal) {
+            if (pickupButton && cartModal && alertModal && deliveryButton && deliveryModal && deliveryForm) {
                 pickupButton.addEventListener('click', () => {
                     const cartTotalElement = document.getElementById('cart-total');
                     const totalText = cartTotalElement ? cartTotalElement.textContent : 'Total no disponible';
@@ -133,6 +138,29 @@
                     alertModal.style.display = 'flex';
                 });
 
+                // --- Lógica para Servicio a Domicilio ---
+
+                // 1. Abrir el modal de datos de entrega
+                deliveryButton.addEventListener('click', () => {
+                    cartModal.style.display = 'none'; // Ocultar modal del carrito
+                    deliveryModal.style.display = 'flex'; // Mostrar modal de entrega
+                });
+
+                // 2. Manejar el envío del formulario de entrega
+                deliveryForm.addEventListener('submit', (event) => {
+                    event.preventDefault(); // Evitar que la página se recargue
+
+                    const cartTotalElement = document.getElementById('cart-total');
+                    const totalText = cartTotalElement ? cartTotalElement.textContent : 'Total no disponible';
+
+                    deliveryModal.style.display = 'none'; // Ocultar modal de entrega
+
+                    // Mostrar modal de alerta con mensaje de éxito
+                    alertModalTitle.textContent = '¡Guardado con éxito!';
+                    alertModalMessage.innerHTML = `Tu pedido ha sido confirmado y llegará pronto. 🚚<br><br><strong>${totalText}</strong>`;
+                    alertModal.style.display = 'flex';
+                });
+
                 // Funcionalidad para cerrar el modal de alerta
                 const closeAlertAndReset = () => {
                     vaciarCarrito();
@@ -140,6 +168,11 @@
                 };
 
                 alertModalClose.addEventListener('click', closeAlertAndReset);
+
+                // Funcionalidad para cerrar el modal de entrega con la 'X'
+                closeDeliveryModal.addEventListener('click', () => {
+                    deliveryModal.style.display = 'none';
+                });
             }
 
             // Función para vaciar el carrito
