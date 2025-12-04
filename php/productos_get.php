@@ -21,6 +21,11 @@ try {
 
     $productos = [];
     while($row = $result->fetch_assoc()) {
+        // REGLA DE NEGOCIO: Asegurarse de que la ruta de la imagen sea correcta
+        // para que el frontend la pueda encontrar desde la carpeta /html.
+        if (!empty($row['imagen_url']) && strpos($row['imagen_url'], '../') !== 0) {
+            $row['imagen_url'] = '../' . $row['imagen_url'];
+        }
         $productos[] = $row;
     }
 
