@@ -72,6 +72,18 @@
         .section-panel { display: none; }
         .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .estado-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .estado-badge.pendiente { background-color: #ff9800; color: white; }
+        .estado-badge.completada { background-color: #4caf50; color: white; }
+        .estado-badge.cancelada { background-color: #ff4d4d; color: white; }
     </style>
 </head>
 <body>
@@ -102,18 +114,11 @@
                 
                 <div class="search-box">
                     <h3>🔍 Buscar Mis Citas</h3>
-                    <label for="barbero-filtro-citas">Buscar por:</label>
-                    <select id="barbero-filtro-citas">
-                        <option value="">-- Selecciona un filtro --</option>
-                        <option value="cliente">Cliente</option>
-                        <option value="servicio">Servicio</option>
-                        <option value="estado">Estado</option>
+                    <label for="barbero-cliente-search">Buscar por Cliente:</label>
+                    <select id="barbero-cliente-search">
+                        <option value="">-- Selecciona un cliente --</option>
                     </select>
-                    <label for="barbero-valor-citas" style="margin-top: 15px;">Valor a buscar:</label>
-                    <select id="barbero-valor-citas">
-                        <option value="">-- Selecciona una opción --</option>
-                    </select>
-                    <button onclick="mostrarCitasBarberFiltradas()" style="margin-top: 10px;">Mostrar</button>
+                    <button onclick="mostrarCitasBarberPorCliente()" style="margin-top: 10px;">Mostrar</button>
                 </div>
 
                 <div class="table-container">
@@ -121,14 +126,14 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Fecha y Hora</th>
                                 <th>Cliente</th>
                                 <th>Servicio</th>
-                                <th>Teléfono</th>
-                                <th>Acciones</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-citas-body">
+                        <tbody id="tabla-citas-barbero-body">
                             <tr><td colspan="6" style="text-align:center; padding: 20px;">Cargando citas...</td></tr>
                         </tbody>
                     </table>
@@ -140,10 +145,10 @@
                 <p class="subtitulo">Productos disponibles para recomendar.</p>
 
                 <div class="search-box">
-                    <h3>Búsqueda por ID de Producto</h3>
-                    <label for="barbero-buscar-producto-id">Selecciona un Producto:</label>
+                    <h3>Búsqueda por Producto</h3>
+                    <label for="barbero-buscar-producto-id">Buscar por Producto:</label>
                     <select id="barbero-buscar-producto-id">
-                        <option value="">-- Cargar productos --</option>
+                        <option value="">-- Seleccionar producto --</option>
                     </select>
                     <button onclick="verDetalleProducto()">Ver Detalle</button>
                 </div>
@@ -246,80 +251,57 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const filtroSelect = document.getElementById('barbero-filtro-citas');
-            if (filtroSelect) {
-                filtroSelect.addEventListener('change', actualizarOpcionesBarber);
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarClientesParaBarbero();
+            cargarProductosBarbero();
+            
+            const clienteSelect = document.getElementById('barbero-cliente-search');
+            if (clienteSelect) {
+                clienteSelect.addEventListener('change', function() {
+                    // Optional: could auto-load on selection
+                });
             }
         });
 
-        function actualizarOpcionesBarber() {
-            const filtro = document.getElementById('barbero-filtro-citas').value;
-            const valorSelect = document.getElementById('barbero-valor-citas');
-            valorSelect.innerHTML = '<option value="">-- Selecciona una opción --</option>';
-
-            if (filtro === 'cliente') {
-                const clientesUnicos = [...new Set(misCitasData.map(c => c.cliente_nombre))];
-                clientesUnicos.forEach(cliente => {
-                    valorSelect.innerHTML += `<option value="${cliente}">${cliente}</option>`;
-                });
-            } else if (filtro === 'servicio') {
-                const servicios = ['Corte', 'Barba', 'Corte + Barba'];
-                servicios.forEach(servicio => {
-                    valorSelect.innerHTML += `<option value="${servicio}">${servicio}</option>`;
-                });
-            } else if (filtro === 'estado') {
-                const estados = ['pendiente', 'completada', 'cancelada'];
-                estados.forEach(estado => {
-                    valorSelect.innerHTML += `<option value="${estado}">${estado.charAt(0).toUpperCase() + estado.slice(1)}</option>`;
-                });
-            }
+        function cargarClientesParaBarbero() {
+            const selectClientes = document.getElementById('barbero-cliente-search');
+            const clientesUnicos = [...new Set(misCitasData.map(c => c.cliente_nombre))];
+            
+            selectClientes.innerHTML = '<option value="">-- Selecciona un cliente --</option>';
+            clientesUnicos.forEach(cliente => {
+                selectClientes.innerHTML += `<option value="${cliente}">${cliente}</option>`;
+            });
         }
 
-        function mostrarCitasBarberFiltradas() {
-            const filtro = document.getElementById('barbero-filtro-citas').value;
-            const valor = document.getElementById('barbero-valor-citas').value;
-            const tbody = document.getElementById('tabla-citas-body');
-
-            if (!filtro || !valor) {
-                alert('Por favor selecciona un filtro y un valor');
+        function mostrarCitasBarberPorCliente() {
+            const clienteSeleccionado = document.getElementById('barbero-cliente-search').value;
+            
+            if (!clienteSeleccionado) {
+                alert('Por favor selecciona un cliente');
                 return;
             }
-
-            let citasFiltradas = [];
-
-            if (filtro === 'cliente') {
-                citasFiltradas = misCitasData.filter(c => c.cliente_nombre === valor);
-            } else if (filtro === 'servicio') {
-                citasFiltradas = misCitasData.filter(c => c.servicio === valor);
-            } else if (filtro === 'estado') {
-                citasFiltradas = misCitasData.filter(c => c.estado === valor);
-            }
-
+            
+            const citasFiltradas = misCitasData.filter(cita => cita.cliente_nombre === clienteSeleccionado);
+            
+            const tbody = document.getElementById('tabla-citas-barbero-body');
             tbody.innerHTML = '';
-
+            
             if (citasFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas con ese filtro</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay citas para este cliente</td></tr>';
                 return;
             }
-
+            
             citasFiltradas.forEach(cita => {
-                const fechaObj = new Date(cita.fecha_hora);
-                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>#${cita.id_cita}</td>
-                    <td>${fechaStr}</td>
-                    <td>${cita.cliente_nombre}</td>
-                    <td>${cita.servicio}</td>
-                    <td>${cita.telefono}</td>
-                    <td>
-                        <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
-                        <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
-                    </td>
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${cita.id_cita}</td>
+                        <td>${cita.cliente_nombre}</td>
+                        <td>${cita.servicio}</td>
+                        <td>${cita.fecha}</td>
+                        <td>${cita.hora}</td>
+                        <td><span class="estado-badge ${cita.estado}">${cita.estado}</span></td>
+                    </tr>
                 `;
-                tbody.appendChild(tr);
             });
         }
 
@@ -349,60 +331,31 @@
                     }
                     
                     misCitasData = data;
-                    const tbody = document.getElementById('tabla-citas-body');
-                    const selectFiltro = document.getElementById('barbero-filtro-citas');
-                    const selectValor = document.getElementById('barbero-valor-citas');
+                    const tbody = document.getElementById('tabla-citas-barbero-body');
                     
                     tbody.innerHTML = '';
-                    selectFiltro.innerHTML = '<option value="">-- Selecciona un filtro --</option>';
-                    selectValor.innerHTML = '<option value="">-- Selecciona una opción --</option>';
 
                     if (!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No tienes citas pendientes</td></tr>';
                         return;
                     }
 
-                    const clientesUnicos = new Set();
-                    const serviciosUnicos = new Set();
-                    const estadosUnicos = new Set();
-
                     data.forEach(cita => {
-                        const fechaObj = new Date(cita.fecha_hora);
-                        const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                        if (!clientesUnicos.has(cita.cliente_nombre)) {
-                            clientesUnicos.add(cita.cliente_nombre);
-                            selectValor.innerHTML += `<option value="${cita.cliente_nombre}">${cita.cliente_nombre}</option>`;
-                        }
-
-                        if (!serviciosUnicos.has(cita.servicio)) {
-                            serviciosUnicos.add(cita.servicio);
-                            selectValor.innerHTML += `<option value="${cita.servicio}">${cita.servicio}</option>`;
-                        }
-
-                        if (!estadosUnicos.has(cita.estado)) {
-                            estadosUnicos.add(cita.estado);
-                            selectValor.innerHTML += `<option value="${cita.estado}">${cita.estado}</option>`;
-                        }
-
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>#${cita.id_cita}</td>
-                            <td>${fechaStr}</td>
-                            <td>${cita.cliente_nombre}</td>
-                            <td>${cita.servicio}</td>
-                            <td>${cita.telefono}</td>
-                            <td>
-                                <button class="btn-estado btn-completar" onclick="actualizarEstado(${cita.id_cita}, 'completada')">✅ Completar</button>
-                                <button class="btn-estado btn-cancelar" onclick="actualizarEstado(${cita.id_cita}, 'cancelada')">❌ Cancelar</button>
-                            </td>
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${cita.id_cita}</td>
+                                <td>${cita.cliente_nombre}</td>
+                                <td>${cita.servicio}</td>
+                                <td>${cita.fecha}</td>
+                                <td>${cita.hora}</td>
+                                <td><span class="estado-badge ${cita.estado}">${cita.estado}</span></td>
+                            </tr>
                         `;
-                        tbody.appendChild(tr);
                     });
                 })
                 .catch(error => {
                     console.error('[v0] Error al cargar citas:', error);
-                    document.getElementById('tabla-citas-body').innerHTML = 
+                    document.getElementById('tabla-citas-barbero-body').innerHTML = 
                         '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar datos: ' + error.message + '</td></tr>';
                 });
         }
@@ -581,4 +534,3 @@
     </script>
 </body>
 </html>
-
