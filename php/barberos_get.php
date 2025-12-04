@@ -42,4 +42,5 @@ try {
         'mensaje' => $e->getMessage()
     ], JSON_UNESCAPED_UNICODE);
 }
+    
 ?>
