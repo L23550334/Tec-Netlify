@@ -1155,7 +1155,7 @@
             const nuevoTelefono = prompt('Nuevo teléfono:', usuario.telefono || '');
             if (nuevoTelefono === null) return; // User cancelled
             
-            const nuevoRol = prompt('Nuevo rol (1=Admin, 2=Barbero, 3=Cliente):', usuario.rol);
+            const nuevoRol = prompt('Nuevo rol (1=Admin, 2=Barbero, 3=Cliente):', usuario.id_rol);
             if (nuevoRol === null) return; // User cancelled
 
             // Basic validation for role
@@ -1175,7 +1175,7 @@
                     nombre: nuevoNombre,
                     email: nuevoEmail,
                     telefono: nuevoTelefono,
-                    rol: parseInt(nuevoRol) // Ensure role is sent as a number
+                    id_rol: parseInt(nuevoRol) // Ensure role is sent as a number
                 })
             })
             .then(res => {
@@ -1280,3 +1280,4 @@
 
 </body>
 </html>
+
