@@ -389,38 +389,7 @@
                 <h2>Citas Programadas</h2>
                 <p class="subtitulo-catalogo">Agenda de la barbería.</p>
                 
-                <!-- Primary Key Search: Search by Appointment ID -->
-                <div class="search-box">
-                    <h3>Búsqueda por Llave Primaria (ID Cita)</h3>
-                    <label for="buscar-cita-id">Selecciona una Cita:</label>
-                    <select id="buscar-cita-id">
-                        <option value="">-- Cargar citas --</option>
-                    </select>
-                    <button onclick="buscarCitaPorId()">Buscar</button>
-                    <button onclick="actualizarCita()">Actualizar</button>
-                    <button onclick="eliminarCita()">Eliminar</button>
-                </div>
-
-                <!-- Foreign Key Search 1: Search by Barber -->
-                <div class="search-box">
-                    <h3>Búsqueda por Barbero</h3>
-                    <label for="buscar-barbero">Selecciona un Barbero:</label>
-                    <select id="buscar-barbero">
-                        <option value="">-- Cargar barberos --</option>
-                    </select>
-                    <button onclick="buscarCitasPorBarbero()">Mostrar Citas</button>
-                </div>
-
-                <!-- Foreign Key Search 2: Search by Customer -->
-                <div class="search-box">
-                    <h3>Búsqueda por Cliente</h3>
-                    <label for="buscar-cliente">Selecciona un Cliente:</label>
-                    <select id="buscar-cliente">
-                        <option value="">-- Cargar clientes --</option>
-                    </select>
-                    <button onclick="buscarCitasPorCliente()">Mostrar Citas</button>
-                </div>
-
+                <!-- Removidas búsquedas por ID, Barbero y Cliente. Manteniendo solo búsqueda por Estado -->
                 <!-- Foreign Key Search 3: Search by State (estado) -->
                 <div class="search-box">
                     <h3>Búsqueda por Estado de Cita</h3>
