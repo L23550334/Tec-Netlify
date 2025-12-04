@@ -4,6 +4,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     ob_end_clean();
@@ -17,23 +18,20 @@ try {
         throw new Exception("Error de conexión a la base de datos");
     }
 
-    // Leer datos del request
     $data = json_decode(file_get_contents('php://input'), true);
 
     if (!isset($data['id_cita']) || !isset($data['estado'])) {
         throw new Exception('Datos incompletos: se requiere id_cita y estado');
     }
 
-    $id_cita = $data['id_cita'];
+    $id_cita = intval($data['id_cita']);
     $estado = $data['estado'];
 
-    // Validar que el estado sea válido
-    $estados_validos = ['pendiente', 'completada', 'cancelada'];
+    $estados_validos = ['pendiente', 'confirmada', 'completada', 'cancelada'];
     if (!in_array($estado, $estados_validos)) {
-        throw new Exception('Estado inválido. Debe ser: pendiente, completada o cancelada');
+        throw new Exception('Estado invalido. Debe ser: pendiente, confirmada, completada o cancelada');
     }
 
-    // Actualizar estado
     $sql = "UPDATE citas SET estado = ? WHERE id_cita = ?";
     $stmt = $conn->prepare($sql);
     
@@ -45,6 +43,10 @@ try {
 
     if (!$stmt->execute()) {
         throw new Exception("Error al actualizar: " . $conn->error);
+    }
+    
+    if ($stmt->affected_rows === 0) {
+        throw new Exception("No se encontró la cita o no hubo cambios");
     }
 
     $stmt->close();
