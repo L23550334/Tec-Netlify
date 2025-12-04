@@ -1063,10 +1063,8 @@
                     
                     usuariosData = data;
                     const tbody = document.getElementById('tabla-usuarios-body');
-                    const select = document.getElementById('buscar-usuario-id');
                     
                     tbody.innerHTML = '';
-                    select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
 
                     if(!data || data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay usuarios registrados</td></tr>';
@@ -1075,8 +1073,6 @@
 
                     data.forEach(usuario => {
                         const rolNombre = usuario.rol_texto || 'N/A';
-                        
-                        select.innerHTML += `<option value="${usuario.id_usuario}">#${usuario.id_usuario} - ${usuario.nombre}</option>`;
                         
                         tbody.innerHTML += `
                             <tr>
@@ -1247,7 +1243,7 @@
             tbody.innerHTML = '';
             
             if(!rol) {
-                cargarUsuarios(); // If no role selected, show all users
+                cargarUsuarios();
                 return;
             }
             
@@ -1268,8 +1264,8 @@
                         <td>${usuario.telefono || 'N/A'}</td>
                         <td>${rolNombre}</td>
                         <td>
-                            <button class="btn-accion btn-editar" onclick="editarUsuario(${usuario.id_usuario})">Editar</button>
-                            <button class="btn-accion btn-borrar" onclick="eliminarUsuarioDirecto(${usuario.id_usuario})">Borrar</button>
+                            <button onclick="editarUsuario(${usuario.id_usuario})" class="btn-accion">Editar</button>
+                            <button onclick="eliminarUsuarioDirecto(${usuario.id_usuario})" class="btn-accion btn-eliminar">Eliminar</button>
                         </td>
                     </tr>
                 `;
