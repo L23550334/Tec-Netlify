@@ -330,8 +330,8 @@
             <a href="../index.html" class="logo">La Quinta Esencia Barber Shop </a>
             <div class="nav-links-group">
                 <ul>
-                    <li><a href="../index.html">🏠Volver al Inicio</a></li>
-                    <!-- <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li> -->
+                    <li><a href="../index.html">Volver al Inicio</a></li>
+                    <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
                 </ul>
             </div>
         </nav>
@@ -349,12 +349,12 @@
 
             <!-- PRODUCTOS Panel with primary key search and dynamic table -->
             <div id="panel-productos" class="section-panel active">
-                <h2 style="color:black">Gestión de Inventario</h2>
-                <h4 style="color:black">Control de productos en venta.</h4>
+                <h2>Gestión de Inventario</h2>
+                <p class="subtitulo-catalogo">Control de productos en venta.</p>
                 
                 <!-- Primary Key Search: Search by Product ID -->
                 <div class="search-box">
-                    <h3>Búsqueda de Producto</h3>
+                    <h3>Búsqueda por Llave Primaria (ID Producto)</h3>
                     <label for="buscar-producto-id">Selecciona un Producto:</label>
                     <select id="buscar-producto-id">
                         <option value="">-- Cargar productos --</option>
@@ -387,8 +387,8 @@
 
             <!-- CITAS Panel with foreign key searches and dynamic tables -->
             <div id="panel-citas" class="section-panel">
-                <h2 style="color:black">Citas Programadas</h2>
-                <h4 style="color:black">Agenda de la barbería.</h4>
+                <h2>Citas Programadas</h2>
+                <p class="subtitulo-catalogo">Agenda de la barbería.</p>
                 
                 <!-- Removidas búsquedas por ID, Barbero y Cliente. Manteniendo solo búsqueda por Estado -->
                 <!-- Foreign Key Search 3: Search by State (estado) -->
@@ -427,8 +427,8 @@
 
             <!-- USUARIOS Panel with primary key search and foreign key search -->
             <div id="panel-usuarios" class="section-panel">
-                <h2 style="color:black">Gestión de Usuarios</h2>
-                <h4 style="color:black">Clientes y personal.</h4>
+                <h2>Gestión de Usuarios</h2>
+                <p class="subtitulo-catalogo">Clientes y personal.</p>
 
                 <!-- Foreign Key Search: Search by Role (rol) -->
                 <div class="search-box">
@@ -1287,3 +1287,4 @@
 
 </body>
 </html>
+
