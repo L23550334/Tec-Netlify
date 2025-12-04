@@ -318,7 +318,7 @@
                                 <button class="btn-accion completar" onclick="completarCitaBarbero(${cita.id_cita})">✓ Completar</button>
                                 <button class="btn-accion cancelar" onclick="cancelarCitaBarbero(${cita.id_cita})">✗ Cancelar</button>
                             ` : `
-                                <span style="font-size: 0.85em; color: #666;">${cita.estado === 'completado' ? '✓ Completado' : '✗ Cancelado'}</span>
+                                <span style="font-size: 0.85em; color: #666;">${cita.estado === 'completada' ? '✓ Completado' : '✗ Cancelado'}</span>
                             `}
                         </td>
                     </tr>
@@ -332,16 +332,17 @@
             fetch('../php/citas_actualizar.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_cita: idCita, estado: 'completado' })
+                body: JSON.stringify({ id_cita: idCita, estado: 'completada' })
             })
             .then(res => res.json())
             .then(data => {
+                console.log("[v0] Completar respuesta:", data);
                 if (data.success) {
                     alert('✓ Cita completada exitosamente');
                     cargarCitasDelBarbero();
                     document.getElementById('barbero-cliente-search').value = '';
                 } else {
-                    alert('Error al completar la cita');
+                    alert('Error: ' + (data.mensaje || 'No se pudo completar la cita'));
                 }
             })
             .catch(err => console.error('[v0] Error:', err));
@@ -353,16 +354,17 @@
             fetch('../php/citas_actualizar.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_cita: idCita, estado: 'cancelado' })
+                body: JSON.stringify({ id_cita: idCita, estado: 'cancelada' })
             })
             .then(res => res.json())
             .then(data => {
+                console.log("[v0] Cancelar respuesta:", data);
                 if (data.success) {
                     alert('✗ Cita cancelada');
                     cargarCitasDelBarbero();
                     document.getElementById('barbero-cliente-search').value = '';
                 } else {
-                    alert('Error al cancelar la cita');
+                    alert('Error: ' + (data.mensaje || 'No se pudo cancelar la cita'));
                 }
             })
             .catch(err => console.error('[v0] Error:', err));
