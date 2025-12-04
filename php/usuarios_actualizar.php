@@ -2,91 +2,97 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
+
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 try {
-    include 'conexion.php';
+    require_once 'conexion.php';
     
     if (!$conn) {
-        throw new Exception("Error de conexión a la base de datos");
+        throw new Exception("No hay conexión a la base de datos");
     }
 
-    $data = json_decode(file_get_contents('php://input'), true);
+    // Leer datos del request
+    $input = file_get_contents('php://input');
+    error_log("=== ACTUALIZAR USUARIO ===");
+    error_log("Input recibido: " . $input);
     
-    // Log datos recibidos para debugging
-    error_log("Datos recibidos: " . json_encode($data));
+    $data = json_decode($input, true);
     
-    if (!$data || !isset($data['id_usuario'])) {
-        throw new Exception("ID de usuario requerido");
+    if (!$data) {
+        throw new Exception("No se pudo decodificar el JSON");
     }
 
-    $id = intval($data['id_usuario']);
-    $nombre = isset($data['nombre']) ? trim($data['nombre']) : null;
-    $email = isset($data['email']) ? trim($data['email']) : null;
-    $telefono = isset($data['telefono']) ? trim($data['telefono']) : null;
-    $rol = isset($data['id_rol']) ? intval($data['id_rol']) : null;
-
-    // Construir query dinámicamente
-    $updates = [];
-    $params = [];
-    $types = '';
-
-    if ($nombre !== null && $nombre !== '') {
-        $updates[] = "nombre = ?";
-        $params[] = $nombre;
-        $types .= 's';
-    }
-    if ($email !== null && $email !== '') {
-        $updates[] = "email = ?";
-        $params[] = $email;
-        $types .= 's';
-    }
-    if ($telefono !== null && $telefono !== '') {
-        $updates[] = "telefono = ?";
-        $params[] = $telefono;
-        $types .= 's';
-    }
-    if ($rol !== null && in_array($rol, [1, 2, 3])) {
-        $updates[] = "id_rol = ?";
-        $params[] = $rol;
-        $types .= 'i';
+    // Validar ID
+    if (!isset($data['id_usuario']) || empty($data['id_usuario'])) {
+        throw new Exception("ID de usuario es requerido");
     }
 
-    if (empty($updates)) {
-        throw new Exception("No hay campos válidos para actualizar");
+    $id_usuario = intval($data['id_usuario']);
+    $nombre = isset($data['nombre']) ? trim($data['nombre']) : '';
+    $email = isset($data['email']) ? trim($data['email']) : '';
+    $telefono = isset($data['telefono']) ? trim($data['telefono']) : '';
+    $id_rol = isset($data['id_rol']) ? intval($data['id_rol']) : 0;
+
+    error_log("ID: $id_usuario, Nombre: $nombre, Email: $email, Telefono: $telefono, Rol: $id_rol");
+
+    // Validaciones básicas
+    if (empty($nombre)) {
+        throw new Exception("El nombre es requerido");
+    }
+    
+    if (empty($email)) {
+        throw new Exception("El email es requerido");
+    }
+    
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        throw new Exception("El email no es válido");
+    }
+    
+    if (!in_array($id_rol, [1, 2, 3])) {
+        throw new Exception("El rol debe ser 1, 2 o 3");
     }
 
-    // Agregar ID al final
-    $params[] = $id;
-    $types .= 'i';
-
-    $sql = "UPDATE usuarios SET " . implode(", ", $updates) . " WHERE id_usuario = ?";
+    // Preparar consulta SQL
+    $sql = "UPDATE usuarios SET nombre = ?, email = ?, telefono = ?, id_rol = ? WHERE id_usuario = ?";
     
     error_log("SQL: $sql");
-    error_log("Params: " . json_encode($params));
     
     $stmt = $conn->prepare($sql);
+    
     if (!$stmt) {
-        throw new Exception("Error preparando consulta: " . $conn->error);
+        throw new Exception("Error al preparar consulta: " . $conn->error);
     }
     
-    $stmt->bind_param($types, ...$params);
+    $stmt->bind_param("sssii", $nombre, $email, $telefono, $id_rol, $id_usuario);
     
-    if ($stmt->execute()) {
-        if ($stmt->affected_rows > 0) {
-            echo json_encode(['success' => true, 'message' => 'Usuario actualizado correctamente']);
-        } else {
-            echo json_encode(['success' => true, 'message' => 'No se realizaron cambios']);
-        }
-    } else {
-        throw new Exception("Error al ejecutar: " . $stmt->error);
+    if (!$stmt->execute()) {
+        throw new Exception("Error al ejecutar consulta: " . $stmt->error);
     }
+    
+    $affected_rows = $stmt->affected_rows;
+    error_log("Filas afectadas: $affected_rows");
     
     $stmt->close();
     $conn->close();
     
+    echo json_encode([
+        'success' => true,
+        'message' => 'Usuario actualizado correctamente',
+        'affected_rows' => $affected_rows
+    ]);
+    
 } catch (Exception $e) {
-    error_log("Error en usuarios_actualizar.php: " . $e->getMessage());
+    error_log("ERROR: " . $e->getMessage());
+    error_log("Trace: " . $e->getTraceAsString());
+    
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
 ?>
