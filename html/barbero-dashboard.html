@@ -72,6 +72,56 @@
         .section-panel { display: none; }
         .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- MEDIA QUERIES PARA DISEÑO RESPONSIVO --- */
+        @media (max-width: 768px) {
+            .admin-layout {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #333;
+                flex-direction: row;
+                gap: 10px;
+                overflow-x: auto; /* Permite scroll horizontal si los botones no caben */
+                padding: 10px;
+            }
+
+            .sidebar button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                white-space: nowrap; /* Evita que el texto del botón se parta */
+                min-width: fit-content;
+            }
+
+            .content {
+                padding: 1rem;
+                min-height: auto;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+
+            .btn-estado {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
     </style>
 </head>
 <body>

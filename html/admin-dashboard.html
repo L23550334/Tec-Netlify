@@ -342,6 +342,7 @@
             <button onclick="mostrarSeccion('productos')" class="active">📦 Productos</button>
             <button onclick="mostrarSeccion('citas')">📅 Citas</button>
             <button onclick="mostrarSeccion('usuarios')">👥 Usuarios</button>
+            <button onclick="mostrarSeccion('reportes')">📊 Reportes</button>
         </aside>
 
         <section class="admin-content">
@@ -504,6 +505,31 @@
                 </div>
             </div>
 
+            <!-- REPORTES Panel -->
+            <div id="panel-reportes" class="section-panel">
+                <h2>Reportes de Gerencia</h2>
+                <p class="subtitulo-catalogo">Análisis de rendimiento del negocio.</p>
+                
+                <div class="search-box">
+                    <h3>📈 Reporte de Ingresos por Servicio</h3>
+                    <p style="color: #ccc; font-size: 0.9rem;">Muestra los ingresos generados por cada tipo de servicio con estado "completada".</p>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Servicio</th>
+                                <th>Citas Realizadas</th>
+                                <th>Ingresos Generados</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-reporte-ingresos-body">
+                            <tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando reporte...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
     </main>
 
@@ -531,6 +557,8 @@
                 cargarClientes();
             } else if (id === 'usuarios') {
                 cargarUsuarios();
+            } else if (id === 'reportes') {
+                cargarReporteIngresos();
             }
         }
 
@@ -1206,6 +1234,42 @@
                     </tr>
                 `;
             });
+        }
+
+        function cargarReporteIngresos() {
+            console.log('[v0] Cargando reporte de ingresos...');
+            const tbody = document.getElementById('tabla-reporte-ingresos-body');
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando reporte...</td></tr>';
+
+            fetch('../php/reporte_ingresos_get.php')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('[v0] Datos del reporte recibidos:', data);
+                    tbody.innerHTML = '';
+
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    if (!data.reporte || data.reporte.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay datos suficientes para generar el reporte.</td></tr>';
+                        return;
+                    }
+
+                    data.reporte.forEach(item => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${item.servicio}</td>
+                                <td>${item.citas_realizadas}</td>
+                                <td>$${parseFloat(item.ingresos_generados).toFixed(2)}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error('[v0] Error al cargar el reporte:', err);
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Error al cargar el reporte: ' + err.message + '</td></tr>';
+                });
         }
 
         function cerrarSesion() {
