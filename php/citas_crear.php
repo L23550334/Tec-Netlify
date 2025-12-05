@@ -3,20 +3,22 @@
 
 header('Content-Type: application/json');
 include 'conexion.php';
-session_start();
 
 $input = json_decode(file_get_contents('php://input'), true);
 
 // --- 1. Recibir y Validar Datos ---
-$id_cliente = $_SESSION['usuario_id'] ?? null;
+$id_cliente = $input['id_cliente'] ?? null;
 $id_barbero = $input['id_barbero'] ?? null;
 $servicio = $input['servicio'] ?? null;
-$fecha_hora = $input['fecha_hora'] ?? null;
+$fecha = $input['fecha'] ?? null;
+$hora = $input['hora'] ?? null;
 
-if (!$id_cliente || !$id_barbero || !$servicio || !$fecha_hora) {
-    echo json_encode(['success' => false, 'message' => 'Faltan datos para crear la cita.']);
+if (!$id_cliente || !$id_barbero || !$servicio || !$fecha || !$hora) {
+    echo json_encode(['success' => false, 'mensaje' => 'Faltan datos para crear la cita.']);
     exit;
 }
+
+$fecha_hora = $fecha . ' ' . $hora;
 
 // --- 2. REGLA DE NEGOCIO: Definir duración según el servicio ---
 $duraciones = [
@@ -49,7 +51,7 @@ while ($cita_existente = $result_check->fetch_assoc()) {
     // Lógica de solapamiento: (Inicio1 < Fin2) y (Fin1 > Inicio2)
     if ($nueva_cita_inicio < $existente_fin && $nueva_cita_fin > $existente_inicio) {
         // ¡Conflicto encontrado!
-        echo json_encode(['success' => false, 'message' => 'Lo sentimos, ese horario ya no está disponible. Por favor, selecciona otro.']);
+        echo json_encode(['success' => false, 'mensaje' => 'Lo sentimos, ese horario ya no está disponible. Por favor, selecciona otro.']);
         $stmt_check->close();
         $conn->close();
         exit;
@@ -64,9 +66,9 @@ $stmt_insert = $conn->prepare($sql_insert);
 $stmt_insert->bind_param("iisssi", $id_cliente, $id_barbero, $servicio, $fecha_hora, $estado_inicial, $duracion_minutos);
 
 if ($stmt_insert->execute()) {
-    echo json_encode(['success' => true, 'message' => '¡Tu cita ha sido agendada con éxito!']);
+    echo json_encode(['success' => true, 'mensaje' => '¡Tu cita ha sido agendada con éxito!']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Error al guardar la cita en la base de datos.']);
+    echo json_encode(['success' => false, 'mensaje' => 'Error al guardar la cita en la base de datos.']);
 }
 
 $stmt_insert->close();
