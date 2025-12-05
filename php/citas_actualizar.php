@@ -2,13 +2,20 @@
 ob_start();
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Methods: PUT, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     ob_end_clean();
     exit(0);
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+    ob_end_clean();
+    http_response_code(405);
+    echo json_encode(['success' => false, 'mensaje' => 'Método no permitido. Use PUT']);
+    exit;
 }
 
 try {
@@ -67,3 +74,4 @@ try {
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>
+
