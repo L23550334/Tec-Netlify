@@ -130,11 +130,11 @@ function guardarProductoEdicion(event) {
     .then((data) => {
       console.log("[v0] Respuesta de actualización:", data)
       if (data.success) {
-        alert("✅ Producto actualizado correctamente")
+        alert("Producto actualizado correctamente")
         cerrarModal("modalEditarProducto")
         cargarProductos()
       } else {
-        alert("❌ Error: " + (data.mensaje || "Error desconocido"))
+        alert("Error: " + (data.mensaje || "Error desconocido"))
       }
     })
     .catch((err) => {
@@ -201,11 +201,11 @@ function guardarCitaEdicion(event) {
     .then((data) => {
       console.log("[v0] Respuesta de actualización:", data)
       if (data.success) {
-        alert("✅ Cita actualizada correctamente")
+        alert("Cita actualizada correctamente")
         cerrarModal("modalEditarCita")
         cargarCitas()
       } else {
-        alert("❌ Error: " + (data.mensaje || "Error desconocido"))
+        alert("Error: " + (data.mensaje || "Error desconocido"))
       }
     })
     .catch((err) => {
@@ -283,11 +283,11 @@ function guardarUsuarioEdicion(event) {
     .then((data) => {
       console.log("[v0] Respuesta de actualización:", data)
       if (data.success) {
-        alert("✅ Usuario actualizado correctamente")
+        alert("Usuario actualizado correctamente")
         cerrarModal("modalEditarUsuario")
         cargarUsuarios()
       } else {
-        alert("❌ Error: " + (data.mensaje || "Error desconocido"))
+        alert("Error: " + (data.mensaje || "Error desconocido"))
       }
     })
     .catch((err) => {
