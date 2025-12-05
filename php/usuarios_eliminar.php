@@ -2,13 +2,18 @@
 ob_start();
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: POST, DELETE');
 
 try {
     include 'conexion.php';
     
     if (!$conn) {
         throw new Exception("Error de conexión a la base de datos");
+    }
+
+    $method = $_SERVER['REQUEST_METHOD'];
+    if ($method !== 'POST' && $method !== 'DELETE') {
+        throw new Exception("Método no permitido. Use POST o DELETE");
     }
 
     $data = json_decode(file_get_contents('php://input'), true);
@@ -48,3 +53,4 @@ try {
     echo json_encode(['success' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
 }
 ?>
+
