@@ -664,12 +664,12 @@ function handleReseñasForm() {
       // Previene el comportamiento por defecto del formulario (recargar la página)
       event.preventDefault()
 
-      // 1. Obtener los datos del formulario
+      // Obtener los datos del formulario
       const nombre = sanitizeHTML(document.getElementById("reseña-nombre").value)
       const comentario = sanitizeHTML(document.getElementById("reseña-comentario").value)
       const rating = document.querySelector('input[name="rating"]:checked').value
 
-      // 2. Crear la nueva tarjeta de reseña
+      // Crear la nueva tarjeta de reseña
       const reseñaGrid = document.querySelector(".reseñas-grid")
       const nuevaReseña = document.createElement("div")
       nuevaReseña.className = "reseña-card"
@@ -684,7 +684,7 @@ function handleReseñasForm() {
                 <h4 class="reseña-autor"></h4>
             `
 
-      // 3. Usar .textContent para insertar los datos sanitizados.
+      // Usar .textContent para insertar los datos sanitizados.
       // Esto es aún más seguro que usar innerHTML con datos del usuario.
       const textoP = nuevaReseña.querySelector(".reseña-texto")
       const autorH4 = nuevaReseña.querySelector(".reseña-autor")
@@ -692,10 +692,10 @@ function handleReseñasForm() {
       textoP.textContent = `"${comentario}"`
       autorH4.textContent = `- ${nombre}`
 
-      // 3. Añadir la nueva reseña al grid
+      // Añadir la nueva reseña al grid
       reseñaGrid.appendChild(nuevaReseña)
 
-      // 4. Limpiar el formulario
+      // Limpiar el formulario
       formReseña.reset()
     })
   }
