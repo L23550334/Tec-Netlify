@@ -472,24 +472,121 @@
                 <h2>Reportes de Gerencia</h2>
                 <p class="subtitulo-catalogo">Análisis de rendimiento del negocio.</p>
                 
-                <div class="search-box">
-                    <h3>📈 Reporte de Ingresos por Servicio</h3>
-                    <p style="color: #ccc; font-size: 0.9rem;">Muestra los ingresos generados por cada tipo de servicio con estado "completada".</p>
+                <!-- Added tabs for different report types -->
+                <div class="search-box" style="margin-bottom: 20px;">
+                    <button onclick="mostrarReporte('ingresos')" id="btn-reporte-ingresos" style="margin-right: 10px; padding: 10px 20px; background: #00d4ff; border: none; border-radius: 5px; cursor: pointer; color: #000; font-weight: bold;">📈 Ingresos por Servicio</button>
+                    <button onclick="mostrarReporte('estadisticas')" id="btn-reporte-estadisticas" style="padding: 10px 20px; background: #333; border: 1px solid #555; border-radius: 5px; cursor: pointer; color: #fff;">📊 Estadísticas de Citas</button>
                 </div>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Servicio</th>
-                                <th>Citas Realizadas</th>
-                                <th>Ingresos Generados</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-reporte-ingresos-body">
-                            <tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando reporte...</td></tr>
-                        </tbody>
-                    </table>
+                <!-- Reporte de Ingresos -->
+                <div id="reporte-ingresos" style="display: block;">
+                    <div class="search-box">
+                        <h3>📈 Reporte de Ingresos por Servicio</h3>
+                        <p style="color: #ccc; font-size: 0.9rem;">Muestra los ingresos generados por cada tipo de servicio con estado "completada".</p>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Servicio</th>
+                                    <th>Citas Realizadas</th>
+                                    <th>Ingresos Generados</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-reporte-ingresos-body">
+                                <tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando reporte...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Added new statistics report section -->
+                <!-- Reporte de Estadísticas -->
+                <div id="reporte-estadisticas" style="display: none;">
+                    <div class="search-box">
+                        <h3>📊 Estadísticas Generales de Citas</h3>
+                        <p style="color: #ccc; font-size: 0.9rem;">Resumen completo del desempeño de citas y barberos.</p>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Total de Citas</p>
+                            <h2 id="stat-total" style="margin: 10px 0 0 0; font-size: 2rem;">-</h2>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 10px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Completadas</p>
+                            <h2 id="stat-completadas" style="margin: 10px 0 0 0; font-size: 2rem;">-</h2>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 20px; border-radius: 10px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Pendientes</p>
+                            <h2 id="stat-pendientes" style="margin: 10px 0 0 0; font-size: 2rem;">-</h2>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); padding: 20px; border-radius: 10px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Canceladas</p>
+                            <h2 id="stat-canceladas" style="margin: 10px 0 0 0; font-size: 2rem;">-</h2>
+                        </div>
+                    </div>
+
+                    <!-- Citas por Estado -->
+                    <div class="search-box">
+                        <h4>Distribución por Estado</h4>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Estado</th>
+                                    <th>Cantidad</th>
+                                    <th>Porcentaje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-estado-body">
+                                <tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Citas por Barbero -->
+                    <div class="search-box" style="margin-top: 25px;">
+                        <h4>Desempeño por Barbero</h4>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Barbero</th>
+                                    <th>Total Citas</th>
+                                    <th>Completadas</th>
+                                    <th>Tasa de Éxito</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-barbero-body">
+                                <tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Citas por Mes -->
+                    <div class="search-box" style="margin-top: 25px;">
+                        <h4>Tendencia Mensual (Últimos 6 meses)</h4>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Total Citas</th>
+                                    <th>Completadas</th>
+                                    <th>Tasa de Finalización</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-mes-body">
+                                <tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
@@ -526,7 +623,7 @@
             } else if (id === 'usuarios') {
                 cargarUsuarios();
             } else if (id === 'reportes') {
-                cargarReporteIngresos();
+                mostrarReporte('ingresos');
             }
         }
 
@@ -1308,8 +1405,32 @@
             });
         }
 
+        function mostrarReporte(tipo) {
+            const reporteIngresos = document.getElementById('reporte-ingresos');
+            const reporteEstadisticas = document.getElementById('reporte-estadisticas');
+            const btnIngresos = document.getElementById('btn-reporte-ingresos');
+            const btnEstadisticas = document.getElementById('btn-reporte-estadisticas');
+
+            if (tipo === 'ingresos') {
+                reporteIngresos.style.display = 'block';
+                reporteEstadisticas.style.display = 'none';
+                btnIngresos.style.background = '#00d4ff';
+                btnIngresos.style.color = '#000';
+                btnEstadisticas.style.background = '#333';
+                btnEstadisticas.style.color = '#fff';
+                cargarReporteIngresos();
+            } else {
+                reporteIngresos.style.display = 'none';
+                reporteEstadisticas.style.display = 'block';
+                btnIngresos.style.background = '#333';
+                btnIngresos.style.color = '#fff';
+                btnEstadisticas.style.background = '#00d4ff';
+                btnEstadisticas.style.color = '#000';
+                cargarReporteEstadisticas();
+            }
+        }
+
         function cargarReporteIngresos() {
-            console.log('[v0] Cargando reporte de ingresos...');
             const tbody = document.getElementById('tabla-reporte-ingresos-body');
             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando reporte...</td></tr>';
 
@@ -1328,6 +1449,7 @@
                         return;
                     }
 
+                    let totalIngresos = 0;
                     data.reporte.forEach(item => {
                         tbody.innerHTML += `
                             <tr>
@@ -1336,7 +1458,16 @@
                                 <td>$${parseFloat(item.ingresos_generados).toFixed(2)}</td>
                             </tr>
                         `;
+                        totalIngresos += parseFloat(item.ingresos_generados);
                     });
+                    
+                    tbody.innerHTML += `
+                        <tr style="background: #00d4ff20; font-weight: bold; border-top: 2px solid #00d4ff;">
+                            <td>TOTAL</td>
+                            <td>-</td>
+                            <td>$${totalIngresos.toFixed(2)}</td>
+                        </tr>
+                    `;
                 })
                 .catch(err => {
                     console.error('[v0] Error al cargar el reporte:', err);
@@ -1344,13 +1475,92 @@
                 });
         }
 
-        // (removing duplicate function if exists)
-        // function cerrarSesion() {
-        //     if(confirm("¿Cerrar sesión?")) {
-        //         localStorage.removeItem('usuario');
-        //         window.location.href = '../index.html';
-        //     }
-        // }
+        function cargarReporteEstadisticas() {
+            fetch('../php/reporte_citas_get.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    const stats = data.estadisticas;
+                    
+                    // Update stat cards
+                    document.getElementById('stat-total').textContent = stats.total_general || '0';
+                    
+                    let completadas = 0, pendientes = 0, canceladas = 0;
+                    stats.por_estado.forEach(item => {
+                        if (item.estado === 'completada') completadas = item.cantidad;
+                        else if (item.estado === 'pendiente') pendientes = item.cantidad;
+                        else if (item.estado === 'cancelada') canceladas = item.cantidad;
+                    });
+                    
+                    document.getElementById('stat-completadas').textContent = completadas;
+                    document.getElementById('stat-pendientes').textContent = pendientes;
+                    document.getElementById('stat-canceladas').textContent = canceladas;
+
+                    // Fill estado table
+                    const tbodyEstado = document.getElementById('tabla-estado-body');
+                    tbodyEstado.innerHTML = '';
+                    stats.por_estado.forEach(item => {
+                        const porcentaje = ((item.cantidad / stats.total_general) * 100).toFixed(1);
+                        tbodyEstado.innerHTML += `
+                            <tr>
+                                <td style="text-transform: capitalize;">${item.estado}</td>
+                                <td>${item.cantidad}</td>
+                                <td>${porcentaje}%</td>
+                            </tr>
+                        `;
+                    });
+
+                    // Fill barbero table
+                    const tbodyBarbero = document.getElementById('tabla-barbero-body');
+                    tbodyBarbero.innerHTML = '';
+                    if (stats.por_barbero.length === 0) {
+                        tbodyBarbero.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay datos disponibles</td></tr>';
+                    } else {
+                        stats.por_barbero.forEach(item => {
+                            const tasa = ((item.completadas / item.total_citas) * 100).toFixed(1);
+                            tbodyBarbero.innerHTML += `
+                                <tr>
+                                    <td>${item.barbero}</td>
+                                    <td>${item.total_citas}</td>
+                                    <td>${item.completadas}</td>
+                                    <td>${tasa}%</td>
+                                </tr>
+                            `;
+                        });
+                    }
+
+                    // Fill mes table
+                    const tbodyMes = document.getElementById('tabla-mes-body');
+                    tbodyMes.innerHTML = '';
+                    if (stats.por_mes.length === 0) {
+                        tbodyMes.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay datos disponibles</td></tr>';
+                    } else {
+                        stats.por_mes.forEach(item => {
+                            const tasa = ((item.completadas / item.total_citas) * 100).toFixed(1);
+                            // Format month nicely
+                            const [year, month] = item.mes.split('-');
+                            const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                            const monthName = monthNames[parseInt(month) - 1];
+                            
+                            tbodyMes.innerHTML += `
+                                <tr>
+                                    <td>${monthName} ${year}</td>
+                                    <td>${item.total_citas}</td>
+                                    <td>${item.completadas}</td>
+                                    <td>${tasa}%</td>
+                                </tr>
+                            `;
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('Error al cargar estadísticas:', err);
+                    alert('Error al cargar las estadísticas: ' + err.message);
+                });
+        }
 
         window.addEventListener('DOMContentLoaded', function() {
             console.log('[v0] Página cargada, iniciando carga de productos');
