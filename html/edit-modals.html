@@ -1,0 +1,326 @@
+<!-- EDIT MODALS TEMPLATE - Include this in admin-dashboard.html -->
+
+<!-- Modal para Editar Producto -->
+<div id="modalEditarProducto" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Editar Producto</h2>
+      <button class="modal-close" onclick="cerrarModal('modalEditarProducto')">&times;</button>
+    </div>
+    <form id="formEditarProducto" onsubmit="guardarProductoEdicion(event)">
+      <input type="hidden" id="productId" value="">
+      
+      <div class="form-group">
+        <label for="productNombre">Nombre del Producto</label>
+        <input type="text" id="productNombre" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="productPrecio">Precio</label>
+        <input type="number" id="productPrecio" step="0.01" min="0" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="productStock">Stock</label>
+        <input type="number" id="productStock" min="0" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="productDescripcion">Descripción</label>
+        <textarea id="productDescripcion" rows="3"></textarea>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn-cancelar" onclick="cerrarModal('modalEditarProducto')">Cancelar</button>
+        <button type="submit" class="btn-guardar">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal para Editar Cita -->
+<div id="modalEditarCita" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Editar Cita</h2>
+      <button class="modal-close" onclick="cerrarModal('modalEditarCita')">&times;</button>
+    </div>
+    <form id="formEditarCita" onsubmit="guardarCitaEdicion(event)">
+      <input type="hidden" id="citaId" value="">
+      
+      <div class="form-group">
+        <label for="citaEstado">Estado</label>
+        <select id="citaEstado" required>
+          <option value="">-- Seleccionar Estado --</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="completada">Completada</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="citaCliente">Cliente</label>
+        <input type="text" id="citaCliente" disabled style="background-color: #2a2a2a; cursor: not-allowed;">
+      </div>
+      
+      <div class="form-group">
+        <label for="citaBarbero">Barbero</label>
+        <input type="text" id="citaBarbero" disabled style="background-color: #2a2a2a; cursor: not-allowed;">
+      </div>
+      
+      <div class="form-group">
+        <label for="citaFecha">Fecha</label>
+        <input type="text" id="citaFecha" disabled style="background-color: #2a2a2a; cursor: not-allowed;">
+      </div>
+      
+      <div class="form-group">
+        <label for="citaHora">Hora</label>
+        <input type="text" id="citaHora" disabled style="background-color: #2a2a2a; cursor: not-allowed;">
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn-cancelar" onclick="cerrarModal('modalEditarCita')">Cancelar</button>
+        <button type="submit" class="btn-guardar">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal para Editar Usuario -->
+<div id="modalEditarUsuario" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Editar Usuario</h2>
+      <button class="modal-close" onclick="cerrarModal('modalEditarUsuario')">&times;</button>
+    </div>
+    <form id="formEditarUsuario" onsubmit="guardarUsuarioEdicion(event)">
+      <input type="hidden" id="usuarioId" value="">
+      
+      <div class="form-group">
+        <label for="usuarioNombre">Nombre</label>
+        <input type="text" id="usuarioNombre" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="usuarioEmail">Email</label>
+        <input type="email" id="usuarioEmail" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="usuarioTelefono">Teléfono</label>
+        <input type="tel" id="usuarioTelefono">
+      </div>
+      
+      <div class="form-group">
+        <label for="usuarioRol">Rol</label>
+        <select id="usuarioRol" required>
+          <option value="">-- Seleccionar Rol --</option>
+          <option value="1">Admin</option>
+          <option value="2">Barbero</option>
+          <option value="3">Cliente</option>
+        </select>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn-cancelar" onclick="cerrarModal('modalEditarUsuario')">Cancelar</button>
+        <button type="submit" class="btn-guardar">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* ===== ESTILOS PARA MODALES ===== */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal-content {
+    background-color: #1a1a1a;
+    border: 1px solid #c5a47e;
+    border-radius: 8px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #c5a47e;
+    background-color: #0a0a0a;
+  }
+
+  .modal-header h2 {
+    color: #c5a47e;
+    margin: 0;
+    font-size: 1.5rem;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: #c5a47e;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+  }
+
+  .modal-close:hover {
+    color: #e0b98f;
+  }
+
+  .modal-content form {
+    padding: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    color: #c5a47e;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #252525;
+    color: #f1f1f1;
+    font-size: 1rem;
+    font-family: Arial, sans-serif;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #c5a47e;
+    box-shadow: 0 0 10px rgba(197, 164, 126, 0.3);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    border-top: 1px solid #333;
+    background-color: #0a0a0a;
+  }
+
+  .btn-cancelar,
+  .btn-guardar {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-cancelar {
+    background-color: #333;
+    color: #f1f1f1;
+  }
+
+  .btn-cancelar:hover {
+    background-color: #444;
+  }
+
+  .btn-guardar {
+    background-color: #c5a47e;
+    color: #0a0a0a;
+  }
+
+  .btn-guardar:hover {
+    background-color: #e0b98f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(197, 164, 126, 0.3);
+  }
+
+  /* Responsivo */
+  @media (max-width: 600px) {
+    .modal-content {
+      width: 95%;
+      max-height: 95vh;
+    }
+
+    .modal-header {
+      padding: 1rem;
+    }
+
+    .modal-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .modal-content form {
+      padding: 1rem;
+    }
+
+    .modal-footer {
+      flex-direction: column;
+      padding: 1rem;
+    }
+
+    .btn-cancelar,
+    .btn-guardar {
+      width: 100%;
+    }
+  }
+</style>
