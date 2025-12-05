@@ -11,6 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once 'conexion.php';
 
+if (!$conn) {
+    echo json_encode(['success' => false, 'mensaje' => 'Error de conexión a la base de datos']);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'mensaje' => 'Método no permitido']);
     exit;
@@ -39,8 +44,7 @@ if ($calificacion < 1 || $calificacion > 5) {
 $nombre_usuario = htmlspecialchars($nombre_usuario, ENT_QUOTES, 'UTF-8');
 $comentario = htmlspecialchars($comentario, ENT_QUOTES, 'UTF-8');
 
-// Verificar que el usuario existe
-$stmt_user = $conexion->prepare("SELECT id_usuario FROM usuarios WHERE id_usuario = ?");
+$stmt_user = $conn->prepare("SELECT id_usuario FROM usuarios WHERE id_usuario = ?");
 $stmt_user->bind_param("i", $id_usuario);
 $stmt_user->execute();
 $result_user = $stmt_user->get_result();
@@ -51,8 +55,7 @@ if ($result_user->num_rows === 0) {
 }
 $stmt_user->close();
 
-// Insertar la reseña
-$stmt = $conexion->prepare("INSERT INTO resenas (id_usuario, nombre_usuario, comentario, calificacion) VALUES (?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO resenas (id_usuario, nombre_usuario, comentario, calificacion) VALUES (?, ?, ?, ?)");
 $stmt->bind_param("issi", $id_usuario, $nombre_usuario, $comentario, $calificacion);
 
 if ($stmt->execute()) {
@@ -73,5 +76,5 @@ if ($stmt->execute()) {
 }
 
 $stmt->close();
-$conexion->close();
+$conn->close();
 ?>
