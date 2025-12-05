@@ -11,6 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once 'conexion.php';
 
+if (!$conn) {
+    echo json_encode(['success' => false, 'mensaje' => 'Error de conexión a la base de datos']);
+    exit;
+}
+
 // Solo obtener reseñas aprobadas, ordenadas por fecha (más recientes primero)
 $sql = "SELECT id_resena, id_usuario, nombre_usuario, comentario, calificacion, fecha_creacion 
         FROM resenas 
@@ -18,7 +23,7 @@ $sql = "SELECT id_resena, id_usuario, nombre_usuario, comentario, calificacion, 
         ORDER BY fecha_creacion DESC 
         LIMIT 20";
 
-$result = $conexion->query($sql);
+$result = $conn->query($sql);
 
 if ($result) {
     $resenas = [];
@@ -34,8 +39,8 @@ if ($result) {
     }
     echo json_encode(['success' => true, 'resenas' => $resenas]);
 } else {
-    echo json_encode(['success' => false, 'mensaje' => 'Error al obtener las reseñas']);
+    echo json_encode(['success' => false, 'mensaje' => 'Error al obtener las reseñas: ' . $conn->error]);
 }
 
-$conexion->close();
+$conn->close();
 ?>
