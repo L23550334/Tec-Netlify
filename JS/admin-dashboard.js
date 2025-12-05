@@ -2,6 +2,8 @@
 
 // Declare variables before using them
 const productosData = [] // This should be populated with actual product data
+const citasData = [] // This should be populated with actual appointments data
+
 function cargarCitas() {
   // Function to load appointments data
   console.log("Cargando citas...")
@@ -73,60 +75,7 @@ function eliminarCitaDirecto(idCita) {
 }
 
 function editarProductoDirecto(id) {
-  const producto = productosData.find((p) => p.id_producto == id)
-  if (!producto) {
-    alert("Producto no encontrado")
-    return
-  }
-
-  const nuevoNombre = prompt("Nuevo nombre:", producto.nombre)
-  if (!nuevoNombre) return
-
-  const nuevoPrecio = prompt("Nuevo precio:", producto.precio)
-  if (!nuevoPrecio) return
-
-  const nuevoStock = prompt("Nuevo stock:", producto.stock)
-  if (!nuevoStock) return
-
-  const nuevaDescripcion = prompt("Nueva descripción:", producto.descripcion || "")
-
-  // Validaciones del lado del cliente
-  if (Number.parseFloat(nuevoPrecio) <= 0) {
-    alert("El precio debe ser mayor a 0")
-    return
-  }
-
-  if (Number.parseInt(nuevoStock) < 0) {
-    alert("El stock no puede ser negativo")
-    return
-  }
-
-  fetch("../php/productos_actualizar.php", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      id_producto: id,
-      nombre: nuevoNombre,
-      precio: Number.parseFloat(nuevoPrecio),
-      stock: Number.parseInt(nuevoStock),
-      descripcion: nuevaDescripcion,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        alert("Producto actualizado correctamente")
-        cargarProductos()
-      } else {
-        alert("Error: " + data.mensaje)
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error)
-      alert("Error de conexión")
-    })
+  editarProductoModal(id)
 }
 
 function eliminarProductoDirecto(id) {
@@ -216,4 +165,17 @@ function cerrarSesion() {
   }
 }
 
+function editarProductoModal(id) {
+  // Function to open a modal for editing product data
+  console.log("Abriendo modal para editar producto con ID:", id)
+}
 
+function editarCitaModal(id) {
+  // Function to open a modal for editing appointment data
+  console.log("Abriendo modal para editar cita con ID:", id)
+}
+
+function editarUsuarioModal(id) {
+  // Function to open a modal for editing user data
+  console.log("Abriendo modal para editar usuario con ID:", id)
+}
