@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Admin - La Quinta Esencia Barber Shop </title>
     <link rel="stylesheet" href="../css/style.css">
-    <!-- Added auth guard script before any other scripts -->
     <script src="../JS/auth-guard.js"></script>
     <style>
-        /* --- ESTILOS CORREGIDOS PARA EL ADMIN --- */
+        /* --- Estilos para el admin --- */
         body {
             background-color: #0a0a0a; /* Fondo general oscuro */
         }
@@ -79,7 +78,7 @@
         h2 { color: var(--color-primario); margin-bottom: 0.5rem; }
         .subtitulo-catalogo { color: #888; margin-bottom: 2rem; }
 
-        /* TABLA MEJORADA */
+        /* Tabla */
         .table-container {
             overflow-x: auto;
             background-color: #1a1a1a;
@@ -129,14 +128,14 @@
         }
         .btn-editar { background-color: #ffc107; color: black; }
         .btn-borrar { background-color: #ff4d4d; color: white; }
-        .btn-eliminar { background-color: #ff4d4d; color: white; } /* Added for consistency in user deletion */
+        .btn-eliminar { background-color: #ff4d4d; color: white; } 
 
         .section-panel { display: none; }
         .section-panel.active { display: block; animation: fadeIn 0.3s ease; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Added styles for search boxes and forms */
+        /* Estilos para buscar cajas y formas*/
         .search-box {
             background-color: #1a1a1a;
             padding: 20px;
@@ -212,7 +211,7 @@
             opacity: 0.9;
         }
 
-        /* Media queries for responsive design */
+        
         @media (max-width: 768px) {
             .admin-layout {
                 flex-direction: column;
@@ -333,8 +332,7 @@
             <div class="nav-links-group">
                 <ul>
                     <li><a href="../index.html">🏠Volver al Inicio</a></li>
-                   <!-- <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li> --> 
-                </ul>
+            </ul>
             </div>
         </nav>
     </header>
@@ -350,12 +348,12 @@
 
         <section class="admin-content">
 
-            <!-- PRODUCTOS Panel with primary key search and dynamic table -->
+            <!-- Panel con llave primaria -->
             <div id="panel-productos" class="section-panel active">
                 <h2 style="color:black">Gestión de Inventario</h2>
                 <h4 style="color:black">Control de productos en venta.</h4>
                 
-                <!-- Primary Key Search: Search by Product ID -->
+                <!-- Busqueda con ID producto -->
                 <div class="search-box">
                     <h3>Búsqueda por Producto</h3>
                     <label for="buscar-producto-id">Selecciona un Producto:</label>
@@ -369,7 +367,7 @@
 
                 <button class="btn-cita" style="margin-bottom: 20px;" onclick="mostrarFormularioNuevoProducto()">+ Nuevo Producto</button>
                 
-                <!-- Dynamic Table 1: Products Grid -->
+                <!-- Tabla dinamica 1: Productos GRID -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -388,13 +386,11 @@
                 </div>
             </div>
 
-            <!-- CITAS Panel with foreign key searches and dynamic tables -->
             <div id="panel-citas" class="section-panel">
                 <h2 style="color:black">Citas Programadas</h2>
                 <h4 style="color:black">Agenda de la barbería.</h4>
                 
                 <!-- Removidas búsquedas por ID, Barbero y Cliente. Manteniendo solo búsqueda por Estado -->
-                <!-- Foreign Key Search 3: Search by State (estado) -->
                 <div class="search-box">
                     <h3>Búsqueda por Estado de Cita</h3>
                     <label for="buscar-estado">Selecciona un Estado:</label>
@@ -407,7 +403,6 @@
                     <button onclick="buscarCitasPorEstado()">Mostrar Citas</button>
                 </div>
 
-                <!-- Dynamic Table 2: Appointments Grid -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -428,12 +423,10 @@
                 </div>
             </div>
 
-            <!-- USUARIOS Panel with primary key search and foreign key search -->
             <div id="panel-usuarios" class="section-panel">
                 <h2 style="color:black">Gestión de Usuarios</h2>
                 <h4 style="color:black">Clientes y personal.</h4>
 
-                <!-- Foreign Key Search: Search by Role (rol) -->
                 <div class="search-box">
                     <h3>Filtrar por Rol</h3>
                     <label for="buscar-rol">Selecciona un Rol:</label>
@@ -447,7 +440,6 @@
                     <button onclick="cargarUsuarios()">Mostrar Todos</button>
                 </div>
 
-                <!-- Dynamic Table 3: Users Grid -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -467,12 +459,10 @@
                 </div>
             </div>
 
-            <!-- REPORTES Panel -->
             <div id="panel-reportes" class="section-panel">
                 <h2 style="color:black">Reportes de Gerencia</h2>
                 <p style="color:black">Análisis de rendimiento del negocio.</p>
                 
-                <!-- Added tabs for different report types -->
                 <div class="search-box" style="margin-bottom: 20px;">
                     <button onclick="mostrarReporte('ingresos')" id="btn-reporte-ingresos" style="margin-right: 10px; padding: 10px 20px; background: #00d4ff; border: none; border-radius: 5px; cursor: pointer; color: #000; font-weight: bold;">Ingresos por Servicio</button>
                     <button onclick="mostrarReporte('estadisticas')" id="btn-reporte-estadisticas" style="padding: 10px 20px; background: #333; border: 1px solid #555; border-radius: 5px; cursor: pointer; color: #fff;">Estadísticas de Citas</button>
@@ -483,7 +473,6 @@
                     <div class="search-box">
                         <h3>Reporte de Ingresos por Servicio</h3>
                         <p style="color: #ccc; font-size: 0.9rem;">Muestra los ingresos generados por cada tipo de servicio con estado "completada".</p>
-                        <!-- Added download button -->
                          </div>
 
                     <div class="table-container">
@@ -504,7 +493,6 @@
                    
                 </div>
 
-                <!-- Added new statistics report section -->
                 <!-- Reporte de Estadísticas -->
                 <div id="reporte-estadisticas" style="display: none;">
                     <div class="search-box">
@@ -512,7 +500,6 @@
                         <p style="color: #ccc; font-size: 0.9rem;">Resumen completo del desempeño de citas y barberos.</p>
                     </div>
 
-                    <!-- Stats Cards -->
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
                         <div style="background: linear-gradient(135deg, #667eea 0%, #131313 100%); padding: 20px; border-radius: 10px;">
                             <p style="margin: 0; font-size: 0.9rem; opacity: 0.9; ">Total de Citas</p>
@@ -633,7 +620,7 @@
         function validarPrecio(precio) {
             const precioNum = parseFloat(precio);
             if (isNaN(precioNum) || precioNum <= 0) {
-                alert('❌ VALIDACIÓN: El precio debe ser un número positivo mayor a 0');
+                alert('VALIDACIÓN: El precio debe ser un número positivo mayor a 0');
                 return false;
             }
             return true;
@@ -642,7 +629,7 @@
         function validarStock(stock) {
             const stockNum = parseInt(stock);
             if (isNaN(stockNum) || stockNum < 0 || !Number.isInteger(parseFloat(stock))) {
-                alert('❌ VALIDACIÓN: El stock debe ser un número entero no negativo');
+                alert('VALIDACIÓN: El stock debe ser un número entero no negativo');
                 return false;
             }
             return true;
@@ -702,7 +689,7 @@
             }
             const producto = productosData.find(p => p.id_producto == id);
             if (producto) {
-                alert(`📦 PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
+                alert(`PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
             } else {
                 alert('Producto no encontrado');
             }
@@ -764,10 +751,10 @@
             .then(data => {
                 console.log('[v0] Respuesta de actualización:', data);
                 if (data.success) {
-                    alert('✅ Producto actualizado correctamente');
+                    alert('Producto actualizado correctamente');
                     cargarProductos();
                 } else {
-                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                    alert('Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
@@ -792,10 +779,10 @@
             .then(data => {
                 console.log('[v0] Respuesta de eliminación:', data);
                 if (data.success) {
-                    alert('✅ Producto eliminado correctamente');
+                    alert('Producto eliminado correctamente');
                     cargarProductos();
                 } else {
-                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                    alert('Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
@@ -835,10 +822,10 @@
             .then(data => {
                 console.log('[v0] Respuesta de creación:', data);
                 if (data.success) {
-                    alert('✅ Producto creado correctamente');
+                    alert('Producto creado correctamente');
                     cargarProductos();
                 } else {
-                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                    alert('Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
@@ -955,7 +942,7 @@
             const cita = citasData.find(c => c.id_cita == id);
             if (cita) {
                 const fechaStr = new Date(cita.fecha_hora).toLocaleString();
-                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nBarbero: ${cita.barbero_nombre}\nFecha: ${fechaStr}\nServicio: ${cita.servicio}\nEstado: ${cita.estado}`);
+                alert(`CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nBarbero: ${cita.barbero_nombre}\nFecha: ${fechaStr}\nServicio: ${cita.servicio}\nEstado: ${cita.estado}`);
             } else {
                 alert('Cita no encontrada');
             }
@@ -990,7 +977,7 @@
             if (!nuevoEstado) return;
             
             if(!['pendiente', 'completada', 'cancelada'].includes(nuevoEstado.toLowerCase())) {
-                alert('❌ Estado inválido. Debe ser: pendiente, completada o cancelada');
+                alert('Estado inválido. Debe ser: pendiente, completada o cancelada');
                 return;
             }
             
@@ -1010,10 +997,10 @@
             .then(data => {
                 console.log('[v0] Respuesta de actualización:', data);
                 if (data.success) {
-                    alert('✅ Cita actualizada correctamente');
+                    alert('Cita actualizada correctamente');
                     cargarCitas();
                 } else {
-                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                    alert('Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
@@ -1038,10 +1025,10 @@
             .then(data => {
                 console.log('[v0] Respuesta de eliminación:', data);
                 if (data.success) {
-                    alert('✅ Cita eliminada correctamente');
+                    alert('Cita eliminada correctamente');
                     cargarCitas();
                 } else {
-                    alert('❌ Error: ' + (data.mensaje || 'Error desconocido'));
+                    alert('Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
@@ -1328,15 +1315,15 @@
             .then(data => {
                 console.log('[v0] Respuesta exitosa:', data);
                 if (data.success) {
-                    alert('✅ Usuario actualizado correctamente');
+                    alert('Usuario actualizado correctamente');
                     cargarUsuarios();
                 } else {
-                    alert('❌ Error: ' + (data.message || 'No se pudo actualizar'));
+                    alert('Error: ' + (data.message || 'No se pudo actualizar'));
                 }
             })
             .catch(err => {
                 console.error('[v0] Error completo:', err);
-                alert('❌ Error de conexión: ' + err.message);
+                alert('Error de conexión: ' + err.message);
             });
         }
 
@@ -1360,10 +1347,10 @@
             .then(data => {
                 console.log('[v0] Respuesta de eliminación:', data);
                 if (data.success) {
-                    alert('✅ Usuario eliminado correctamente');
+                    alert('Usuario eliminado correctamente');
                     cargarUsuarios(); // Reload the table
                 } else {
-                    alert('❌ Error: ' + (data.mensaje || 'No se pudo eliminar'));
+                    alert('Error: ' + (data.mensaje || 'No se pudo eliminar'));
                 }
             })
             .catch(err => {
@@ -1482,13 +1469,13 @@
         
         function descargarReporteIngresos() {
             if (!window.reporteIngresosData || window.reporteIngresosData.length === 0) {
-                alert('❌ No hay datos para descargar. Por favor, carga el reporte primero.');
+                alert('No hay datos para descargar. Por favor, carga el reporte primero.');
                 return;
             }
 
             const datos = window.reporteIngresosData;
             
-            // Build CSV content
+        
             let csv = 'Servicio,Citas Realizadas,Ingresos Generados\n';
             
             let totalCitas = 0;
@@ -1505,14 +1492,14 @@
                 totalIngresos += parseFloat(ingresos);
             });
             
-            // Add totals row
+            // Añade el total
             csv += `"TOTAL",${totalCitas},${totalIngresos.toFixed(2)}\n`;
             
-            // Add metadata
+            // Añade metadatos
             csv += '\n\nGenerado en: ' + new Date().toLocaleString('es-MX') + '\n';
             csv += 'Reporte de Ingresos por Servicio - La Quinta Esencia Barber Shop';
             
-            // Create download link
+            // Crea link de descarga
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
@@ -1538,7 +1525,7 @@
 
                     const stats = data.estadisticas;
                     
-                    // Update stat cards
+                    // Actualiza el estado
                     document.getElementById('stat-total').textContent = stats.total_general || '0';
                     
                     let completadas = 0, pendientes = 0, canceladas = 0;
@@ -1552,7 +1539,7 @@
                     document.getElementById('stat-pendientes').textContent = pendientes;
                     document.getElementById('stat-canceladas').textContent = canceladas;
 
-                    // Fill estado table
+                    // Llena la tabla estado
                     const tbodyEstado = document.getElementById('tabla-estado-body');
                     tbodyEstado.innerHTML = '';
                     stats.por_estado.forEach(item => {
@@ -1566,7 +1553,7 @@
                         `;
                     });
 
-                    // Fill barbero table
+                    // LLena tabla barbero
                     const tbodyBarbero = document.getElementById('tabla-barbero-body');
                     tbodyBarbero.innerHTML = '';
                     if (stats.por_barbero.length === 0) {
@@ -1585,7 +1572,7 @@
                         });
                     }
 
-                    // Fill mes table
+                    // Llena las tablas
                     const tbodyMes = document.getElementById('tabla-mes-body');
                     tbodyMes.innerHTML = '';
                     if (stats.por_mes.length === 0) {
@@ -1593,7 +1580,7 @@
                     } else {
                         stats.por_mes.forEach(item => {
                             const tasa = ((item.completadas / item.total_citas) * 100).toFixed(1);
-                            // Format month nicely
+                            // Formato de fecha
                             const [year, month] = item.mes.split('-');
                             const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
                             const monthName = monthNames[parseInt(month) - 1];
@@ -1620,7 +1607,6 @@
             mostrarSeccion('productos'); // Cargar la primera sección por defecto
         });
     </script>
-<!-- CHANGE: Adding modal functionality before closing body tag -->
 <!-- Incluir los modales en el HTML -->
 <script src="../JS/edit-modals.js"></script>
 </body>
