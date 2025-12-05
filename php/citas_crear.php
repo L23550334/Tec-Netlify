@@ -2,7 +2,22 @@
 // php/citas_crear.php
 
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Handle preflight request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 include 'conexion.php';
+
+if (!$conn) {
+    echo json_encode(['success' => false, 'mensaje' => 'Error de conexión a la base de datos.']);
+    exit;
+}
 
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -18,6 +33,9 @@ if (!$id_cliente || !$id_barbero || !$servicio || !$fecha || !$hora) {
     exit;
 }
 
+if (strlen($hora) === 5) {
+    $hora = $hora . ':00';
+}
 $fecha_hora = $fecha . ' ' . $hora;
 
 // --- 2. REGLA DE NEGOCIO: Definir duración según el servicio ---
@@ -29,28 +47,32 @@ $duraciones = [
     'Tratamiento Capilar' => 40
 ];
 
-$duracion_minutos = $duraciones[$servicio] ?? 30; // 30 min por defecto si el servicio no se encuentra
+$duracion_minutos = $duraciones[$servicio] ?? 30;
 
 // --- 3. REGLA DE NEGOCIO: Verificar que no haya citas que se solapen ---
-// Calculamos la hora de inicio y fin de la nueva cita
 $nueva_cita_inicio = new DateTime($fecha_hora);
-$nueva_cita_fin = (new DateTime($fecha_hora))->add(new DateInterval("PT{$duracion_minutos}M"));
+$nueva_cita_fin = (clone $nueva_cita_inicio)->add(new DateInterval("PT{$duracion_minutos}M"));
 
-// Preparamos la consulta para buscar conflictos
-$sql_check = "SELECT fecha_hora, duracion_minutos FROM citas WHERE id_barbero = ? AND estado != 'cancelada'";
+$sql_check = "SELECT fecha_hora, servicio FROM citas WHERE id_barbero = ? AND estado != 'cancelada' AND DATE(fecha_hora) = ?";
 $stmt_check = $conn->prepare($sql_check);
-$stmt_check->bind_param("i", $id_barbero);
+
+if (!$stmt_check) {
+    echo json_encode(['success' => false, 'mensaje' => 'Error en la consulta: ' . $conn->error]);
+    exit;
+}
+
+$stmt_check->bind_param("is", $id_barbero, $fecha);
 $stmt_check->execute();
 $result_check = $stmt_check->get_result();
 
 while ($cita_existente = $result_check->fetch_assoc()) {
     $existente_inicio = new DateTime($cita_existente['fecha_hora']);
-    $existente_duracion = $cita_existente['duracion_minutos'] ?? 30; // Usar 30 si es nulo
-    $existente_fin = (new DateTime($cita_existente['fecha_hora']))->add(new DateInterval("PT{$existente_duracion}M"));
+    $existente_servicio = $cita_existente['servicio'];
+    $existente_duracion = $duraciones[$existente_servicio] ?? 30;
+    $existente_fin = (clone $existente_inicio)->add(new DateInterval("PT{$existente_duracion}M"));
 
-    // Lógica de solapamiento: (Inicio1 < Fin2) y (Fin1 > Inicio2)
+    // Lógica de solapamiento
     if ($nueva_cita_inicio < $existente_fin && $nueva_cita_fin > $existente_inicio) {
-        // ¡Conflicto encontrado!
         echo json_encode(['success' => false, 'mensaje' => 'Lo sentimos, ese horario ya no está disponible. Por favor, selecciona otro.']);
         $stmt_check->close();
         $conn->close();
@@ -61,18 +83,23 @@ $stmt_check->close();
 
 // --- 4. Si no hay conflictos, insertar la nueva cita ---
 $estado_inicial = 'pendiente';
-$sql_insert = "INSERT INTO citas (id_cliente, id_barbero, servicio, fecha_hora, estado, duracion_minutos) VALUES (?, ?, ?, ?, ?, ?)";
+$sql_insert = "INSERT INTO citas (id_cliente, id_barbero, servicio, fecha_hora, estado) VALUES (?, ?, ?, ?, ?)";
 $stmt_insert = $conn->prepare($sql_insert);
-$stmt_insert->bind_param("iisssi", $id_cliente, $id_barbero, $servicio, $fecha_hora, $estado_inicial, $duracion_minutos);
+
+if (!$stmt_insert) {
+    echo json_encode(['success' => false, 'mensaje' => 'Error preparando la consulta: ' . $conn->error]);
+    exit;
+}
+
+$stmt_insert->bind_param("iisss", $id_cliente, $id_barbero, $servicio, $fecha_hora, $estado_inicial);
 
 if ($stmt_insert->execute()) {
     echo json_encode(['success' => true, 'mensaje' => '¡Tu cita ha sido agendada con éxito!']);
 } else {
-    echo json_encode(['success' => false, 'mensaje' => 'Error al guardar la cita en la base de datos.']);
+    echo json_encode(['success' => false, 'mensaje' => 'Error al guardar: ' . $stmt_insert->error]);
 }
 
 $stmt_insert->close();
 $conn->close();
 
 ?>
-
