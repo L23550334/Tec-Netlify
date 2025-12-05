@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Admin - La Quinta Esencia Barber Shop </title>
     <link rel="stylesheet" href="../css/style.css">
+    <!-- Added auth guard script before any other scripts -->
+    <script src="../JS/auth-guard.js"></script>
     <style>
         /* --- ESTILOS CORREGIDOS PARA EL ADMIN --- */
         body {
@@ -494,6 +496,12 @@
     </main>
 
     <script>
+        // Verificar acceso antes de cargar cualquier cosa
+        if (!verificarAcceso('admin')) {
+            // La función verificarAcceso ya redirige si no hay acceso
+            throw new Error('Acceso denegado');
+        }
+        
         let productosData = [];
         let citasData = [];
         let usuariosData = [];
@@ -1336,12 +1344,13 @@
                 });
         }
 
-        function cerrarSesion() {
-            if(confirm("¿Cerrar sesión?")) {
-                localStorage.removeItem('usuario');
-                window.location.href = '../index.html';
-            }
-        }
+        // (removing duplicate function if exists)
+        // function cerrarSesion() {
+        //     if(confirm("¿Cerrar sesión?")) {
+        //         localStorage.removeItem('usuario');
+        //         window.location.href = '../index.html';
+        //     }
+        // }
 
         window.addEventListener('DOMContentLoaded', function() {
             console.log('[v0] Página cargada, iniciando carga de productos');
@@ -1351,4 +1360,3 @@
 
 </body>
 </html>
-
