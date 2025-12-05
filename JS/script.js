@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
   handleProductCardParticles() // Nueva función para las partículas
   handleShoppingCart() // Nueva función para el carrito
   handleSideMenu() // Nueva función para el menú lateral
-  cargarProductosCatalogo(); // Cargar productos dinámicamente
+  cargarProductosCatalogo() // Cargar productos dinámicamente
 })
 
 function handleAuth() {
@@ -231,59 +231,60 @@ function handleShoppingCart() {
 }
 
 function cargarProductosCatalogo() {
-    // Solo ejecutar en la página de productos
-    if (!window.location.pathname.includes("productos.html")) return;
+  // Solo ejecutar en la página de productos
+  if (!window.location.pathname.includes("productos.html")) return
 
-    const productGrid = document.querySelector('.product-grid');
-    if (!productGrid) return;
+  const productGrid = document.querySelector(".product-grid")
+  if (!productGrid) return
 
-    productGrid.innerHTML = '<p style="color: white; text-align: center;">Cargando productos...</p>';
+  productGrid.innerHTML = '<p style="color: white; text-align: center;">Cargando productos...</p>'
 
-    fetch('../php/productos_get.php')
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Error al cargar los productos: ' + res.status);
-            }
-            return res.json();
-        })
-        .then(productos => {
-            productGrid.innerHTML = ''; // Limpiar mensaje de carga
+  fetch("../php/productos_get.php")
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Error al cargar los productos: " + res.status)
+      }
+      return res.json()
+    })
+    .then((productos) => {
+      productGrid.innerHTML = "" // Limpiar mensaje de carga
 
-            if (!productos || productos.length === 0) {
-                productGrid.innerHTML = '<p style="color: #888; text-align: center;">No hay productos disponibles en este momento.</p>';
-                return;
-            }
+      if (!productos || productos.length === 0) {
+        productGrid.innerHTML =
+          '<p style="color: #888; text-align: center;">No hay productos disponibles en este momento.</p>'
+        return
+      }
 
-            productos.forEach(prod => {
-                // SOLUCIÓN DE EMERGENCIA: Forzar la ruta correcta.
-                // 1. Extraemos solo el nombre del archivo de la URL que viene de la BD (ej: "cera2.webp").
-                const nombreArchivo = prod.imagen_url ? prod.imagen_url.split(/[\\/]/).pop() : 'placeholder_producto.webp';
-                
-                // 2. Construimos la ruta relativa correcta desde la página productos.html.
-                const imageUrl = `../img/${nombreArchivo}`; // Sube un nivel desde /html/ y luego entra a /img/
+      productos.forEach((prod) => {
+        // SOLUCIÓN DE EMERGENCIA: Forzar la ruta correcta.
+        // 1. Extraemos solo el nombre del archivo de la URL que viene de la BD (ej: "cera2.webp").
+        const nombreArchivo = prod.imagen_url ? prod.imagen_url.split(/[\\/]/).pop() : "placeholder_producto.webp"
 
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.dataset.id = prod.id_producto;
-                card.dataset.name = prod.nombre;
-                card.dataset.price = prod.precio;
-                card.dataset.img = imageUrl;
+        // 2. Construimos la ruta relativa correcta desde la página productos.html.
+        const imageUrl = `../img/${nombreArchivo}` // Sube un nivel desde /html/ y luego entra a /img/
 
-                card.innerHTML = `
+        const card = document.createElement("div")
+        card.className = "product-card"
+        card.dataset.id = prod.id_producto
+        card.dataset.name = prod.nombre
+        card.dataset.price = prod.precio
+        card.dataset.img = imageUrl
+
+        card.innerHTML = `
                     <img src="${imageUrl}" alt="${prod.nombre}">
                     <h3>${prod.nombre}</h3>
-                    <p>${prod.descripcion || 'Sin descripción.'}</p>
-                    <span class="precio">$${parseFloat(prod.precio).toFixed(2)}</span>
+                    <p>${prod.descripcion || "Sin descripción."}</p>
+                    <span class="precio">$${Number.parseFloat(prod.precio).toFixed(2)}</span>
                     <button class="btn-comprar">Agregar al carrito</button>
-                `;
-                productGrid.appendChild(card);
-            });
-            handleShoppingCart(); // Volver a inicializar los listeners para los nuevos botones
-        })
-        .catch(err => {
-            console.error('Error al cargar productos del catálogo:', err);
-            productGrid.innerHTML = `<p style="color: red; text-align: center;">Error al cargar productos. Intenta recargar la página.</p>`;
-        });
+                `
+        productGrid.appendChild(card)
+      })
+      handleShoppingCart() // Volver a inicializar los listeners para los nuevos botones
+    })
+    .catch((err) => {
+      console.error("Error al cargar productos del catálogo:", err)
+      productGrid.innerHTML = `<p style="color: red; text-align: center;">Error al cargar productos. Intenta recargar la página.</p>`
+    })
 }
 
 function handlePickupButton() {
@@ -450,7 +451,7 @@ function renderCartItems() {
     itemsContainer.innerHTML = "<p>Tu carrito está vacío.</p>"
     totalContainer.innerHTML = ""
     if (checkoutOptions) {
-        checkoutOptions.classList.add('disabled');
+      checkoutOptions.classList.add("disabled")
     }
     return
   }
@@ -478,7 +479,7 @@ function renderCartItems() {
   })
 
   if (checkoutOptions) {
-    checkoutOptions.classList.remove('disabled');
+    checkoutOptions.classList.remove("disabled")
   }
 
   totalContainer.innerHTML = `<h3>Total: $${total.toFixed(2)}</h3>`
@@ -648,55 +649,115 @@ function createParticles(card) {
 
 function handleReseñasForm() {
   const formReseña = document.getElementById("form-reseña")
+  const reseñaGrid = document.querySelector(".reseñas-grid")
+
+  if (reseñaGrid) {
+    cargarResenasDesdeDB(reseñaGrid)
+  }
 
   // Verifica si el formulario existe en la página actual
   if (formReseña) {
-    formReseña.addEventListener("submit", (event) => {
+    formReseña.addEventListener("submit", async (event) => {
+      event.preventDefault()
+
       const user = JSON.parse(localStorage.getItem("loggedInUser"))
 
       // Si el usuario no ha iniciado sesión, previene el envío y lo redirige
       if (!user) {
-        event.preventDefault()
-        document.getElementById("login-modal").style.display = "flex" // Muestra el modal
+        document.getElementById("login-modal").style.display = "flex"
         return
       }
 
-      // Previene el comportamiento por defecto del formulario (recargar la página)
-      event.preventDefault()
+      // 1. Obtener los datos del formulario
+      const nombre = document.getElementById("reseña-nombre").value.trim()
+      const comentario = document.getElementById("reseña-comentario").value.trim()
+      const ratingInput = document.querySelector('input[name="rating"]:checked')
 
-      // Obtener los datos del formulario
-      const nombre = sanitizeHTML(document.getElementById("reseña-nombre").value)
-      const comentario = sanitizeHTML(document.getElementById("reseña-comentario").value)
-      const rating = document.querySelector('input[name="rating"]:checked').value
-
-      // Crear la nueva tarjeta de reseña
-      const reseñaGrid = document.querySelector(".reseñas-grid")
-      const nuevaReseña = document.createElement("div")
-      nuevaReseña.className = "reseña-card"
-
-      let estrellasHTML = ""
-      for (let i = 0; i < rating; i++) {
-        estrellasHTML += "<span>&#9733;</span>"
+      if (!ratingInput) {
+        alert("Por favor selecciona una calificación")
+        return
       }
 
-      nuevaReseña.innerHTML = ` <div class="reseña-estrellas">${estrellasHTML}</div>
-                <p class="reseña-texto"></p>
-                <h4 class="reseña-autor"></h4>
-            `
+      const rating = Number.parseInt(ratingInput.value)
 
-      // Usar .textContent para insertar los datos sanitizados.
-      // Esto es aún más seguro que usar innerHTML con datos del usuario.
-      const textoP = nuevaReseña.querySelector(".reseña-texto")
-      const autorH4 = nuevaReseña.querySelector(".reseña-autor")
+      try {
+        const response = await fetch("php/resenas_crear.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_usuario: user.id_usuario,
+            nombre_usuario: nombre,
+            comentario: comentario,
+            calificacion: rating,
+          }),
+        })
 
-      textoP.textContent = `"${comentario}"`
-      autorH4.textContent = `- ${nombre}`
+        const data = await response.json()
 
-      // Añadir la nueva reseña al grid
-      reseñaGrid.appendChild(nuevaReseña)
-
-      // Limpiar el formulario
-      formReseña.reset()
+        if (data.success) {
+          // Agregar la nueva reseña al grid visualmente
+          agregarResenaAlGrid(reseñaGrid, data.resena)
+          formReseña.reset()
+          alert("¡Gracias por tu reseña!")
+        } else {
+          alert("Error: " + data.mensaje)
+        }
+      } catch (error) {
+        console.error("Error al enviar reseña:", error)
+        alert("Error de conexión. Intenta de nuevo.")
+      }
     })
   }
+}
+
+async function cargarResenasDesdeDB(container) {
+  try {
+    const response = await fetch("php/resenas_get.php")
+    const data = await response.json()
+
+    if (data.success && data.resenas.length > 0) {
+      // Limpiar reseñas estáticas del HTML
+      container.innerHTML = ""
+
+      // Agregar cada reseña desde la BD
+      data.resenas.forEach((resena) => {
+        agregarResenaAlGrid(container, resena)
+      })
+    }
+  } catch (error) {
+    console.error("Error al cargar reseñas:", error)
+    // Si falla, se mantienen las reseñas estáticas del HTML
+  }
+}
+
+function agregarResenaAlGrid(container, resena) {
+  const nuevaReseña = document.createElement("div")
+  nuevaReseña.className = "reseña-card"
+
+  let estrellasHTML = ""
+  for (let i = 0; i < resena.calificacion; i++) {
+    estrellasHTML += "<span>&#9733;</span>"
+  }
+  // Estrellas vacías
+  for (let i = resena.calificacion; i < 5; i++) {
+    estrellasHTML += "<span style='color: #555;'>&#9733;</span>"
+  }
+
+  nuevaReseña.innerHTML = `
+    <div class="reseña-estrellas">${estrellasHTML}</div>
+    <p class="reseña-texto"></p>
+    <h4 class="reseña-autor"></h4>
+  `
+
+  // Usar textContent para seguridad
+  const textoP = nuevaReseña.querySelector(".reseña-texto")
+  const autorH4 = nuevaReseña.querySelector(".reseña-autor")
+
+  textoP.textContent = `"${resena.comentario}"`
+  autorH4.textContent = `- ${resena.nombre_usuario}`
+
+  // Insertar al inicio para mostrar las más recientes primero
+  container.insertBefore(nuevaReseña, container.firstChild)
 }
