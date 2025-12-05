@@ -79,7 +79,7 @@
         h2 { color: var(--color-primario); margin-bottom: 0.5rem; }
         .subtitulo-catalogo { color: #888; margin-bottom: 2rem; }
 
-        /*TABLA MEJORADA */
+        /* TABLA MEJORADA */
         .table-container {
             overflow-x: auto;
             background-color: #1a1a1a;
@@ -333,7 +333,7 @@
             <div class="nav-links-group">
                 <ul>
                     <li><a href="../index.html">🏠Volver al Inicio</a></li>
-                   <!-- <li><a href="#" onclick="cerrarSesion()">Cerrar Sesi��n</a></li> --> 
+                   <!-- <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li> --> 
                 </ul>
             </div>
         </nav>
@@ -469,126 +469,124 @@
 
             <!-- REPORTES Panel -->
             <div id="panel-reportes" class="section-panel">
-                <h2 style="color: var(--color-primario); margin-bottom: 0.5rem;">Reportes de Gerencia</h2>
-                <p class="subtitulo-catalogo" style="margin-bottom: 2rem; color: #aaa;">Análisis de rendimiento del negocio.</p>
+                <h2 style="color:black">Reportes de Gerencia</h2>
+                <p style="color:black">Análisis de rendimiento del negocio.</p>
                 
-                <!-- Mejorados estilos de botones de reportes para mejor cohesión visual -->
-                <div class="search-box" style="margin-bottom: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <button onclick="mostrarReporte('ingresos')" id="btn-reporte-ingresos" style="padding: 12px 24px; background: var(--stat-ingresos); border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 1rem; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">📈 Ingresos por Servicio</button>
-                    <button onclick="mostrarReporte('estadisticas')" id="btn-reporte-estadisticas" style="padding: 12px 24px; background: var(--stat-total); border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 1rem; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">📊 Estadísticas de Citas</button>
+                <!-- Added tabs for different report types -->
+                <div class="search-box" style="margin-bottom: 20px;">
+                    <button onclick="mostrarReporte('ingresos')" id="btn-reporte-ingresos" style="margin-right: 10px; padding: 10px 20px; background: #00d4ff; border: none; border-radius: 5px; cursor: pointer; color: #000; font-weight: bold;">Ingresos por Servicio</button>
+                    <button onclick="mostrarReporte('estadisticas')" id="btn-reporte-estadisticas" style="padding: 10px 20px; background: #333; border: 1px solid #555; border-radius: 5px; cursor: pointer; color: #fff;">Estadísticas de Citas</button>
                 </div>
 
                 <!-- Reporte de Ingresos -->
                 <div id="reporte-ingresos" style="display: block;">
-                    <div class="search-box" style="background: var(--color-gris-medio); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--stat-ingresos); border: 1px solid rgba(139, 92, 246, 0.2);">
-                        <h3 style="color: var(--stat-ingresos); margin-bottom: 0.5rem;">📈 Reporte de Ingresos por Servicio</h3>
-                        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 1rem;">Muestra los ingresos generados por cada tipo de servicio con estado "completada".</p>
-                        <!-- Mejorado botón de descarga con sombra y mejor estilo -->
-                        <button onclick="descargarReporteIngresos()" style="padding: 12px 20px; background: linear-gradient(135deg, var(--stat-ingresos), rgba(139, 92, 246, 0.8)); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">⬇️ Descargar Tabla (CSV)</button>
-                    </div>
+                    <div class="search-box">
+                        <h3>Reporte de Ingresos por Servicio</h3>
+                        <p style="color: #ccc; font-size: 0.9rem;">Muestra los ingresos generados por cada tipo de servicio con estado "completada".</p>
+                        <!-- Added download button -->
+                         </div>
 
-                    <div class="table-container" style="background: var(--color-gris-oscuro); border: 1px solid var(--color-gris-claro); border-radius: 8px; overflow: hidden;">
+                    <div class="table-container">
                         <table>
-                            <thead style="background: linear-gradient(135deg, var(--stat-ingresos), rgba(139, 92, 246, 0.6)); border-bottom: 2px solid rgba(139, 92, 246, 0.3);">
+                            <thead>
                                 <tr>
-                                    <th style="color: white; padding: 1.2rem; text-align: left;">Servicio</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: center;">Citas Realizadas</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: right;">Ingresos Generados</th>
+                                    <th>Servicio</th>
+                                    <th>Citas Realizadas</th>
+                                    <th>Ingresos Generados</th>
                                 </tr>
                             </thead>
                             <tbody id="tabla-reporte-ingresos-body">
-                                <tr><td colspan="3" style="text-align:center; padding: 20px; color: #888;">Cargando reporte...</td></tr>
+                                <tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando reporte...</td></tr>
                             </tbody>
                         </table>
                     </div>
+                    <button onclick="descargarReporteIngresos()" style="margin-top: 15px; padding: 10px 20px; background-color: #163317; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Descargar Tabla (CSV)</button>
+                   
                 </div>
 
+                <!-- Added new statistics report section -->
                 <!-- Reporte de Estadísticas -->
                 <div id="reporte-estadisticas" style="display: none;">
-                    <div class="search-box" style="background: var(--color-gris-medio); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--stat-total); border: 1px solid rgba(99, 102, 241, 0.2);">
-                        <h3 style="color: var(--stat-total); margin-bottom: 0.5rem;">📊 Estadísticas Generales de Citas</h3>
-                        <p style="color: #aaa; font-size: 0.95rem;">Resumen completo del desempeño de citas y barberos.</p>
+                    <div class="search-box">
+                        <h3>Estadísticas Generales de Citas</h3>
+                        <p style="color: #ccc; font-size: 0.9rem;">Resumen completo del desempeño de citas y barberos.</p>
                     </div>
 
-                    <!-- Tarjetas de estadísticas con bordes sutiles y mejor visual -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 3rem;">
-                        <!-- Total de Citas -->
-                        <div style="background: linear-gradient(135deg, var(--stat-total) 0%, rgba(99, 102, 241, 0.7) 100%); padding: 1.5rem; border-radius: 10px; box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;">
-                            <p style="margin: 0; font-size: 0.95rem; opacity: 0.9; color: rgba(255, 255, 255, 0.9);">Total de Citas</p>
-                            <h2 id="stat-total" style="margin: 10px 0 0 0; font-size: 2.5rem; font-weight: bold; color: #fff;">-</h2>
+                    <!-- Stats Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #131313 100%); padding: 20px; border-radius: 10px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9; ">Total de Citas</p>
+                            <h2 id="stat-total" style="margin: 10px 0 0 0; font-size: 2rem;">-</h2>
                         </div>
-                        <!-- Completadas -->
-                        <div style="background: linear-gradient(135deg, var(--stat-completadas) 0%, rgba(16, 185, 129, 0.7) 100%); padding: 1.5rem; border-radius: 10px; box-shadow: 0 8px 16px rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;">
-                            <p style="margin: 0; font-size: 0.95rem; opacity: 0.9; color: rgba(255, 255, 255, 0.9);">Completadas</p>
-                            <h2 id="stat-completadas" style="margin: 10px 0 0 0; font-size: 2.5rem; font-weight: bold; color: #fff;">-</h2>
+                        <div style="background: linear-gradient(135deg, #f093fb 0%, #000000 100%); padding: 20px; border-radius: 10px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Completadas</p>
+                            <h2 id="stat-completadas" style="margin: 10px 0 0 0; font-size: 2rem;">-</h2>
                         </div>
-                        <!-- Pendientes -->
-                        <div style="background: linear-gradient(135deg, var(--stat-pendientes) 0%, rgba(245, 158, 11, 0.7) 100%); padding: 1.5rem; border-radius: 10px; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;">
-                            <p style="margin: 0; font-size: 0.95rem; opacity: 0.9; color: rgba(255, 255, 255, 0.9);">Pendientes</p>
-                            <h2 id="stat-pendientes" style="margin: 10px 0 0 0; font-size: 2.5rem; font-weight: bold; color: #fff;">-</h2>
+                        <div style="background: linear-gradient(135deg, #4facfe 0%, #000000 100%); padding: 20px; border-radius: 10px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Pendientes</p>
+                            <h2 id="stat-pendientes" style="margin: 10px 0 0 0; font-size: 2rem;">-</h2>
                         </div>
-                        <!-- Canceladas -->
-                        <div style="background: linear-gradient(135deg, var(--stat-canceladas) 0%, rgba(239, 68, 68, 0.7) 100%); padding: 1.5rem; border-radius: 10px; box-shadow: 0 8px 16px rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;">
-                            <p style="margin: 0; font-size: 0.95rem; opacity: 0.9; color: rgba(255, 255, 255, 0.9);">Canceladas</p>
-                            <h2 id="stat-canceladas" style="margin: 10px 0 0 0; font-size: 2.5rem; font-weight: bold; color: #fff;">-</h2>
+                        <div style="background: linear-gradient(135deg, #fa709a 0%, #000000 100%); padding: 20px; border-radius: 10px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Canceladas</p>
+                            <h2 id="stat-canceladas" style="margin: 10px 0 0 0; font-size: 2rem;">-</h2>
                         </div>
                     </div>
 
                     <!-- Citas por Estado -->
-                    <div class="search-box" style="background: var(--color-gris-medio); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid var(--color-primario); border: 1px solid rgba(212, 175, 55, 0.2);">
-                        <h4 style="margin: 0; color: var(--color-primario);">Distribución por Estado</h4>
+                    <div class="search-box">
+                        <h4>Distribución por Estado</h4>
                     </div>
-                    <div class="table-container" style="background: var(--color-gris-oscuro); border: 1px solid var(--color-gris-claro); border-radius: 8px; overflow: hidden;">
+                    <div class="table-container">
                         <table>
-                            <thead style="background: linear-gradient(135deg, var(--stat-total), rgba(99, 102, 241, 0.6)); border-bottom: 2px solid rgba(99, 102, 241, 0.3);">
+                            <thead>
                                 <tr>
-                                    <th style="color: white; padding: 1.2rem; text-align: left;">Estado</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: center;">Cantidad</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: right;">Porcentaje</th>
+                                    <th>Estado</th>
+                                    <th>Cantidad</th>
+                                    <th>Porcentaje</th>
                                 </tr>
                             </thead>
                             <tbody id="tabla-estado-body">
-                                <tr><td colspan="3" style="text-align:center; padding: 20px; color: #888;">Cargando...</td></tr>
+                                <tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando...</td></tr>
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Citas por Barbero -->
-                    <div class="search-box" style="background: var(--color-gris-medio); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid var(--color-primario); border: 1px solid rgba(212, 175, 55, 0.2);">
-                        <h4 style="margin: 0; color: var(--color-primario);">Desempeño por Barbero</h4>
+                    <div class="search-box" style="margin-top: 25px;">
+                        <h4>Desempeño por Barbero</h4>
                     </div>
-                    <div class="table-container" style="background: var(--color-gris-oscuro); border: 1px solid var(--color-gris-claro); border-radius: 8px; overflow: hidden;">
+                    <div class="table-container">
                         <table>
-                            <thead style="background: linear-gradient(135deg, var(--color-primario), rgba(139, 92, 246, 0.6)); border-bottom: 2px solid rgba(139, 92, 246, 0.3);">
+                            <thead>
                                 <tr>
-                                    <th style="color: white; padding: 1.2rem; text-align: left;">Barbero</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: center;">Total Citas</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: center;">Completadas</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: right;">Tasa de Éxito</th>
+                                    <th>Barbero</th>
+                                    <th>Total Citas</th>
+                                    <th>Completadas</th>
+                                    <th>Tasa de Éxito</th>
                                 </tr>
                             </thead>
                             <tbody id="tabla-barbero-body">
-                                <tr><td colspan="4" style="text-align:center; padding: 20px; color: #888;">Cargando...</td></tr>
+                                <tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando...</td></tr>
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Citas por Mes -->
-                    <div class="search-box" style="background: var(--color-gris-medio); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid var(--color-primario); border: 1px solid rgba(212, 175, 55, 0.2);">
-                        <h4 style="margin: 0; color: var(--color-primario);">Tendencia Mensual (Últimos 6 meses)</h4>
+                    <div class="search-box" style="margin-top: 25px;">
+                        <h4>Tendencia Mensual (Últimos 6 meses)</h4>
                     </div>
-                    <div class="table-container" style="background: var(--color-gris-oscuro); border: 1px solid var(--color-gris-claro); border-radius: 8px; overflow: hidden;">
+                    <div class="table-container">
                         <table>
-                            <thead style="background: linear-gradient(135deg, var(--color-primario), rgba(139, 92, 246, 0.6)); border-bottom: 2px solid rgba(139, 92, 246, 0.3);">
+                            <thead>
                                 <tr>
-                                    <th style="color: white; padding: 1.2rem; text-align: left;">Mes</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: center;">Total Citas</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: center;">Completadas</th>
-                                    <th style="color: white; padding: 1.2rem; text-align: right;">Tasa de Finalización</th>
+                                    <th>Mes</th>
+                                    <th>Total Citas</th>
+                                    <th>Completadas</th>
+                                    <th>Tasa de Finalización</th>
                                 </tr>
                             </thead>
                             <tbody id="tabla-mes-body">
-                                <tr><td colspan="4" style="text-align:center; padding: 20px; color: #888;">Cargando...</td></tr>
+                                <tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -598,24 +596,6 @@
     </main>
 
     <script>
-        // Variables para los colores de las estadísticas (esto debería venir de una configuración o variable global si es posible)
-        // Asumo que estas variables CSS están definidas en style.css o se pueden establecer aquí
-        // Si no, se pueden definir valores por defecto aquí.
-        // Por ahora, definimos algunos colores representativos que se pueden mapear a las variables CSS.
-        const colorStatTotal = getComputedStyle(document.documentElement).getPropertyValue('--stat-total').trim() || '#4F46E5'; // Indigo-600
-        const colorStatCompletadas = getComputedStyle(document.documentElement).getPropertyValue('--stat-completadas').trim() || '#047857'; // Green-700
-        const colorStatPendientes = getComputedStyle(document.documentElement).getPropertyValue('--stat-pendientes').trim() || '#D97706'; // Amber-700
-        const colorStatCanceladas = getComputedStyle(document.documentElement).getPropertyValue('--stat-canceladas').trim() || '#DC2626'; // Red-700
-        const colorStatIngresos = getComputedStyle(document.documentElement).getPropertyValue('--stat-ingresos').trim() || '#8B5CF6'; // Purple-500
-
-        // Configuración para los gradient backgrounds de las tarjetas
-        const gradients = {
-            total: `linear-gradient(135deg, ${colorStatTotal} 0%, rgba(99, 102, 241, 0.7) 100%)`,
-            completadas: `linear-gradient(135deg, ${colorStatCompletadas} 0%, rgba(16, 185, 129, 0.7) 100%)`,
-            pendientes: `linear-gradient(135deg, ${colorStatPendientes} 0%, rgba(245, 158, 11, 0.7) 100%)`,
-            canceladas: `linear-gradient(135deg, ${colorStatCanceladas} 0%, rgba(239, 68, 68, 0.7) 100%)`
-        };
-        
         // Verificar acceso antes de cargar cualquier cosa
         if (!verificarAcceso('admin')) {
             // La función verificarAcceso ya redirige si no hay acceso
@@ -627,9 +607,6 @@
         let usuariosData = [];
         let barberosData = [];
         let clientesData = [];
-        
-        // Variable para almacenar los datos del reporte de ingresos para la descarga
-        window.reporteIngresosData = []; 
         
         console.log('[v0] Dashboard de Admin iniciado');
 
@@ -644,20 +621,15 @@
                 cargarProductos();
             } else if (id === 'citas') {
                 cargarCitas();
-                // Asegurarse de que los selects de barbero y cliente estén disponibles antes de cargarlos
-                // Estos selectores no estaban definidos en el HTML original para la búsqueda,
-                // pero se cargan datos de ellos. Los mantendré comentados si no se usan.
-                // cargarBarberos(); 
-                // cargarClientes();
+                cargarBarberos();
+                cargarClientes();
             } else if (id === 'usuarios') {
                 cargarUsuarios();
             } else if (id === 'reportes') {
-                // Mostrar la sección de ingresos por defecto al entrar a reportes
                 mostrarReporte('ingresos');
             }
         }
 
-        // --- VALIDACIONES ---
         function validarPrecio(precio) {
             const precioNum = parseFloat(precio);
             if (isNaN(precioNum) || precioNum <= 0) {
@@ -675,8 +647,7 @@
             }
             return true;
         }
-        
-        // --- PRODUCTOS ---
+
         function cargarProductos() {
             console.log('[v0] Cargando productos desde productos_get.php...');
             fetch('../php/productos_get.php')
@@ -706,7 +677,7 @@
                             <tr>
                                 <td>#${prod.id_producto}</td>
                                 <td>${prod.nombre}</td>
-                                <td>$${prod.precio.toFixed(2)}</td>
+                                <td>$${prod.precio}</td>
                                 <td>${prod.stock} un.</td>
                                 <td>
                                     <button class="btn-accion btn-editar" onclick="editarProductoDirecto(${prod.id_producto})">Editar</button>
@@ -731,7 +702,7 @@
             }
             const producto = productosData.find(p => p.id_producto == id);
             if (producto) {
-                alert(`📦 PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio.toFixed(2)}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
+                alert(`📦 PRODUCTO ENCONTRADO:\n\nID: ${producto.id_producto}\nNombre: ${producto.nombre}\nPrecio: $${producto.precio}\nStock: ${producto.stock}\nDescripción: ${producto.descripcion || 'N/A'}`);
             } else {
                 alert('Producto no encontrado');
             }
@@ -763,24 +734,16 @@
             }
             
             const nuevoNombre = prompt('Nuevo nombre:', producto.nombre);
-            if (nuevoNombre === null || nuevoNombre.trim() === '') { // Permitir vacío si es para limpiar
-                if (nuevoNombre === null) return; // Si cancela, salir
-                if (nuevoNombre.trim() === '') {
-                    alert('El nombre del producto no puede estar vacío.');
-                    return;
-                }
-            }
+            if (!nuevoNombre) return;
             
             const nuevoPrecio = prompt('Nuevo precio:', producto.precio);
-            if (nuevoPrecio === null) return;
-            if (!validarPrecio(nuevoPrecio)) return;
+            if (!nuevoPrecio || !validarPrecio(nuevoPrecio)) return;
             
             const nuevoStock = prompt('Nuevo stock:', producto.stock);
             if (nuevoStock === null) return;
             if (!validarStock(nuevoStock)) return;
             
             const nuevaDescripcion = prompt('Nueva descripción:', producto.descripcion || '');
-            if (nuevaDescripcion === null) return;
             
             console.log('[v0] Actualizando producto:', id);
             fetch('../php/productos_actualizar.php', {
@@ -843,13 +806,7 @@
 
         function mostrarFormularioNuevoProducto() {
             const nombre = prompt('Nombre del producto:');
-            if (nombre === null || nombre.trim() === '') {
-                if (nombre === null) return;
-                if (nombre.trim() === '') {
-                    alert('El nombre del producto no puede estar vacío.');
-                    return;
-                }
-            }
+            if (!nombre) return;
             
             const precio = prompt('Precio:');
             if (!precio || !validarPrecio(precio)) return;
@@ -859,7 +816,6 @@
             if (!validarStock(stock)) return;
             
             const descripcion = prompt('Descripción (opcional):') || '';
-            if (descripcion === null) return; // If user clicks cancel on description
             
             console.log('[v0] Creando nuevo producto');
             fetch('../php/productos_crear.php', {
@@ -891,7 +847,6 @@
             });
         }
 
-        // --- CITAS ---
         function cargarCitas() {
             console.log('[v0] Cargando citas desde citas_admin_get.php...');
             fetch('../php/citas_admin_get.php')
@@ -943,7 +898,7 @@
                 });
         }
 
-        function cargarBarberos() { // No se usa actualmente en el UI principal, pero es útil si se necesita
+        function cargarBarberos() {
             console.log('[v0] Cargando barberos...');
             fetch('../php/barberos_get_admin.php')
                 .then(res => {
@@ -953,22 +908,21 @@
                 .then(data => {
                     console.log('[v0] Barberos recibidos:', data);
                     barberosData = data;
-                    // Si necesitas poblar un select para barberos, este es el lugar
-                    // const select = document.getElementById('buscar-barbero');
-                    // select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
+                    const select = document.getElementById('buscar-barbero');
+                    select.innerHTML = '<option value="">-- Seleccionar barbero --</option>';
                     
-                    // if(data && data.length > 0) {
-                    //     data.forEach(barbero => {
-                    //         select.innerHTML += `<option value="${barbero.id_usuario}">${barbero.nombre}</option>`;
-                    //     });
-                    // }
+                    if(data && data.length > 0) {
+                        data.forEach(barbero => {
+                            select.innerHTML += `<option value="${barbero.id_usuario}">${barbero.nombre}</option>`;
+                        });
+                    }
                 })
                 .catch(err => {
                     console.error('[v0] Error al cargar barberos:', err);
                 });
         }
 
-        function cargarClientes() { // No se usa actualmente en el UI principal, pero es útil si se necesita
+        function cargarClientes() {
             console.log('[v0] Cargando clientes...');
             fetch('../php/clientes_get_admin.php')
                 .then(res => {
@@ -978,31 +932,46 @@
                 .then(data => {
                     console.log('[v0] Clientes recibidos:', data);
                     clientesData = data;
-                    // Si necesitas poblar un select para clientes, este es el lugar
-                    // const select = document.getElementById('buscar-cliente');
-                    // select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+                    const select = document.getElementById('buscar-cliente');
+                    select.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
                     
-                    // if(data && data.length > 0) {
-                    //     data.forEach(cliente => {
-                    //         select.innerHTML += `<option value="${cliente.id_usuario}">${cliente.nombre}</option>`;
-                    //     });
-                    // }
+                    if(data && data.length > 0) {
+                        data.forEach(cliente => {
+                            select.innerHTML += `<option value="${cliente.id_usuario}">${cliente.nombre}</option>`;
+                        });
+                    }
                 })
                 .catch(err => {
                     console.error('[v0] Error al cargar clientes:', err);
                 });
         }
 
-        // La búsqueda por ID de cita no está implementada en el UI original,
-        // pero la función existe y se podría añadir si fuera necesario.
-        // function buscarCitaPorId() { ... }
+        function buscarCitaPorId() {
+            const id = document.getElementById('buscar-cita-id').value;
+            if (!id) {
+                alert('Por favor selecciona una cita');
+                return;
+            }
+            const cita = citasData.find(c => c.id_cita == id);
+            if (cita) {
+                const fechaStr = new Date(cita.fecha_hora).toLocaleString();
+                alert(`📅 CITA ENCONTRADA:\n\nID: ${cita.id_cita}\nCliente: ${cita.cliente_nombre}\nBarbero: ${cita.barbero_nombre}\nFecha: ${fechaStr}\nServicio: ${cita.servicio}\nEstado: ${cita.estado}`);
+            } else {
+                alert('Cita no encontrada');
+            }
+        }
 
-        // La edición directa de citas se realiza a través de editarCitaDirecto.
-        // La función 'editarCita()' que usaba el select de búsqueda no estaba completa.
-        // function editarCita() { ... }
+        function actualizarCita() {
+            const id = document.getElementById('buscar-cita-id').value;
+            if (!id) {
+                alert('Por favor selecciona una cita');
+                return;
+            }
+            editarCitaDirecto(id);
+        }
 
         function eliminarCita() {
-            const id = document.getElementById('buscar-cita-id').value; // Este ID de input no existe en el HTML. Se asume que se usará el botón de borrar directo.
+            const id = document.getElementById('buscar-cita-id').value;
             if (!id) {
                 alert('Por favor selecciona una cita');
                 return;
@@ -1018,10 +987,9 @@
             }
             
             const nuevoEstado = prompt('Nuevo estado (pendiente/completada/cancelada):', cita.estado);
-            if (nuevoEstado === null) return;
+            if (!nuevoEstado) return;
             
-            const estadoNormalizado = nuevoEstado.toLowerCase();
-            if(!['pendiente', 'completada', 'cancelada'].includes(estadoNormalizado)) {
+            if(!['pendiente', 'completada', 'cancelada'].includes(nuevoEstado.toLowerCase())) {
                 alert('❌ Estado inválido. Debe ser: pendiente, completada o cancelada');
                 return;
             }
@@ -1032,7 +1000,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     id_cita: id,
-                    estado: estadoNormalizado
+                    estado: nuevoEstado.toLowerCase()
                 })
             })
             .then(res => {
@@ -1082,23 +1050,89 @@
             });
         }
 
-        // Las funciones de búsqueda por barbero y cliente no estaban directamente vinculadas
-        // a selectores en el HTML original para citasseleccionar
-        // function buscarCitasPorBarbero() { ... }
-        // function buscarCitasPorCliente() { ... }
+        function buscarCitasPorBarbero() {
+            const barberoId = document.getElementById('buscar-barbero').value;
+            if (!barberoId) {
+                cargarCitas();
+                return;
+            }
+            
+            const tbody = document.getElementById('tabla-citas-body');
+            tbody.innerHTML = '';
+            
+            const citasFiltradas = citasData.filter(c => c.id_barbero == barberoId);
+            
+            if (citasFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas para este barbero</td></tr>';
+                return;
+            }
+
+            citasFiltradas.forEach(cita => {
+                const fechaObj = new Date(cita.fecha_hora);
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${cita.id_cita}</td>
+                        <td>${cita.cliente_nombre}</td>
+                        <td>${cita.barbero_nombre}</td>
+                        <td>${fechaStr}</td>
+                        <td>${cita.servicio}</td>
+                        <td>${cita.estado}</td>
+                        <td>
+                            <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function buscarCitasPorCliente() {
+            const clienteId = document.getElementById('buscar-cliente').value;
+            if (!clienteId) {
+                cargarCitas();
+                return;
+            }
+            
+            const tbody = document.getElementById('tabla-citas-body');
+            tbody.innerHTML = '';
+            
+            const citasFiltradas = citasData.filter(c => c.id_cliente == clienteId);
+            
+            if (citasFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay citas para este cliente</td></tr>';
+                return;
+            }
+
+            citasFiltradas.forEach(cita => {
+                const fechaObj = new Date(cita.fecha_hora);
+                const fechaStr = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${cita.id_cita}</td>
+                        <td>${cita.cliente_nombre}</td>
+                        <td>${cita.barbero_nombre}</td>
+                        <td>${fechaStr}</td>
+                        <td>${cita.servicio}</td>
+                        <td>${cita.estado}</td>
+                        <td>
+                            <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
 
         function buscarCitasPorEstado() {
             const estado = document.getElementById('buscar-estado').value;
-            const tbody = document.getElementById('tabla-citas-body');
-
-            // Si no hay estado seleccionado, recargar todas las citas
             if (!estado) {
                 cargarCitas();
                 return;
             }
             
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Cargando...</td></tr>'; // Placeholder
-
             console.log('[v0] Buscando citas por estado:', estado);
             fetch('../php/citas_por_estado_get.php?estado=' + encodeURIComponent(estado))
                 .then(res => {
@@ -1107,6 +1141,7 @@
                 })
                 .then(data => {
                     console.log('[v0] Citas por estado recibidas:', data);
+                    const tbody = document.getElementById('tabla-citas-body');
                     tbody.innerHTML = '';
                     
                     if (!data || data.length === 0) {
@@ -1136,38 +1171,32 @@
                 })
                 .catch(err => {
                     console.error('[v0] Error:', err);
-                    tbody.innerHTML = 
+                    document.getElementById('tabla-citas-body').innerHTML = 
                         '<tr><td colspan="7" style="text-align:center; color:red;">Error al cargar datos: ' + err.message + '</td></tr>';
                 });
         }
 
-        // --- USUARIOS ---
         function cargarUsuarios() {
             console.log('[v0] Cargando usuarios desde usuarios_get.php...');
             fetch('../php/usuarios_get.php')
                 .then(res => {
                     console.log('[v0] Respuesta recibida de usuarios_get.php, status:', res.status);
-                    // Manejar el caso de respuesta vacía o no JSON
-                    if (res.status === 204) { // No Content
-                        console.warn('[v0] No hay usuarios para cargar.');
-                        return Promise.resolve([]); // Devolver arreglo vacío
-                    }
                     return res.text().then(text => {
                         console.log('[v0] Respuesta raw:', text);
                         try {
-                            const jsonData = JSON.parse(text);
-                            if (jsonData.error) { // Si el backend devuelve un objeto de error
-                                throw new Error(jsonData.error);
-                            }
-                            return jsonData;
+                            return JSON.parse(text);
                         } catch(e) {
                             console.error('[v0] Error parseando JSON:', e);
-                            throw new Error('La respuesta del servidor no es un JSON válido. Revisa la consola para más detalles.');
+                            throw new Error('La respuesta no es JSON válido. Revisa que el archivo PHP no tenga errores de sintaxis o output HTML.');
                         }
                     });
                 })
                 .then(data => {
                     console.log('[v0] Usuarios recibidos:', data);
+                    if(data.error) {
+                        throw new Error(data.error);
+                    }
+                    
                     usuariosData = data;
                     const tbody = document.getElementById('tabla-usuarios-body');
                     
@@ -1179,7 +1208,7 @@
                     }
 
                     data.forEach(usuario => {
-                        const rolNombre = usuario.rol_texto || 'N/A'; // Usar el texto del rol si está disponible
+                        const rolNombre = usuario.rol_texto || 'N/A';
                         
                         tbody.innerHTML += `
                             <tr>
@@ -1203,8 +1232,33 @@
                 });
         }
 
-        // La búsqueda por ID de usuario no estaba implementada en el HTML
-        // function buscarUsuarioPorId() { ... }
+        function buscarUsuarioPorId() {
+            const id = document.getElementById('buscar-usuario-id').value;
+            if(!id) {
+                alert('Selecciona un usuario');
+                return;
+            }
+            const usuario = usuariosData.find(u => u.id_usuario == id);
+            if(usuario) {
+                const tbody = document.getElementById('tabla-usuarios-body');
+                const rolNombre = usuario.rol_texto || 'N/A';
+                tbody.innerHTML = `
+                    <tr>
+                        <td>#${usuario.id_usuario}</td>
+                        <td>${usuario.nombre}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.telefono || 'N/A'}</td>
+                        <td>${rolNombre}</td>
+                        <td>
+                            <button class="btn-accion btn-editar" onclick="editarUsuario(${usuario.id_usuario})">Editar</button>
+                            <button class="btn-accion btn-borrar" onclick="eliminarUsuarioDirecto(${usuario.id_usuario})">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                 alert('Usuario no encontrado');
+            }
+        }
 
         function editarUsuario(id) {
             const usuario = usuariosData.find(u => u.id_usuario == id);
@@ -1325,7 +1379,7 @@
             tbody.innerHTML = '';
             
             if(!rol) {
-                cargarUsuarios(); // Si no se selecciona rol, mostrar todos
+                cargarUsuarios();
                 return;
             }
             
@@ -1354,55 +1408,39 @@
             });
         }
 
-        // --- REPORTES ---
         function mostrarReporte(tipo) {
             const reporteIngresos = document.getElementById('reporte-ingresos');
             const reporteEstadisticas = document.getElementById('reporte-estadisticas');
             const btnIngresos = document.getElementById('btn-reporte-ingresos');
             const btnEstadisticas = document.getElementById('btn-reporte-estadisticas');
 
-            // Reset styles first
-            btnIngresos.style.background = '#3a3a3a'; // Default dark grey
-            btnIngresos.style.border = '2px solid var(--color-gris-claro)';
-            btnIngresos.style.color = 'white';
-
-            btnEstadisticas.style.background = '#3a3a3a'; // Default dark grey
-            btnEstadisticas.style.border = '2px solid var(--color-gris-claro)';
-            btnEstadisticas.style.color = 'white';
-            
-            // Apply styles for the selected report type
             if (tipo === 'ingresos') {
                 reporteIngresos.style.display = 'block';
                 reporteEstadisticas.style.display = 'none';
-                
-                btnIngresos.style.background = colorStatIngresos; // Use the defined color
-                btnIngresos.style.border = 'none';
-                btnIngresos.style.color = 'white';
-                
+                btnIngresos.style.background = '#00d4ff';
+                btnIngresos.style.color = '#000';
+                btnEstadisticas.style.background = '#333';
+                btnEstadisticas.style.color = '#fff';
                 cargarReporteIngresos();
-            } else if (tipo === 'estadisticas') {
+            } else {
                 reporteIngresos.style.display = 'none';
                 reporteEstadisticas.style.display = 'block';
-
-                btnEstadisticas.style.background = colorStatTotal; // Use the defined color
-                btnEstadisticas.style.border = 'none';
-                btnEstadisticas.style.color = 'white';
-                
+                btnIngresos.style.background = '#333';
+                btnIngresos.style.color = '#fff';
+                btnEstadisticas.style.background = '#00d4ff';
+                btnEstadisticas.style.color = '#000';
                 cargarReporteEstadisticas();
             }
         }
 
         function cargarReporteIngresos() {
             const tbody = document.getElementById('tabla-reporte-ingresos-body');
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px; color: #888;">Cargando reporte...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px;">Cargando reporte...</td></tr>';
 
             fetch('../php/reporte_ingresos_get.php')
-                .then(res => {
-                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                    return res.json();
-                })
+                .then(res => res.json())
                 .then(data => {
-                    console.log('[v0] Datos del reporte de ingresos recibidos:', data);
+                    console.log('[v0] Datos del reporte recibidos:', data);
                     tbody.innerHTML = '';
 
                     if (data.error) {
@@ -1410,11 +1448,11 @@
                     }
 
                     if (!data.reporte || data.reporte.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #888;">No hay datos suficientes para generar el reporte.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay datos suficientes para generar el reporte.</td></tr>';
                         return;
                     }
 
-                    window.reporteIngresosData = data.reporte; // Store for download
+                    window.reporteIngresosData = data.reporte;
                     
                     let totalIngresos = 0;
                     data.reporte.forEach(item => {
@@ -1429,7 +1467,7 @@
                     });
                     
                     tbody.innerHTML += `
-                        <tr style="background: rgba(139, 92, 246, 0.2); font-weight: bold; border-top: 2px solid var(--stat-ingresos);">
+                        <tr style="background: #00d4ff20; font-weight: bold; border-top: 2px solid #00d4ff;">
                             <td>TOTAL</td>
                             <td>-</td>
                             <td>$${totalIngresos.toFixed(2)}</td>
@@ -1437,7 +1475,7 @@
                     `;
                 })
                 .catch(err => {
-                    console.error('[v0] Error al cargar el reporte de ingresos:', err);
+                    console.error('[v0] Error al cargar el reporte:', err);
                     tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Error al cargar el reporte: ' + err.message + '</td></tr>';
                 });
         }
@@ -1457,12 +1495,11 @@
             let totalIngresos = 0;
             
             datos.forEach(item => {
-                // Escape double quotes by doubling them for CSV
-                const servicioEscaped = `"${item.servicio.replace(/"/g, '""')}"`; 
+                const servicio = `"${item.servicio.replace(/"/g, '""')}"`;
                 const citas = item.citas_realizadas;
                 const ingresos = parseFloat(item.ingresos_generados).toFixed(2);
                 
-                csv += `${servicioEscaped},${citas},${ingresos}\n`;
+                csv += `${servicio},${citas},${ingresos}\n`;
                 
                 totalCitas += parseInt(citas);
                 totalIngresos += parseFloat(ingresos);
@@ -1488,15 +1525,12 @@
             link.click();
             document.body.removeChild(link);
             
-            console.log('[v0] Reporte de ingresos descargado exitosamente');
+            console.log('[v0] Reporte descargado exitosamente');
         }
 
         function cargarReporteEstadisticas() {
             fetch('../php/reporte_citas_get.php')
-                .then(res => {
-                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                    return res.json();
-                })
+                .then(res => res.json())
                 .then(data => {
                     if (data.error) {
                         throw new Error(data.error);
@@ -1504,55 +1538,42 @@
 
                     const stats = data.estadisticas;
                     
-                    // Update stat cards with applied gradients and styles
+                    // Update stat cards
                     document.getElementById('stat-total').textContent = stats.total_general || '0';
-                    document.getElementById('stat-total').style.background = gradients.total;
-                    document.querySelector('#stat-total').parentElement.style.background = gradients.total; // Apply to parent div too
-                    document.querySelector('#stat-total').parentElement.style.boxShadow = '0 8px 16px rgba(99, 102, 241, 0.2)'; // Example shadow
-
-                    document.getElementById('stat-completadas').textContent = stats.completadas || '0';
-                    document.getElementById('stat-completadas').style.background = gradients.completadas;
-                    document.querySelector('#stat-completadas').parentElement.style.background = gradients.completadas;
-                    document.querySelector('#stat-completadas').parentElement.style.boxShadow = '0 8px 16px rgba(16, 185, 129, 0.2)';
-
-                    document.getElementById('stat-pendientes').textContent = stats.pendientes || '0';
-                    document.getElementById('stat-pendientes').style.background = gradients.pendientes;
-                    document.querySelector('#stat-pendientes').parentElement.style.background = gradients.pendientes;
-                    document.querySelector('#stat-pendientes').parentElement.style.boxShadow = '0 8px 16px rgba(245, 158, 11, 0.2)';
                     
-                    document.getElementById('stat-canceladas').textContent = stats.canceladas || '0';
-                    document.getElementById('stat-canceladas').style.background = gradients.canceladas;
-                    document.querySelector('#stat-canceladas').parentElement.style.background = gradients.canceladas;
-                    document.querySelector('#stat-canceladas').parentElement.style.boxShadow = '0 8px 16px rgba(239, 68, 68, 0.2)';
-
+                    let completadas = 0, pendientes = 0, canceladas = 0;
+                    stats.por_estado.forEach(item => {
+                        if (item.estado === 'completada') completadas = item.cantidad;
+                        else if (item.estado === 'pendiente') pendientes = item.cantidad;
+                        else if (item.estado === 'cancelada') canceladas = item.cantidad;
+                    });
+                    
+                    document.getElementById('stat-completadas').textContent = completadas;
+                    document.getElementById('stat-pendientes').textContent = pendientes;
+                    document.getElementById('stat-canceladas').textContent = canceladas;
 
                     // Fill estado table
                     const tbodyEstado = document.getElementById('tabla-estado-body');
                     tbodyEstado.innerHTML = '';
-                    if (stats.por_estado.length === 0) {
-                        tbodyEstado.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px; color: #888;">No hay datos disponibles</td></tr>';
-                    } else {
-                        stats.por_estado.forEach(item => {
-                            const porcentaje = (stats.total_general > 0) ? ((item.cantidad / stats.total_general) * 100).toFixed(1) : '0.0';
-                            tbodyEstado.innerHTML += `
-                                <tr>
-                                    <td style="text-transform: capitalize;">${item.estado}</td>
-                                    <td>${item.cantidad}</td>
-                                    <td>${porcentaje}%</td>
-                                </tr>
-                            `;
-                        });
-                    }
+                    stats.por_estado.forEach(item => {
+                        const porcentaje = ((item.cantidad / stats.total_general) * 100).toFixed(1);
+                        tbodyEstado.innerHTML += `
+                            <tr>
+                                <td style="text-transform: capitalize;">${item.estado}</td>
+                                <td>${item.cantidad}</td>
+                                <td>${porcentaje}%</td>
+                            </tr>
+                        `;
+                    });
 
                     // Fill barbero table
                     const tbodyBarbero = document.getElementById('tabla-barbero-body');
                     tbodyBarbero.innerHTML = '';
                     if (stats.por_barbero.length === 0) {
-                        tbodyBarbero.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #888;">No hay datos disponibles</td></tr>';
+                        tbodyBarbero.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay datos disponibles</td></tr>';
                     } else {
                         stats.por_barbero.forEach(item => {
-                            // Handle division by zero if total_citas is 0
-                            const tasa = (item.total_citas > 0) ? ((item.completadas / item.total_citas) * 100).toFixed(1) : '0.0';
+                            const tasa = ((item.completadas / item.total_citas) * 100).toFixed(1);
                             tbodyBarbero.innerHTML += `
                                 <tr>
                                     <td>${item.barbero}</td>
@@ -1568,12 +1589,10 @@
                     const tbodyMes = document.getElementById('tabla-mes-body');
                     tbodyMes.innerHTML = '';
                     if (stats.por_mes.length === 0) {
-                        tbodyMes.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #888;">No hay datos disponibles</td></tr>';
+                        tbodyMes.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay datos disponibles</td></tr>';
                     } else {
                         stats.por_mes.forEach(item => {
-                            // Handle division by zero if total_citas is 0
-                            const tasa = (item.total_citas > 0) ? ((item.completadas / item.total_citas) * 100).toFixed(1) : '0.0';
-                            
+                            const tasa = ((item.completadas / item.total_citas) * 100).toFixed(1);
                             // Format month nicely
                             const [year, month] = item.mes.split('-');
                             const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -1593,18 +1612,12 @@
                 .catch(err => {
                     console.error('Error al cargar estadísticas:', err);
                     alert('Error al cargar las estadísticas: ' + err.message);
-                    // Display error in tables if fetching fails
-                    document.getElementById('tabla-estado-body').innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Error al cargar datos.</td></tr>';
-                    document.getElementById('tabla-barbero-body').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar datos.</td></tr>';
-                    document.getElementById('tabla-mes-body').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar datos.</td></tr>';
                 });
         }
 
-        // Event listener para cargar la sección de productos al inicio
         window.addEventListener('DOMContentLoaded', function() {
             console.log('[v0] Página cargada, iniciando carga de productos');
-            // Llama a mostrarSeccion para que se active la primera pestaña y cargue sus datos
-            mostrarSeccion('productos'); 
+            mostrarSeccion('productos'); // Cargar la primera sección por defecto
         });
     </script>
 
