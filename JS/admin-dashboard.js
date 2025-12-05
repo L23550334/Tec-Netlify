@@ -18,7 +18,7 @@ function actualizarEstado(idCita, nuevoEstado) {
   }
 
   fetch("../php/citas_actualizar.php", {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
@@ -49,7 +49,7 @@ function eliminarCitaDirecto(idCita) {
   }
 
   fetch("../php/citas_eliminar.php", {
-    method: "POST",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
@@ -102,7 +102,7 @@ function editarProductoDirecto(id) {
   }
 
   fetch("../php/productos_actualizar.php", {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
@@ -135,7 +135,7 @@ function eliminarProductoDirecto(id) {
   }
 
   fetch("../php/productos_eliminar.php", {
-    method: "POST",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
@@ -215,3 +215,4 @@ function cerrarSesion() {
     window.location.href = "../index.html"
   }
 }
+
