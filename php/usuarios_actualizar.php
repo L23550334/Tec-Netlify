@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: POST, PUT');
 header('Access-Control-Allow-Headers: Content-Type');
 
 error_reporting(E_ALL);
@@ -15,9 +15,15 @@ try {
         throw new Exception("No hay conexión a la base de datos");
     }
 
+    $method = $_SERVER['REQUEST_METHOD'];
+    if ($method !== 'POST' && $method !== 'PUT') {
+        throw new Exception("Método no permitido. Use POST o PUT");
+    }
+
     // Leer datos del request
     $input = file_get_contents('php://input');
     error_log("=== ACTUALIZAR USUARIO ===");
+    error_log("Método HTTP: " . $method);
     error_log("Input recibido: " . $input);
     
     $data = json_decode($input, true);
@@ -96,3 +102,4 @@ try {
     ]);
 }
 ?>
+
