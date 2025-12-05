@@ -212,131 +212,6 @@
             opacity: 0.9;
         }
 
-        /* --- MODAL STYLES --- */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .modal-backdrop.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-dialog {
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            border: 1px solid #333;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid #333;
-            background-color: #252525;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-        .modal-header h2 {
-            margin: 0;
-            color: var(--color-primario);
-            font-size: 1.3rem;
-        }
-        .modal-close-btn {
-            background: none;
-            border: none;
-            font-size: 2rem;
-            color: #ccc;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0 10px;
-        }
-        .modal-close-btn:hover {
-            color: var(--color-primario);
-        }
-        .modal-body {
-            padding: 20px;
-        }
-        .modal-body .form-group {
-            margin-bottom: 15px;
-        }
-        .modal-body label {
-            display: block;
-            margin-bottom: 5px;
-            color: #eee;
-            font-weight: bold;
-        }
-        .modal-body input[type="text"],
-        .modal-body input[type="number"],
-        .modal-body input[type="email"],
-        .modal-body input[type="tel"],
-        .modal-body input[type="datetime-local"],
-        .modal-body textarea,
-        .modal-body select {
-            width: 100%;
-            padding: 10px;
-            background-color: #0a0a0a;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .modal-body textarea {
-            resize: vertical;
-        }
-        .modal-form-error {
-            color: #ff4d4d;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            height: 1em; /* To prevent layout shifts */
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            padding: 15px 20px;
-            border-top: 1px solid #333;
-            background-color: #252525;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
-        .btn-modal-cancel,
-        .btn-modal-save {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .btn-modal-cancel {
-            background-color: #444;
-            color: #eee;
-        }
-        .btn-modal-cancel:hover {
-            background-color: #555;
-        }
-        .btn-modal-save {
-            background-color: var(--color-primario);
-            color: #0a0a0a;
-        }
-        .btn-modal-save:hover {
-            opacity: 0.9;
-        }
-        /* --- END MODAL STYLES --- */
-
         /* Media queries for responsive design */
         @media (max-width: 768px) {
             .admin-layout {
@@ -488,7 +363,7 @@
                         <option value="">-- Cargar productos --</option>
                     </select>
                     <button onclick="buscarProductoPorId()">Buscar</button>
-                    <button onclick="abrirModalEditarProducto()">Editar</button>
+                    <button onclick="editarProducto()">Editar</button>
                     <button onclick="eliminarProducto()">Eliminar</button>
                 </div>
 
@@ -518,6 +393,7 @@
                 <h2 style="color:black">Citas Programadas</h2>
                 <h4 style="color:black">Agenda de la barbería.</h4>
                 
+                <!-- Removidas búsquedas por ID, Barbero y Cliente. Manteniendo solo búsqueda por Estado -->
                 <!-- Foreign Key Search 3: Search by State (estado) -->
                 <div class="search-box">
                     <h3>Búsqueda por Estado de Cita</h3>
@@ -529,28 +405,6 @@
                         <option value="cancelada">Cancelada</option>
                     </select>
                     <button onclick="buscarCitasPorEstado()">Mostrar Citas</button>
-                </div>
-                
-                <!-- Additional search boxes for Barbero and Cliente -->
-                <div class="search-box">
-                    <h3>Filtros Adicionales</h3>
-                    <div class="form-grid">
-                        <div>
-                            <label for="buscar-barbero">Filtrar por Barbero:</label>
-                            <select id="buscar-barbero">
-                                <option value="">-- Todos los barberos --</option>
-                            </select>
-                            <button onclick="buscarCitasPorBarbero()">Filtrar</button>
-                        </div>
-                        <div>
-                            <label for="buscar-cliente">Filtrar por Cliente:</label>
-                            <select id="buscar-cliente">
-                                <option value="">-- Todos los clientes --</option>
-                            </select>
-                            <button onclick="buscarCitasPorCliente()">Filtrar</button>
-                        </div>
-                    </div>
-                     <button onclick="cargarCitas()" style="background-color: #333; color: #eee; margin-top: 10px;">Limpiar Filtros</button>
                 </div>
 
                 <!-- Dynamic Table 2: Appointments Grid -->
@@ -741,119 +595,6 @@
         </section>
     </main>
 
-    <!-- Modales para edición de productos, citas y usuarios -->
-    
-    <!-- MODAL: EDITAR PRODUCTO -->
-    <div id="modal-backdrop-producto" class="modal-backdrop">
-        <div id="modal-edit-producto" class="modal-dialog">
-            <div class="modal-header">
-                <h2>Editar Producto</h2>
-                <button class="modal-close-btn" onclick="cerrarModalEditarProducto()">×</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="modal-edit-producto-id">
-                <div class="form-group">
-                    <label>Nombre del Producto</label>
-                    <input type="text" id="modal-edit-producto-nombre" placeholder="Ej: Gel de barbas">
-                </div>
-                <div class="form-group">
-                    <label>Precio ($)</label>
-                    <input type="number" id="modal-edit-producto-precio" step="0.01" placeholder="Ej: 25.99">
-                </div>
-                <div class="form-group">
-                    <label>Stock</label>
-                    <input type="number" id="modal-edit-producto-stock" placeholder="Ej: 50">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-modal-cancel" onclick="cerrarModalEditarProducto()">Cancelar</button>
-                <button class="btn-modal-save" onclick="guardarProductoModal()">Guardar Cambios</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: EDITAR CITA -->
-    <div id="modal-backdrop-cita" class="modal-backdrop">
-        <div id="modal-edit-cita" class="modal-dialog">
-            <div class="modal-header">
-                <h2>Editar Cita</h2>
-                <button class="modal-close-btn" onclick="cerrarModalEditarCita()">×</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="modal-edit-cita-id">
-                <div class="form-group">
-                    <label>Cliente</label>
-                    <input type="text" id="modal-edit-cita-cliente" disabled>
-                </div>
-                <div class="form-group">
-                    <label>Barbero</label>
-                    <select id="modal-edit-cita-barbero">
-                        <option value="">-- Selecciona un barbero --</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Fecha y Hora</label>
-                    <input type="datetime-local" id="modal-edit-cita-fecha">
-                </div>
-                <div class="form-group">
-                    <label>Servicio</label>
-                    <input type="text" id="modal-edit-cita-servicio" placeholder="Ej: Corte y Barba">
-                </div>
-                <div class="form-group">
-                    <label>Estado</label>
-                    <select id="modal-edit-cita-estado">
-                        <option value="pendiente">Pendiente</option>
-                        <option value="confirmada">Confirmada</option>
-                        <option value="completada">Completada</option>
-                        <option value="cancelada">Cancelada</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-modal-cancel" onclick="cerrarModalEditarCita()">Cancelar</button>
-                <button class="btn-modal-save" onclick="guardarCitaModal()">Guardar Cambios</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: EDITAR USUARIO -->
-    <div id="modal-backdrop-usuario" class="modal-backdrop">
-        <div id="modal-edit-usuario" class="modal-dialog">
-            <div class="modal-header">
-                <h2>Editar Usuario</h2>
-                <button class="modal-close-btn" onclick="cerrarModalEditarUsuario()">×</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="modal-edit-usuario-id">
-                <div class="form-group">
-                    <label>Nombre</label>
-                    <input type="text" id="modal-edit-usuario-nombre" placeholder="Ej: Juan Pérez">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="modal-edit-usuario-email" placeholder="Ej: juan@example.com">
-                </div>
-                <div class="form-group">
-                    <label>Teléfono</label>
-                    <input type="tel" id="modal-edit-usuario-telefono" placeholder="Ej: +34 123 456 789">
-                </div>
-                <div class="form-group">
-                    <label>Rol</label>
-                    <select id="modal-edit-usuario-rol">
-                        <option value="">-- Selecciona un rol --</option>
-                        <option value="1">Admin</option>
-                        <option value="2">Barbero</option>
-                        <option value="3">Cliente</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-modal-cancel" onclick="cerrarModalEditarUsuario()">Cancelar</button>
-                <button class="btn-modal-save" onclick="guardarUsuarioModal()">Guardar Cambios</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Verificar acceso antes de cargar cualquier cosa
         if (!verificarAcceso('admin')) {
@@ -939,7 +680,7 @@
                                 <td>$${prod.precio}</td>
                                 <td>${prod.stock} un.</td>
                                 <td>
-                                    <button class="btn-accion btn-editar" onclick="abrirModalEditarProducto(${prod.id_producto})">Editar</button>
+                                    <button class="btn-accion btn-editar" onclick="editarProductoDirecto(${prod.id_producto})">Editar</button>
                                     <button class="btn-accion btn-borrar" onclick="eliminarProductoDirecto(${prod.id_producto})">Borrar</button>
                                 </td>
                             </tr>
@@ -973,7 +714,7 @@
                 alert('Por favor selecciona un producto');
                 return;
             }
-            abrirModalEditarProducto(id);
+            editarProductoDirecto(id);
         }
 
         function eliminarProducto() {
@@ -1139,7 +880,7 @@
                                 <td>${cita.servicio}</td>
                                 <td>${cita.estado}</td>
                                 <td>
-                                    <button class="btn-accion btn-editar" onclick="abrirModalEditarCita(${cita.id_cita})">Editar</button>
+                                    <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
                                     <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
                                 </td>
                             </tr>
@@ -1226,7 +967,7 @@
                 alert('Por favor selecciona una cita');
                 return;
             }
-            abrirModalEditarCita(id);
+            editarCitaDirecto(id);
         }
 
         function eliminarCita() {
@@ -1339,7 +1080,7 @@
                         <td>${cita.servicio}</td>
                         <td>${cita.estado}</td>
                         <td>
-                            <button class="btn-accion btn-editar" onclick="abrirModalEditarCita(${cita.id_cita})">Editar</button>
+                            <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
                             <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
                         </td>
                     </tr>
@@ -1377,7 +1118,7 @@
                         <td>${cita.servicio}</td>
                         <td>${cita.estado}</td>
                         <td>
-                            <button class="btn-accion btn-editar" onclick="abrirModalEditarCita(${cita.id_cita})">Editar</button>
+                            <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
                             <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
                         </td>
                     </tr>
@@ -1421,7 +1162,7 @@
                                 <td>${cita.servicio}</td>
                                 <td>${cita.estado}</td>
                                 <td>
-                                    <button class="btn-accion btn-editar" onclick="abrirModalEditarCita(${cita.id_cita})">Editar</button>
+                                    <button class="btn-accion btn-editar" onclick="editarCitaDirecto(${cita.id_cita})">Editar</button>
                                     <button class="btn-accion btn-borrar" onclick="eliminarCitaDirecto(${cita.id_cita})">Borrar</button>
                                 </td>
                             </tr>
@@ -1477,7 +1218,7 @@
                                 <td>${usuario.telefono || 'N/A'}</td>
                                 <td>${rolNombre}</td>
                                 <td>
-                                    <button onclick="abrirModalEditarUsuario(${usuario.id_usuario})" class="btn-accion">Editar</button>
+                                    <button onclick="editarUsuario(${usuario.id_usuario})" class="btn-accion">Editar</button>
                                     <button onclick="eliminarUsuarioDirecto(${usuario.id_usuario})" class="btn-accion btn-eliminar">Eliminar</button>
                                 </td>
                             </tr>
@@ -1509,7 +1250,7 @@
                         <td>${usuario.telefono || 'N/A'}</td>
                         <td>${rolNombre}</td>
                         <td>
-                            <button class="btn-accion btn-editar" onclick="abrirModalEditarUsuario(${usuario.id_usuario})">Editar</button>
+                            <button class="btn-accion btn-editar" onclick="editarUsuario(${usuario.id_usuario})">Editar</button>
                             <button class="btn-accion btn-borrar" onclick="eliminarUsuarioDirecto(${usuario.id_usuario})">Borrar</button>
                         </td>
                     </tr>
@@ -1659,7 +1400,7 @@
                         <td>${usuario.telefono || 'N/A'}</td>
                         <td>${rolNombre}</td>
                         <td>
-                            <button onclick="abrirModalEditarUsuario(${usuario.id_usuario})" class="btn-accion">Editar</button>
+                            <button onclick="editarUsuario(${usuario.id_usuario})" class="btn-accion">Editar</button>
                             <button onclick="eliminarUsuarioDirecto(${usuario.id_usuario})" class="btn-accion btn-eliminar">Eliminar</button>
                         </td>
                     </tr>
@@ -1879,7 +1620,6 @@
             mostrarSeccion('productos'); // Cargar la primera sección por defecto
         });
     </script>
-<!-- CHANGE: Script para manejar modales debe cargarse ANTES que admin-dashboard.js -->
-<script src="../JS/edit-modals.js"></script>
+
 </body>
 </html>
