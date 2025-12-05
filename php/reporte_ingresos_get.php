@@ -1,18 +1,19 @@
 <?php
 // php/reporte_ingresos_get.php
 
-ob_start();
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 
-try {
-    include 'conexion.php';
-    
-    if (!$conn) {
-        throw new Exception("Error de conexión a la base de datos");
-    }
+include 'conexion.php';
 
+if (!$conn) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Error de conexión a la base de datos'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+try {
     // Definimos los precios de los servicios aquí porque no están en una tabla separada.
     // Esto es una regla de negocio en el backend.
     $precios_servicios = [
@@ -40,6 +41,10 @@ try {
             ORDER BY ingresos_generados DESC";
 
     $result = $conn->query($sql);
+    
+    if (!$result) {
+        throw new Exception("Error en la consulta: " . $conn->error);
+    }
 
     $reporte = [];
     while($row = $result->fetch_assoc()) {
@@ -47,12 +52,13 @@ try {
     }
 
     $conn->close();
-    ob_end_clean();
-    echo json_encode(['reporte' => $reporte]);
+    echo json_encode(['reporte' => $reporte], JSON_UNESCAPED_UNICODE);
     
 } catch (Exception $e) {
-    ob_end_clean();
+    if ($conn) {
+        $conn->close();
+    }
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
 }
 ?>
